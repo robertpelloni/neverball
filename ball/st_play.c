@@ -350,6 +350,10 @@ static int fast_rotate;
 static int show_hud;
 static int loop_transition;
 
+#define MAX_PLAYERS 4
+static float respawn_timer[MAX_PLAYERS];
+static int last_status[MAX_PLAYERS];
+
 static int play_loop_gui(void)
 {
     int id;
@@ -366,9 +370,16 @@ static int play_loop_gui(void)
 static int play_loop_enter(struct state *st, struct state *prev, int intent)
 {
     int id;
+    int i;
 
     rot_init();
     fast_rotate = 0;
+
+    for (i = 0; i < MAX_PLAYERS; i++)
+    {
+        respawn_timer[i] = 0.0f;
+        last_status[i] = GAME_NONE;
+    }
 
     if (prev == &st_pause)
     {
@@ -414,6 +425,10 @@ static void play_loop_timer(int id, float dt)
                (float) config_get_d(CONFIG_ROTATE_SLOW) / 100.0f);
 
     float r = 0.0f;
+    int p;
+    int count = config_get_d(CONFIG_MULTIBALL);
+    if (count < 1) count = 1;
+    if (count > MAX_PLAYERS) count = MAX_PLAYERS;
 
     gui_timer(id, dt);
     hud_timer(dt);
@@ -427,11 +442,6 @@ static void play_loop_timer(int id, float dt)
     switch (rot_get(&r))
     {
     case ROT_HOLD:
-        /*
-         * Cam 3 could be anything. But let's assume it's a manual cam
-         * and holding down both rotation buttons freezes the camera
-         * rotation.
-         */
         game_set_rot(0.0f, 0);
         game_set_cam(CAM_3, 0);
         break;
@@ -449,27 +459,42 @@ static void play_loop_timer(int id, float dt)
     game_client_sync(demo_fp);
     game_client_blend(game_server_blend());
 
-    switch (curr_status(0))
+    for (p = 0; p < count; p++)
     {
-    case GAME_GOAL:
-        progress_stat(GAME_GOAL, 0);
-        goto_state(&st_goal);
-        break;
+        int status = curr_status(p);
 
-    case GAME_FALL:
-        progress_stat(GAME_FALL, 0);
-        goto_state(&st_fail);
-        break;
+        if (status != last_status[p])
+        {
+            if (status != GAME_NONE)
+                progress_stat(status, p);
+            last_status[p] = status;
+        }
 
-    case GAME_TIME:
-        progress_stat(GAME_TIME, 0);
-        goto_state(&st_fail);
-        break;
+        switch (status)
+        {
+        case GAME_GOAL:
+            if (p == 0)
+                goto_state(&st_goal);
+            break;
 
-    default:
-        progress_step();
-        break;
+        case GAME_FALL:
+            respawn_timer[p] += dt;
+            if (respawn_timer[p] > 1.5f)
+            {
+                game_respawn(p);
+                respawn_timer[p] = 0.0f;
+                last_status[p] = GAME_NONE;
+            }
+            break;
+
+        case GAME_TIME:
+            if (p == 0)
+                goto_state(&st_fail);
+            break;
+        }
     }
+
+    progress_step();
 }
 
 static void play_loop_point(int id, int x, int y, int dx, int dy)

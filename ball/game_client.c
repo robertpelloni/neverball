@@ -71,6 +71,7 @@ static void game_run_cmd(const union cmd *cmd)
     struct game_draw *cg = &gd[cs.curr_player];
     struct game_lerp *cl = &gl[cs.curr_player];
     struct client_stats *cst = &stats[cs.curr_player];
+    int p;
 
     if (cg->state)
     {
@@ -87,7 +88,11 @@ static void game_run_cmd(const union cmd *cmd)
 
         if (cs.next_update)
         {
-            game_lerp_copy(cl);
+            for (p = 0; p < MAX_PLAYERS; p++)
+            {
+                if (gd[p].state)
+                    game_lerp_copy(&gl[p]);
+            }
             cs.next_update = 0;
         }
 
@@ -97,23 +102,6 @@ static void game_run_cmd(const union cmd *cmd)
             cs.curr_player = cmd->setplayer.player_index;
             if (cs.curr_player < 0) cs.curr_player = 0;
             if (cs.curr_player >= MAX_PLAYERS) cs.curr_player = 0;
-            /* Reset references for the next command */
-            /* Actually, the loop continues and next command will pick up new cs.curr_player */
-            /* But we already dereferenced cg/cl/cst at function start. */
-            /* We must update them immediately for subsequent usage within this function call? */
-            /* No, game_run_cmd handles ONE command struct. */
-            /* But the function start dereferenced BEFORE switching player. */
-            /* Does CMD_SET_PLAYER affect the CURRENT command processing? No, it sets context for NEXT commands? */
-            /* Or does it affect subsequent logic in THIS function? */
-            /* game_run_cmd processes ONE command. */
-            /* So the context switch applies to FUTURE commands processed by future calls to game_run_cmd. */
-            /* Wait, if I enqueue [SET_PLAYER, BALL_POS], then: */
-            /* 1. game_run_cmd(SET_PLAYER) is called. It updates cs.curr_player. */
-            /* 2. game_run_cmd(BALL_POS) is called. It uses the NEW cs.curr_player. */
-            /* So simply updating cs.curr_player is enough for the NEXT command. */
-            /* However, 'cg', 'cl' pointers in THIS function call are stale if used here. */
-            /* But CMD_SET_PLAYER logic only updates cs.curr_player and breaks. It doesn't use cg/cl. */
-            /* Correct. */
             break;
 
         case CMD_END_OF_UPDATE:
@@ -122,19 +110,25 @@ static void game_run_cmd(const union cmd *cmd)
 
             if (cs.first_update)
             {
-                game_lerp_copy(cl);
-                /* Hack to sync state before the next update. */
-                game_lerp_apply(cl, cg);
+                for (p = 0; p < MAX_PLAYERS; p++)
+                {
+                    if (gd[p].state)
+                    {
+                        game_lerp_copy(&gl[p]);
+                        /* Hack to sync state before the next update. */
+                        game_lerp_apply(&gl[p], &gd[p]);
+                    }
+                }
                 cs.first_update = 0;
                 break;
             }
 
             /* Compute gravity for particle effects. */
-
-            if (cst->status == GAME_GOAL)
-                game_tilt_grav(v, GRAVITY_UP, tilt);
+            /* Use P0 context for global particles */
+            if (stats[0].status == GAME_GOAL)
+                game_tilt_grav(v, GRAVITY_UP, &gl[0].tilt[CURR]);
             else
-                game_tilt_grav(v, GRAVITY_DN, tilt);
+                game_tilt_grav(v, GRAVITY_DN, &gl[0].tilt[CURR]);
 
             /* Step particle, goal and jump effects. */
 
@@ -142,15 +136,24 @@ static void game_run_cmd(const union cmd *cmd)
             {
                 dt = 1.0f / cs.ups;
 
-                if (cg->goal_e && cl->goal_k[CURR] < 1.0f)
-                    cl->goal_k[CURR] += dt;
-
-                if (cg->jump_b)
+                for (p = 0; p < MAX_PLAYERS; p++)
                 {
-                    cl->jump_dt[CURR] += dt;
+                    if (gd[p].state)
+                    {
+                         struct game_draw *cg_p = &gd[p];
+                         struct game_lerp *cl_p = &gl[p];
 
-                    if (cl->jump_dt[PREV] >= 1.0f)
-                        cg->jump_b = 0;
+                         if (cg_p->goal_e && cl_p->goal_k[CURR] < 1.0f)
+                            cl_p->goal_k[CURR] += dt;
+
+                         if (cg_p->jump_b)
+                         {
+                            cl_p->jump_dt[CURR] += dt;
+
+                            if (cl_p->jump_dt[PREV] >= 1.0f)
+                                cg_p->jump_b = 0;
+                         }
+                    }
                 }
 
                 part_step(v, dt);
@@ -171,14 +174,14 @@ static void game_run_cmd(const union cmd *cmd)
 
             if ((idx = cmd->pkitem.hi) >= 0 && idx < vary->hc)
             {
-                float p[3];
+                float pos[3];
 
                 hp = &vary->hv[idx];
 
-                sol_entity_world(p, vary, hp->mi, hp->mj, hp->p);
+                sol_entity_world(pos, vary, hp->mi, hp->mj, hp->p);
 
                 item_color(hp, v);
-                part_burst(p, v);
+                part_burst(pos, v);
 
                 hp->t = ITEM_NONE;
             }

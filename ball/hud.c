@@ -42,6 +42,7 @@ static int scor_id;
 static int goal_id;
 static int cam_id;
 static int fps_id;
+static int msg_id;
 
 static int speed_id;
 static int speed_ids[SPEED_MAX];
@@ -125,6 +126,11 @@ void hud_init(void)
         gui_layout(time_id, 0, -1);
     }
 
+    if ((msg_id = gui_label(0, " ", GUI_LRG, gui_yel, gui_red)))
+    {
+        gui_layout(msg_id, 0, 0);
+    }
+
     /* Find the longest camera name. */
 
     for (str_cam = "", v = CAM_NONE + 1; v < CAM_MAX; v++)
@@ -165,6 +171,7 @@ void hud_free(void)
     gui_delete(time_id);
     gui_delete(cam_id);
     gui_delete(fps_id);
+    gui_delete(msg_id);
 
     gui_delete(speed_id);
 
@@ -209,6 +216,7 @@ void hud_paint(int x, int y, int w, int h)
 
         gui_paint(Rhud_id);
         gui_paint(time_id);
+        gui_paint(msg_id);
 
         if (config_get_d(CONFIG_FPS))
             gui_paint(fps_id);
@@ -228,6 +236,7 @@ void hud_update(int p, int pulse)
     int goal  = curr_goal();
     int balls = curr_balls(p);
     int score = curr_score(p);
+    int status = curr_status(p);
 
     int c_id;
     int last;
@@ -239,9 +248,18 @@ void hud_update(int p, int pulse)
         gui_pulse(ball_id, 0.f);
         gui_pulse(time_id, 0.f);
         gui_pulse(coin_id, 0.f);
+        gui_pulse(msg_id, 0.f);
 
         speed_timer = 0.0f;
     }
+
+    if (status == GAME_GOAL) gui_set_label(msg_id, _("GOAL!"));
+    else if (status == GAME_FALL) gui_set_label(msg_id, _("FALL OUT"));
+    else if (status == GAME_TIME) gui_set_label(msg_id, _("TIME UP"));
+    else gui_set_label(msg_id, " ");
+
+    if (status != GAME_NONE && pulse)
+        gui_pulse(msg_id, 1.2f);
 
     /* time and tick-tock */
 
@@ -338,6 +356,7 @@ void hud_timer(float dt)
     gui_timer(Lhud_id, dt);
     gui_timer(Touch_id, dt);
     gui_timer(time_id, dt);
+    gui_timer(msg_id, dt);
 
     hud_cam_timer(dt);
     hud_speed_timer(dt);

@@ -15,6 +15,8 @@ void  game_server_step(float);
 float game_server_blend(void);
 
 void  game_set_goal(int);
+void  game_respawn(int);
+void  game_respawn(int);
 
 void  game_set_ang(float, float, int);
 void  game_set_pos(int, int, int);

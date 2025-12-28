@@ -65,6 +65,7 @@ struct server_player
     int   jump_b;
     float jump_dt;
     float jump_p[3];
+    float start_p[3];
 };
 
 static struct server_player players[MAX_PLAYERS];
@@ -445,6 +446,8 @@ static void game_player_init(int p, int t, int e)
     }
 
     game_view_fly(&pl->view, &pl->vary, 0.0f);
+
+    v_cpy(pl->start_p, pl->vary.uv[0].p);
 
     pl->view_k = 1.0f;
     pl->view_time = 0.0f;
@@ -894,6 +897,29 @@ void game_set_goal(int p)
     {
         players[p].goal_e = 1;
         game_cmd_goalopen(p);
+    }
+}
+
+void game_respawn(int p)
+{
+    struct server_player *pl = &players[p];
+    if (p >= 0 && p < MAX_PLAYERS)
+    {
+        /* Reset ball */
+        v_cpy(pl->vary.uv[0].p, pl->start_p);
+        v_scl(pl->vary.uv[0].v, pl->vary.uv[0].v, 0.0f);
+        v_scl(pl->vary.uv[0].w, pl->vary.uv[0].w, 0.0f);
+
+        /* Reset status */
+        pl->status = GAME_NONE;
+
+        /* Reset view */
+        game_view_fly(&pl->view, &pl->vary, 0.0f);
+
+        /* Send updates */
+        game_cmd_status(p);
+        game_cmd_updball(p);
+        game_cmd_updview(p);
     }
 }
 
