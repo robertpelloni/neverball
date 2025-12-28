@@ -399,7 +399,7 @@ static int help_keybd(int c, int d)
     return 1;
 }
 
-static int help_buttn(int b, int d)
+static int help_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -452,7 +452,7 @@ static int help_demo_keybd(int c, int d)
     return 1;
 }
 
-static int help_demo_buttn(int b, int d)
+static int help_demo_buttn(int b, int d, int device_id)
 {
     if (d)
     {

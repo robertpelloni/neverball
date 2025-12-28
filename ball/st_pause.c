@@ -113,7 +113,7 @@ static int pause_enter(struct state *st, struct state *prev, int intent)
 static void pause_paint(int id, float t)
 {
     shared_paint(id, t);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void pause_timer(int id, float dt)
@@ -135,7 +135,7 @@ static int pause_keybd(int c, int d)
     return 1;
 }
 
-static int pause_buttn(int b, int d)
+static int pause_buttn(int b, int d, int device_id)
 {
     if (d)
     {

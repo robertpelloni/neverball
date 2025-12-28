@@ -603,7 +603,7 @@ static void package_point(int id, int x, int y, int dx, int dy)
         gui_pulse(jd, 1.2f);
 }
 
-static void package_stick(int id, int a, float v, int bump)
+static void package_stick(int id, int a, float v, int bump, int device_id)
 {
     int jd = gui_stick(id, a, v, bump);
 

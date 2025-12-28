@@ -197,7 +197,7 @@ static int name_keybd(int c, int d)
     return 1;
 }
 
-static int name_buttn(int b, int d)
+static int name_buttn(int b, int d, int device_id)
 {
     if (d)
     {

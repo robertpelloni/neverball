@@ -275,7 +275,7 @@ static void start_point(int id, int x, int y, int dx, int dy)
     start_over(gui_point(id, x, y), 1);
 }
 
-static void start_stick(int id, int a, float v, int bump)
+static void start_stick(int id, int a, float v, int bump, int device_id)
 {
     start_over(gui_stick(id, a, v, bump), 1);
 }
@@ -330,7 +330,7 @@ static int start_keybd(int c, int d)
     return 1;
 }
 
-static int start_buttn(int b, int d)
+static int start_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -348,7 +348,7 @@ static int start_click(int b, int d)
 {
     if (gui_click(b, d))
     {
-        return start_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+        return start_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
     }
     return 1;
 }

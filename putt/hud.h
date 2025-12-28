@@ -6,7 +6,7 @@
 void hud_init(void);
 void hud_free(void);
 
-void hud_paint(void);
+void hud_paint(int x, int y, int w, int h);
 
 /*---------------------------------------------------------------------------*/
 

@@ -179,7 +179,7 @@ static int score_card(const char  *title,
 
 /*---------------------------------------------------------------------------*/
 
-static int shared_stick_basic(int id, int a, float v, int bump)
+static int shared_stick_basic(int id, int a, float v, int bump, int device_id)
 {
     int jd;
 
@@ -189,9 +189,9 @@ static int shared_stick_basic(int id, int a, float v, int bump)
     return jd;
 }
 
-static void shared_stick(int id, int a, float v, int bump)
+static void shared_stick(int id, int a, float v, int bump, int device_id)
 {
-    shared_stick_basic(id, a, v, bump);
+    shared_stick_basic(id, a, v, bump, device_id);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -298,7 +298,7 @@ static int title_click(int b, int d)
     return gui_click(b, d) ? title_action(gui_token(gui_active())) : 1;
 }
 
-static int title_buttn(int b, int d)
+static int title_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -452,11 +452,11 @@ static void course_point(int id, int x, int y, int dx, int dy)
     }
 }
 
-static void course_stick(int id, int a, float v, int bump)
+static void course_stick(int id, int a, float v, int bump, int device_id)
 {
     int jd;
 
-    if ((jd = shared_stick_basic(id, a, v, bump)))
+    if ((jd = shared_stick_basic(id, a, v, bump, device_id)))
     {
         int i = gui_token(jd);
 
@@ -474,7 +474,7 @@ static int course_click(int b, int d)
     return gui_click(b, d) ? course_action(gui_token(gui_active())) : 1;
 }
 
-static int course_buttn(int b, int d)
+static int course_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -591,7 +591,7 @@ static int party_click(int b, int d)
     return gui_click(b, d) ? party_action(gui_token(gui_active())) : 1;
 }
 
-static int party_buttn(int b, int d)
+static int party_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -676,7 +676,7 @@ static void pause_paint(int id, float t)
 {
     game_draw(0, t);
     gui_paint(id);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void pause_timer(int id, float dt)
@@ -701,7 +701,7 @@ static int pause_keybd(int c, int d)
     return 1;
 }
 
-static int pause_buttn(int b, int d)
+static int pause_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -789,7 +789,7 @@ static int next_leave(struct state *st, struct state *next, int id, int intent)
 static void next_paint(int id, float t)
 {
     game_draw(0, t);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
     gui_paint(id);
 }
 
@@ -822,7 +822,7 @@ static int next_keybd(int c, int d)
     return 1;
 }
 
-static int next_buttn(int b, int d)
+static int next_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -862,7 +862,7 @@ static void poser_paint(int id, float t)
     game_draw(1, t);
 }
 
-static int poser_buttn(int b, int d)
+static int poser_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -898,7 +898,7 @@ static int flyby_leave(struct state *st, struct state *next, int id, int intent)
 static void flyby_paint(int id, float t)
 {
     game_draw(0, t);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void flyby_timer(int id, float dt)
@@ -923,7 +923,7 @@ static int flyby_click(int b, int d)
     return 1;
 }
 
-static int flyby_buttn(int b, int d)
+static int flyby_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -971,7 +971,7 @@ static int stroke_leave(struct state *st, struct state *next, int id, int intent
 static void stroke_paint(int id, float t)
 {
     game_draw(0, t);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void stroke_timer(int id, float dt)
@@ -998,7 +998,7 @@ static void stroke_point(int id, int x, int y, int dx, int dy)
     game_set_mag(dy);
 }
 
-static void stroke_stick(int id, int a, float v, int bump)
+static void stroke_stick(int id, int a, float v, int bump, int device_id)
 {
     if      (config_tst_d(CONFIG_JOYSTICK_AXIS_X0, a))
         stroke_rotate = 6 * v;
@@ -1011,7 +1011,7 @@ static int stroke_click(int b, int d)
     return (d && b == SDL_BUTTON_LEFT) ? goto_state(&st_roll) : 1;
 }
 
-static int stroke_buttn(int b, int d)
+static int stroke_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -1055,7 +1055,7 @@ static int roll_leave(struct state *st, struct state *next, int id, int intent)
 static void roll_paint(int id, float t)
 {
     game_draw(0, t);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void roll_timer(int id, float dt)
@@ -1070,7 +1070,7 @@ static void roll_timer(int id, float dt)
     }
 }
 
-static int roll_buttn(int b, int d)
+static int roll_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -1110,7 +1110,7 @@ static void goal_paint(int id, float t)
 {
     game_draw(0, t);
     gui_paint(id);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void goal_timer(int id, float dt)
@@ -1138,7 +1138,7 @@ static int goal_click(int b, int d)
     return 1;
 }
 
-static int goal_buttn(int b, int d)
+static int goal_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -1178,7 +1178,7 @@ static int stop_leave(struct state *st, struct state *next, int id, int intent)
 static void stop_paint(int id, float t)
 {
     game_draw(0, t);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void stop_timer(int id, float dt)
@@ -1209,7 +1209,7 @@ static int stop_click(int b, int d)
     return 1;
 }
 
-static int stop_buttn(int b, int d)
+static int stop_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -1259,7 +1259,7 @@ static void fall_paint(int id, float t)
 {
     game_draw(0, t);
     gui_paint(id);
-    hud_paint();
+    hud_paint(0, 0, video.device_w, video.device_h);
 }
 
 static void fall_timer(int id, float dt)
@@ -1287,7 +1287,7 @@ static int fall_click(int b, int d)
     return 1;
 }
 
-static int fall_buttn(int b, int d)
+static int fall_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -1344,7 +1344,7 @@ static int score_click(int b, int d)
     return 1;
 }
 
-static int score_buttn(int b, int d)
+static int score_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -1390,7 +1390,7 @@ static int over_click(int b, int d)
     return (d && b == SDL_BUTTON_LEFT) ? goto_state(&st_title) : 1;
 }
 
-static int over_buttn(int b, int d)
+static int over_buttn(int b, int d, int device_id)
 {
     if (d)
     {

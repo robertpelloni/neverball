@@ -177,7 +177,7 @@ static int save_keybd(int c, int d)
     return 1;
 }
 
-static int save_buttn(int b, int d)
+static int save_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -250,7 +250,7 @@ static int clobber_keybd(int c, int d)
     return 1;
 }
 
-static int clobber_buttn(int b, int d)
+static int clobber_buttn(int b, int d, int device_id)
 {
     if (d)
     {

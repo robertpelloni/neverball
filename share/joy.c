@@ -132,7 +132,7 @@ int joy_button(int instance, int b, int d)
     if (joy_curr == instance)
     {
         /* Process button event normally. */
-        return st_buttn(b, d);
+        return st_buttn(b, d, instance);
     }
     else
     {
@@ -151,6 +151,6 @@ void joy_axis(int instance, int a, float v)
     if (joy_curr == instance)
     {
         /* Process axis events from current joystick only. */
-        st_stick(a, v);
+        st_stick(a, v, instance);
     }
 }

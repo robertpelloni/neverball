@@ -270,7 +270,7 @@ static int handle_key_dn(SDL_Event *e)
         break;
     case SDLK_RETURN:
     case SDLK_KP_ENTER:
-        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
         break;
     case KEY_FULLSCREEN:
         video_fullscreen(!config_get_d(CONFIG_FULLSCREEN));
@@ -297,7 +297,7 @@ static int handle_key_dn(SDL_Event *e)
                 break;
 
             key_pressed[dir] = 1;
-            st_stick(config_get_d(*key_axis[dir]), key_tilt[dir]);
+            st_stick(config_get_d(*key_axis[dir]), key_tilt[dir], 0);
         }
         else
             d = st_keybd(e->key.keysym.sym, 1);
@@ -317,7 +317,7 @@ static int handle_key_up(SDL_Event *e)
     {
     case SDLK_RETURN:
     case SDLK_KP_ENTER:
-        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 0);
+        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 0, 0);
         break;
     case KEY_EXIT:
         d = st_keybd(KEY_EXIT, 0);
@@ -337,9 +337,9 @@ static int handle_key_up(SDL_Event *e)
             key_pressed[dir] = 0;
 
             if (key_pressed[key_other[dir]])
-                st_stick(config_get_d(*key_axis[dir]), -key_tilt[dir]);
+                st_stick(config_get_d(*key_axis[dir]), -key_tilt[dir], 0);
             else
-                st_stick(config_get_d(*key_axis[dir]), 0.0f);
+                st_stick(config_get_d(*key_axis[dir]), 0.0f, 0);
         }
         else
             d = st_keybd(e->key.keysym.sym, 0);
@@ -721,15 +721,15 @@ static int loop(void)
 
                 /* Convert D-pad button events into joystick axis motion. */
 
-                if      (pad[0] && !pad[1]) st_stick(X, -1.0f);
-                else if (pad[1] && !pad[0]) st_stick(X, +1.0f);
-                else                        st_stick(X,  0.0f);
+                if      (pad[0] && !pad[1]) st_stick(X, -1.0f, 0);
+                else if (pad[1] && !pad[0]) st_stick(X, +1.0f, 0);
+                else                        st_stick(X,  0.0f, 0);
 
-                if      (pad[2] && !pad[3]) st_stick(Y, -1.0f);
-                else if (pad[3] && !pad[2]) st_stick(Y, +1.0f);
-                else                        st_stick(Y,  0.0f);
+                if      (pad[2] && !pad[3]) st_stick(Y, -1.0f, 0);
+                else if (pad[3] && !pad[2]) st_stick(Y, +1.0f, 0);
+                else                        st_stick(Y,  0.0f, 0);
             }
-            else d = st_buttn(b, s);
+            else d = st_buttn(b, s, 0);
         }
     }
 

@@ -30,10 +30,10 @@ int  common_leave(struct state *st, struct state *next, int id, int intent);
 void common_paint(int id, float st);
 void common_timer(int id, float dt);
 void common_point(int id, int x, int y, int dx, int dy);
-void common_stick(int id, int a, float v, int bump);
+void common_stick(int id, int a, float v, int bump, int device_id);
 int  common_click(int b, int d);
 int  common_keybd(int c, int d);
-int  common_buttn(int b, int d);
+int  common_buttn(int b, int d, int device_id);
 
 
 /*---------------------------------------------------------------------------*/

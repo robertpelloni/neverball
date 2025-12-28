@@ -114,7 +114,7 @@ static int done_keybd(int c, int d)
     return 1;
 }
 
-static int done_buttn(int b, int d)
+static int done_buttn(int b, int d, int device_id)
 {
     if (d)
     {

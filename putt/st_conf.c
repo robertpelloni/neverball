@@ -209,7 +209,7 @@ static void conf_point(int id, int x, int y, int dx, int dy)
     gui_pulse(gui_point(id, x, y), 1.2f);
 }
 
-static void conf_stick(int id, int a, float v, int bump)
+static void conf_stick(int id, int a, float v, int bump, int device_id)
 {
     gui_pulse(gui_stick(id, a, v, bump), 1.2f);
 }
@@ -227,7 +227,7 @@ static int conf_keybd(int c, int d)
     return (d && c == SDLK_ESCAPE) ? goto_state(&st_title) : 1;
 }
 
-static int conf_buttn(int b, int d)
+static int conf_buttn(int b, int d, int device_id)
 {
     if (d)
     {

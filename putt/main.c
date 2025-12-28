@@ -157,24 +157,24 @@ static int loop(void)
                 break;
             case SDLK_RETURN:
             case SDLK_KP_ENTER:
-                d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+                d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
                 break;
             case SDLK_ESCAPE:
                 if (video_get_grab())
-                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_START), 1);
+                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_START), 1, 0);
                 else
-                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_B), 1);
+                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_B), 1, 0);
                 break;
 
             default:
                 if (config_tst_d(CONFIG_KEY_FORWARD, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), -1.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), -1.0f, 0);
                 else if (config_tst_d(CONFIG_KEY_BACKWARD, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), +1.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), +1.0f, 0);
                 else if (config_tst_d(CONFIG_KEY_LEFT, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), -1.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), -1.0f, 0);
                 else if (config_tst_d(CONFIG_KEY_RIGHT, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), +1.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), +1.0f, 0);
                 else
                     d = st_keybd(e.key.keysym.sym, 1);
             }
@@ -188,24 +188,24 @@ static int loop(void)
             {
             case SDLK_RETURN:
             case SDLK_KP_ENTER:
-                d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 0);
+                d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 0, 0);
                 break;
             case SDLK_ESCAPE:
                 if (video_get_grab())
-                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_START), 0);
+                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_START), 0, 0);
                 else
-                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_B), 0);
+                    d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_B), 0, 0);
                 break;
 
             default:
                 if (config_tst_d(CONFIG_KEY_FORWARD, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), 0.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), 0.0f, 0);
                 else if (config_tst_d(CONFIG_KEY_BACKWARD, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), 0.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y0), 0.0f, 0);
                 else if (config_tst_d(CONFIG_KEY_LEFT, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), 0.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), 0.0f, 0);
                 else if (config_tst_d(CONFIG_KEY_RIGHT, c))
-                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), 0.0f);
+                    st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X0), 0.0f, 0);
                 else
                     d = st_keybd(e.key.keysym.sym, 0);
             }

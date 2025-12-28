@@ -187,9 +187,9 @@ static void set_point(int id, int x, int y, int dx, int dy)
         set_over(gui_value(jd));
 }
 
-static void set_stick(int id, int a, float v, int bump)
+static void set_stick(int id, int a, float v, int bump, int device_id)
 {
-    int jd = shared_stick_basic(id, a, v, bump);
+    int jd = shared_stick_basic(id, a, v, bump, device_id);
 
     if (jd && gui_token(jd) == SET_SELECT)
         set_over(gui_value(jd));
@@ -205,7 +205,7 @@ static int set_keybd(int c, int d)
     return 1;
 }
 
-static int set_buttn(int b, int d)
+static int set_buttn(int b, int d, int device_id)
 {
     if (d)
     {

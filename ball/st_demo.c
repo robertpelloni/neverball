@@ -39,6 +39,7 @@
 #include "st_demo.h"
 #include "st_title.h"
 #include "st_shared.h"
+#include "st_common.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -412,7 +413,7 @@ static int demo_keybd(int c, int d)
     return 1;
 }
 
-static int demo_buttn(int b, int d)
+static int demo_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -528,7 +529,7 @@ static void demo_play_paint(int id, float t)
     game_client_draw(0, t);
 
     if (show_hud)
-        hud_paint();
+        hud_paint(0, 0, video.device_w, video.device_h);
 
     gui_paint(id);
 }
@@ -571,7 +572,7 @@ static void set_speed(int d)
     hud_speed_pulse(speed);
 }
 
-static void demo_play_stick(int id, int a, float v, int bump)
+static void demo_play_stick(int id, int a, float v, int bump, int device_id)
 {
     if (!bump)
         return;
@@ -605,7 +606,7 @@ static int demo_play_keybd(int c, int d)
     return 1;
 }
 
-static int demo_play_buttn(int b, int d)
+static int demo_play_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -707,8 +708,8 @@ static int demo_end_enter(struct state *st, struct state *prev, int intent)
 static void demo_end_paint(int id, float t)
 {
     game_client_draw(0, t);
+    hud_paint(0, 0, video.device_w, video.device_h);
     gui_paint(id);
-    hud_paint();
 }
 
 static void demo_end_timer(int id, float dt)
@@ -733,7 +734,7 @@ static int demo_end_keybd(int c, int d)
     return 1;
 }
 
-static int demo_end_buttn(int b, int d)
+static int demo_end_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -804,7 +805,7 @@ static int demo_del_keybd(int c, int d)
     return 1;
 }
 
-static int demo_del_buttn(int b, int d)
+static int demo_del_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -839,10 +840,23 @@ static int demo_compat_gui(void)
     return id;
 }
 
+static int demo_compat_action(int tok, int val)
+{
+    audio_play(AUD_MENU, 1.0f);
+
+    switch (tok)
+    {
+    case GUI_BACK:
+        return goto_state(&st_demo_play);
+    }
+    return 1;
+}
+
 static int demo_compat_enter(struct state *st, struct state *prev, int intent)
 {
     check_compat = 0;
 
+    conf_common_init(demo_compat_action);
     return transition_slide(demo_compat_gui(), 1, intent);
 }
 
@@ -862,14 +876,16 @@ static int demo_compat_keybd(int c, int d)
     return 1;
 }
 
-static int demo_compat_buttn(int b, int d)
+static int demo_compat_buttn(int b, int d, int device_id)
 {
     if (d)
     {
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
-            return goto_state(&st_demo_play);
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
-            return goto_state(&st_demo_end);
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b) ||
+            config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b) ||
+            config_tst_d(CONFIG_JOYSTICK_BUTTON_START, b))
+        {
+            return demo_compat_action(GUI_BACK, 0);
+        }
     }
     return 1;
 }

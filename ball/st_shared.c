@@ -55,7 +55,7 @@ void shared_point(int id, int x, int y, int dx, int dy)
     shared_point_basic(id, x, y);
 }
 
-int shared_stick_basic(int id, int a, float v, int bump)
+int shared_stick_basic(int id, int a, float v, int bump, int device_id)
 {
     int jd;
 
@@ -65,9 +65,9 @@ int shared_stick_basic(int id, int a, float v, int bump)
     return jd;
 }
 
-void shared_stick(int id, int a, float v, int bump)
+void shared_stick(int id, int a, float v, int bump, int device_id)
 {
-    shared_stick_basic(id, a, v, bump);
+    shared_stick_basic(id, a, v, bump, device_id);
 }
 
 void shared_angle(int id, float x, float z)
@@ -80,7 +80,7 @@ int shared_click_basic(int b, int d)
     /* Activate on left click. */
 
     if (b == SDL_BUTTON_LEFT && d)
-        return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+        return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
     else
         return 1;
 }
@@ -90,7 +90,7 @@ int shared_click(int b, int d)
     /* Activate based on GUI state. */
 
     if (gui_click(b, d))
-        return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+        return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
     else
         return 1;
 }

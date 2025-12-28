@@ -372,7 +372,7 @@ static void title_point(int id, int x, int y, int dx, int dy)
         gui_pulse(jd, 1.2f);
 }
 
-void title_stick(int id, int a, float v, int bump)
+void title_stick(int id, int a, float v, int bump, int device_id)
 {
     int jd;
 
@@ -392,7 +392,7 @@ static int title_keybd(int c, int d)
     return 1;
 }
 
-static int title_buttn(int b, int d)
+static int title_buttn(int b, int d, int device_id)
 {
     if (d)
     {

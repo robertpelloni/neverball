@@ -70,7 +70,7 @@ void hud_free(void)
 
 /*---------------------------------------------------------------------------*/
 
-void hud_paint(void)
+void hud_paint(int x, int y, int w, int h)
 {
     if (config_get_d(CONFIG_FPS))
     {

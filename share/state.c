@@ -35,12 +35,13 @@ struct stick_cache
     int a;                              /* Axis index */
     float v, p;                         /* Axis value */
     float t;                            /* Repeat time */
+    int device_id;
 };
 
 static struct stick_cache stick_cache[STICK_MAX];
 static int                stick_count;
 
-static void cache_stick(int a, float v, float t)
+static void cache_stick(int a, float v, float t, int device_id)
 {
     int i;
 
@@ -50,7 +51,7 @@ static void cache_stick(int a, float v, float t)
     {
         struct stick_cache *sc = &stick_cache[i];
 
-        if (sc->a == a)
+        if (sc->a == a && sc->device_id == device_id)
         {
             sc->p = sc->v;
             sc->v = v;
@@ -73,6 +74,7 @@ static void cache_stick(int a, float v, float t)
         sc->a = a;
         sc->p = 0.0f;
         sc->v = v;
+        sc->device_id = device_id;
 
         if (fabsf(v) >= 0.5f)
             sc->t = t;
@@ -83,7 +85,7 @@ static void cache_stick(int a, float v, float t)
     }
 }
 
-static int bump_stick(int a)
+static int bump_stick(int a, int device_id)
 {
     int i;
 
@@ -91,7 +93,7 @@ static int bump_stick(int a)
     {
         struct stick_cache *sc = &stick_cache[i];
 
-        if (sc->a == a)
+        if (sc->a == a && sc->device_id == device_id)
         {
             /* Note the transition from centered to leaned position. */
 
@@ -207,7 +209,7 @@ void st_timer(float dt)
 
         if (sc->t > 0.0f && state_time >= sc->t)
         {
-            state->stick(state->gui_id, sc->a, sc->v, 1);
+            state->stick(state->gui_id, sc->a, sc->v, 1, sc->device_id);
             sc->t = state_time + STICK_REPEAT_TIME;
         }
     }
@@ -228,7 +230,7 @@ void st_point(int x, int y, int dx, int dy)
     }
 }
 
-void st_stick(int a, float v)
+void st_stick(int a, float v, int device_id)
 {
     static struct
     {
@@ -257,9 +259,9 @@ void st_stick(int a, float v)
 
     if (state && state->stick)
     {
-        cache_stick(a, v, state_time + STICK_HOLD_TIME);
+        cache_stick(a, v, state_time + STICK_HOLD_TIME, device_id);
 
-        state->stick(state->gui_id, a, v, bump_stick(a));
+        state->stick(state->gui_id, a, v, bump_stick(a, device_id), device_id);
     }
 }
 
@@ -288,9 +290,9 @@ int st_keybd(int c, int d)
     return (state && state->keybd) ? state->keybd(c, d) : 1;
 }
 
-int st_buttn(int b, int d)
+int st_buttn(int b, int d, int device_id)
 {
-    return (state && state->buttn) ? state->buttn(b, d) : 1;
+    return (state && state->buttn) ? state->buttn(b, d, device_id) : 1;
 }
 
 int st_touch(const SDL_TouchFingerEvent *event)

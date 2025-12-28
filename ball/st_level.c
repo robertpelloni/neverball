@@ -166,7 +166,7 @@ static int level_keybd(int c, int d)
     return 1;
 }
 
-static int level_buttn(int b, int d)
+static int level_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -190,7 +190,7 @@ static int level_buttn(int b, int d)
 static int level_click(int b, int d)
 {
     if (gui_click(b, d))
-        return level_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+        return level_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
 
     return (b == SDL_BUTTON_LEFT && d == 0) ? goto_state(&st_play_ready) : 1;
 }
@@ -212,7 +212,7 @@ static int poser_keybd(int c, int d)
     return 1;
 }
 
-static int poser_buttn(int c, int d)
+static int poser_buttn(int c, int d, int device_id)
 {
     if (d && config_tst_d(CONFIG_JOYSTICK_BUTTON_B, c))
         return goto_state(&st_level);
@@ -263,7 +263,7 @@ static int nodemo_keybd(int c, int d)
     return 1;
 }
 
-static int nodemo_buttn(int b, int d)
+static int nodemo_buttn(int b, int d, int device_id)
 {
     if (d)
     {

@@ -172,7 +172,7 @@ void hud_free(void)
         gui_delete(speed_ids[i]);
 }
 
-void hud_paint(void)
+void hud_paint(int x, int y, int w, int h)
 {
     if (curr_mode() == MODE_CHALLENGE)
         gui_paint(Lhud_id);

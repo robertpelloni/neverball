@@ -172,8 +172,8 @@ static void fail_timer(int id, float dt)
 static void fail_paint(int id, float t)
 {
     game_client_draw(0, t);
+    hud_paint(0, 0, video.device_w, video.device_h);
     gui_paint(id);
-    hud_paint();
 }
 
 static int fail_keybd(int c, int d)
@@ -192,7 +192,7 @@ static int fail_keybd(int c, int d)
     return 1;
 }
 
-static int fail_buttn(int b, int d)
+static int fail_buttn(int b, int d, int device_id)
 {
     if (d)
     {

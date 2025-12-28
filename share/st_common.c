@@ -156,7 +156,7 @@ void common_point(int id, int x, int y, int dx, int dy)
     gui_pulse(gui_point(id, x, y), 1.2f);
 }
 
-void common_stick(int id, int a, float v, int bump)
+void common_stick(int id, int a, float v, int bump, int device_id)
 {
     gui_pulse(gui_stick(id, a, v, bump), 1.2f);
 }
@@ -188,7 +188,7 @@ int common_keybd(int c, int d)
     return 1;
 }
 
-int common_buttn(int b, int d)
+int common_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -740,7 +740,7 @@ int lang_leave(struct state *st, struct state *next, int id, int intent)
     return conf_common_leave(st, next, id, intent);
 }
 
-static int lang_buttn(int b, int d)
+static int lang_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -975,7 +975,7 @@ static void joystick_paint(int id, float t)
         gui_paint(joystick_modal_axis_id);
 }
 
-static int joystick_buttn(int b, int d)
+static int joystick_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -996,10 +996,10 @@ static int joystick_buttn(int b, int d)
         }
     }
 
-    return common_buttn(b, d);
+    return common_buttn(b, d, device_id);
 }
 
-static void joystick_stick(int id, int a, float v, int bump)
+static void joystick_stick(int id, int a, float v, int bump, int device_id)
 {
     if (joystick_modal == JOYSTICK_ASSIGN_AXIS)
     {

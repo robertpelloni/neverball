@@ -181,7 +181,7 @@ static int play_ready_keybd(int c, int d)
     return 1;
 }
 
-static int play_ready_buttn(int b, int d)
+static int play_ready_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -273,7 +273,7 @@ static int play_set_keybd(int c, int d)
     return 1;
 }
 
-static int play_set_buttn(int b, int d)
+static int play_set_buttn(int b, int d, int device_id)
 {
     if (d)
     {
@@ -402,7 +402,7 @@ static void play_loop_paint(int id, float t)
     game_client_draw(0, t);
 
     if (show_hud)
-        hud_paint();
+        hud_paint(0, 0, video.device_w, video.device_h);
 
     gui_paint(id);
 }
@@ -477,7 +477,7 @@ static void play_loop_point(int id, int x, int y, int dx, int dy)
     game_set_pos(dx, dy);
 }
 
-static void play_loop_stick(int id, int a, float v, int bump)
+static void play_loop_stick(int id, int a, float v, int bump, int device_id)
 {
     if (config_tst_d(CONFIG_JOYSTICK_AXIS_X0, a))
         game_set_z(v);
@@ -562,7 +562,7 @@ static int play_loop_keybd(int c, int d)
     return 1;
 }
 
-static int play_loop_buttn(int b, int d)
+static int play_loop_buttn(int b, int d, int device_id)
 {
     if (d == 1)
     {
@@ -741,7 +741,7 @@ static int look_keybd(int c, int d)
     return 1;
 }
 
-static int look_buttn(int b, int d)
+static int look_buttn(int b, int d, int device_id)
 {
     if (d && (config_tst_d(CONFIG_JOYSTICK_BUTTON_START, b)))
         return goto_state(&st_play_loop);
