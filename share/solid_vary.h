@@ -113,6 +113,7 @@ struct v_ball
     float r_vel;                               /* radius velocity            */
     float sizes[3];                            /* sizes (small, base, big)   */
     short size;                                /* current size (0, 1, 2)     */
+    float mass;                                /* mass                       */
 };
 
 struct s_vary

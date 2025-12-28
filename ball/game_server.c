@@ -249,11 +249,42 @@ static void game_cmd_ballradius(void)
 
 static void game_cmd_init_balls(void)
 {
+    int i;
+    int count = config_get_d(CONFIG_MULTIBALL);
+
     cmd.type = CMD_CLEAR_BALLS;
     game_proxy_enq(&cmd);
 
+    /* Ensure we have at least one ball */
+    if (count < 1) count = 1;
+
+    /* Initialize the first ball (already allocated by sol_load_vary) */
     cmd.type = CMD_MAKE_BALL;
     game_proxy_enq(&cmd);
+
+    /* Allocate and initialize extra balls */
+    if (count > 1)
+    {
+        struct v_ball *new_uv = realloc(vary.uv, sizeof(struct v_ball) * count);
+        if (new_uv)
+        {
+            vary.uv = new_uv;
+
+            for (i = 1; i < count; i++)
+            {
+                cmd.type = CMD_MAKE_BALL;
+                game_proxy_enq(&cmd);
+
+                vary.uv[i] = vary.uv[0]; /* Copy first ball properties */
+
+                /* Offset subsequent balls so they don't spawn inside each other */
+                /* Simple offset for now, maybe circle formation later */
+                vary.uv[i].p[0] += (float)i * 1.5f;
+                vary.uv[i].p[2] += (float)i * 1.5f;
+            }
+            vary.uc = count;
+        }
+    }
 
     game_cmd_updball();
     game_cmd_ballradius();
@@ -770,6 +801,7 @@ static int game_step(const float g[3], float dt, int bt)
     if (server_state)
     {
         float h[3];
+        int i;
 
         /* Smooth jittery or discontinuous input. */
 
@@ -817,17 +849,20 @@ static int game_step(const float g[3], float dt, int bt)
         {
             /* Run the sim. */
 
-            float b = sol_step(&vary, game_proxy_enq, h, dt, 0, NULL);
-
-            /* Mix the sound of a ball bounce. */
-
-            if (b > 0.5f)
+            for (i = 0; i < vary.uc; i++)
             {
-                float k = (b - 0.5f) * 2.0f;
+                float b = sol_step(&vary, game_proxy_enq, h, dt, i, NULL);
 
-                if      (vary.uv->r > vary.uv->sizes[1]) audio_play(AUD_BUMPL, k);
-                else if (vary.uv->r < vary.uv->sizes[1]) audio_play(AUD_BUMPS, k);
-                else                                     audio_play(AUD_BUMPM, k);
+                /* Mix the sound of a ball bounce. */
+
+                if (b > 0.5f)
+                {
+                    float k = (b - 0.5f) * 2.0f;
+
+                    if      (vary.uv[i].r > vary.uv[i].sizes[1]) audio_play(AUD_BUMPL, k);
+                    else if (vary.uv[i].r < vary.uv[i].sizes[1]) audio_play(AUD_BUMPS, k);
+                    else                                         audio_play(AUD_BUMPM, k);
+                }
             }
         }
 

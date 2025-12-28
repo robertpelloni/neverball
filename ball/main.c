@@ -67,6 +67,7 @@ static char *opt_data;
 static char *opt_replay;
 static char *opt_level;
 static char *opt_link;
+static int   opt_multiball = 1;
 
 #define opt_usage                                                     \
     "Usage: %s [options ...]\n"                                       \
@@ -76,7 +77,8 @@ static char *opt_link;
     "  -d, --data <dir>          use 'dir' as game data directory.\n" \
     "  -r, --replay <file>       play the replay 'file'.\n"           \
     "  -l, --level <file>        load the level 'file'\n"             \
-    "      --link <asset>        open the named asset\n"
+    "      --link <asset>        open the named asset\n"              \
+    "      --multiball <n>       spawn n balls (debug)\n"
 
 #define opt_error(option) \
     fprintf(stderr, "Option '%s' requires an argument.\n", option)
@@ -142,6 +144,18 @@ static void opt_init(int argc, char **argv)
                 exit(EXIT_FAILURE);
             }
             opt_link = argv[++i];
+            continue;
+        }
+
+        if (strcmp(argv[i], "--multiball") == 0)
+        {
+            if (i + 1 == argc)
+            {
+                opt_error(argv[i]);
+                exit(EXIT_FAILURE);
+            }
+            opt_multiball = atoi(argv[++i]);
+            if (opt_multiball < 1) opt_multiball = 1;
             continue;
         }
 
@@ -359,6 +373,9 @@ static int goto_level(const char *path)
     if (path && level_load(path, &level))
     {
         progress_init(MODE_STANDALONE);
+
+        /* Set debug multiball count */
+        config_set_d(CONFIG_MULTIBALL, opt_multiball);
 
         if (progress_play(&level))
             return 1;

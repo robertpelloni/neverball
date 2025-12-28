@@ -122,6 +122,8 @@ int CONFIG_TOUCH_ROTATE;
 
 int CONFIG_ONLINE;
 
+int CONFIG_MULTIBALL;
+
 /* String options. */
 
 int CONFIG_PLAYER;
@@ -238,6 +240,8 @@ static struct
     { &CONFIG_TOUCH_ROTATE, "touch_rotate", 16 },
 
     { &CONFIG_ONLINE, "online", 1 },
+
+    { &CONFIG_MULTIBALL, "multiball", 1 },
 };
 
 static struct

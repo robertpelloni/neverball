@@ -113,6 +113,8 @@ extern int CONFIG_TOUCH_ROTATE;
 
 extern int CONFIG_ONLINE;
 
+extern int CONFIG_MULTIBALL;
+
 /* String options. */
 
 extern int CONFIG_PLAYER;

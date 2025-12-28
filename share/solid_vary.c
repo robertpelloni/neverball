@@ -226,6 +226,8 @@ int sol_load_vary(struct s_vary *fp, struct s_base *base)
             up->E[2][0] = up->e[2][0] = 0.0f;
             up->E[2][1] = up->e[2][1] = 0.0f;
             up->E[2][2] = up->e[2][2] = 1.0f;
+
+            up->mass = 1.0f;
         }
     }
 

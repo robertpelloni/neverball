@@ -112,6 +112,120 @@ static float v_vert(float Q[3],
     return t;
 }
 
+static float sol_test_balls(float dt,
+                            float T[3], float V[3],
+                            int *ball_idx,
+                            const struct v_ball *up,
+                            const struct s_vary *vary)
+{
+    float t = dt;
+    int i;
+
+    if (ball_idx) *ball_idx = -1;
+
+    for (i = 0; i < vary->uc; i++)
+    {
+        const struct v_ball *uq = vary->uv + i;
+
+        if (up != uq)
+        {
+            float u, P[3], Q[3];
+
+            v_sub(P, uq->p, up->p);
+            v_sub(Q, uq->v, up->v);
+
+            /* Relative velocity must be towards each other */
+            if (v_dot(P, Q) < 0.0f)
+            {
+                /* Solves |P + Q * u| == r + r */
+                u = v_sol(P, Q, up->r + uq->r);
+
+                if (u < t)
+                {
+                    /* Position of impact (center of ball up at time u) */
+                    v_mad(T, up->p, up->v, u);
+
+                    /* Adjust T to be the contact point on the surface of up */
+                    v_mad(P, uq->p, uq->v, u); /* P is uq center at time u */
+                    v_sub(Q, P, T);            /* Vector from up to uq */
+                    v_nrm(Q, Q);
+                    v_mad(T, T, Q, up->r);
+
+                    /* Velocity of other ball */
+                    v_cpy(V, uq->v);
+
+                    if (ball_idx) *ball_idx = i;
+
+                    t = u;
+                }
+            }
+        }
+    }
+    return t;
+}
+
+static float sol_bounce_ball(struct v_ball *up,
+                             const float q[3],
+                             int other_idx,
+                             struct s_vary *vary)
+{
+    struct v_ball *uq = vary->uv + other_idx;
+    float n[3], r[3], d[3], vn, wn;
+    float *v1 = up->v;
+    float *v2 = uq->v;
+    float m1 = up->mass;
+    float m2 = uq->mass;
+
+    float v1n_mag, v2n_mag, v1n_new, v2n_new;
+    float v1n[3], v2n[3], v1t[3], v2t[3];
+
+    /* q is the contact point. */
+    /* Current position up->p is at collision time (sol_step moved it). */
+    /* Current position uq->p is NOT necessarily at collision time? */
+    /* sol_step only moves 'up'. uq is elsewhere in the loop. */
+    /* However, we need to resolve velocities. */
+
+    /* Find normal from up to uq. */
+    /* Since we don't have uq's position at time t handy easily without recomputing, */
+    /* let's derive normal from contact point q and up->p. */
+
+    v_sub(r, q, up->p);
+    v_nrm(n, r); /* Normal pointing from up center to contact point (towards uq) */
+
+    /* Relative velocity */
+    v_sub(d, v1, v2);
+
+    /* If moving apart, do nothing (should be handled by collision time check though) */
+    if (v_dot(d, n) < 0.0f) return 0.0f;
+
+    /* Decomposition of velocities */
+    vn = v_dot(v1, n);
+    wn = v_dot(v2, n);
+
+    v_scl(v1n, n, vn);
+    v_scl(v2n, n, wn);
+
+    v_sub(v1t, v1, v1n);
+    v_sub(v2t, v2, v2n);
+
+    /* 1D Elastic Collision on normal components */
+    v1n_mag = vn;
+    v2n_mag = wn;
+
+    v1n_new = (v1n_mag * (m1 - m2) + 2 * m2 * v2n_mag) / (m1 + m2);
+    v2n_new = (v2n_mag * (m2 - m1) + 2 * m1 * v1n_mag) / (m1 + m2);
+
+    /* Reconstruct vectors */
+    v_mad(v1, v1t, n, v1n_new);
+    v_mad(v2, v2t, n, v2n_new);
+
+    /* Update angular velocity (frictionless collision for now) */
+    /* ... */
+
+    /* Return impact energy */
+    return fabsf(v_dot(n, d));
+}
+
 /*
  * Compute the  earliest time  and position of  the intersection  of a
  * sphere and an edge.
@@ -794,6 +908,7 @@ float sol_step(struct s_vary *vary, cmd_fn cmd_func,
         for (c = 16; c > 0 && tt > 0; c--)
         {
             float pt;
+            int ball_idx = -1;
 
             /* Avoid stepping across path changes. */
 
@@ -802,15 +917,40 @@ float sol_step(struct s_vary *vary, cmd_fn cmd_func,
             /* Miss collisions if we reach the iteration limit. */
 
             if (c > 1)
+            {
                 nt = sol_test_file(pt, P, V, up, vary);
+
+                {
+                    float TB[3], VB[3];
+                    int bi;
+                    float tb = sol_test_balls(nt, TB, VB, &bi, up, vary);
+                    if (tb < nt)
+                    {
+                        nt = tb;
+                        v_cpy(P, TB);
+                        v_cpy(V, VB);
+                        ball_idx = bi;
+                    }
+                }
+            }
             else
                 nt = tt;
 
             sol_move_once(vary, cmd_func, nt);
 
             if (nt < pt)
-                if (b < (d = sol_bounce(up, P, V, nt)))
-                    b = d;
+            {
+                if (ball_idx != -1)
+                {
+                    d = sol_bounce_ball(up, P, ball_idx, vary);
+                }
+                else
+                {
+                    d = sol_bounce(up, P, V, nt);
+                }
+
+                if (b < d) b = d;
+            }
 
             tt -= nt;
         }

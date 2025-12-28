@@ -32,26 +32,30 @@ static void game_draw_balls(struct s_rend *rend,
                             const float *bill_M, float t)
 {
     float c[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+    int i;
 
-    float ball_M[16];
-    float pend_M[16];
-
-    m_basis(ball_M, vary->uv[0].e[0], vary->uv[0].e[1], vary->uv[0].e[2]);
-    m_basis(pend_M, vary->uv[0].E[0], vary->uv[0].E[1], vary->uv[0].E[2]);
-
-    glPushMatrix();
+    for (i = 0; i < vary->uc; i++)
     {
-        glTranslatef(vary->uv[0].p[0],
-                     vary->uv[0].p[1] + BALL_FUDGE,
-                     vary->uv[0].p[2]);
-        glScalef(vary->uv[0].r,
-                 vary->uv[0].r,
-                 vary->uv[0].r);
+        float ball_M[16];
+        float pend_M[16];
 
-        glColor4f(c[0], c[1], c[2], c[3]);
-        ball_draw(rend, ball_M, pend_M, bill_M, t);
+        m_basis(ball_M, vary->uv[i].e[0], vary->uv[i].e[1], vary->uv[i].e[2]);
+        m_basis(pend_M, vary->uv[i].E[0], vary->uv[i].E[1], vary->uv[i].E[2]);
+
+        glPushMatrix();
+        {
+            glTranslatef(vary->uv[i].p[0],
+                         vary->uv[i].p[1] + BALL_FUDGE,
+                         vary->uv[i].p[2]);
+            glScalef(vary->uv[i].r,
+                     vary->uv[i].r,
+                     vary->uv[i].r);
+
+            glColor4f(c[0], c[1], c[2], c[3]);
+            ball_draw(rend, ball_M, pend_M, bill_M, t);
+        }
+        glPopMatrix();
     }
-    glPopMatrix();
 }
 
 static void game_draw_items(struct s_rend *rend,
