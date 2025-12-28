@@ -60,7 +60,7 @@ static int pause_action(int tok, int val)
         break;
 
     case PAUSE_EXIT:
-        progress_stat(GAME_NONE);
+        progress_stat(GAME_NONE, 0);
         progress_stop();
         audio_music_stop();
         return goto_exit();

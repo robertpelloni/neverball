@@ -129,18 +129,12 @@ void joy_remove(int instance)
  */
 int joy_button(int instance, int b, int d)
 {
-    if (joy_curr == instance)
+    if (joy_curr != instance)
     {
-        /* Process button event normally. */
-        return st_buttn(b, d, instance);
-    }
-    else
-    {
-        /* Do not process button event, but make joystick current. */
         joy_curr = instance;
         log_printf("Joystick %d made current via button press\n", joy_curr);
-        return 1;
     }
+    return st_buttn(b, d, instance);
 }
 
 /*
@@ -148,9 +142,8 @@ int joy_button(int instance, int b, int d)
  */
 void joy_axis(int instance, int a, float v)
 {
-    if (joy_curr == instance)
-    {
-        /* Process axis events from current joystick only. */
-        st_stick(a, v, instance);
-    }
+    if (joy_curr != instance)
+        joy_curr = instance;
+
+    st_stick(a, v, instance);
 }

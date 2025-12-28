@@ -9,7 +9,7 @@ void progress_init(int);
 
 int  progress_play(struct level *);
 void progress_step(void);
-void progress_stat(int status);
+void progress_stat(int status, int p);
 void progress_stop(void);
 void progress_exit(void);
 

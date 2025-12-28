@@ -452,17 +452,17 @@ static void play_loop_timer(int id, float dt)
     switch (curr_status(0))
     {
     case GAME_GOAL:
-        progress_stat(GAME_GOAL);
+        progress_stat(GAME_GOAL, 0);
         goto_state(&st_goal);
         break;
 
     case GAME_FALL:
-        progress_stat(GAME_FALL);
+        progress_stat(GAME_FALL, 0);
         goto_state(&st_fail);
         break;
 
     case GAME_TIME:
-        progress_stat(GAME_TIME);
+        progress_stat(GAME_TIME, 0);
         goto_state(&st_fail);
         break;
 
@@ -556,7 +556,7 @@ static int play_loop_keybd(int c, int d)
 
     if (d && c == SDLK_c && config_cheat())
     {
-        progress_stat(GAME_GOAL);
+        progress_stat(GAME_GOAL, 0);
         return goto_state(&st_goal);
     }
     return 1;

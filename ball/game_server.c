@@ -887,17 +887,10 @@ float game_server_blend(void)
 
 /*---------------------------------------------------------------------------*/
 
-void game_set_goal(void)
+void game_set_goal(int p)
 {
-    /* Enable goal for all players? Or per player?
-       In independent worlds, opening a goal might be a shared event (e.g. collecting coins).
-       Or per player.
-       If coins are per player, goal opens per player.
-       If game_set_goal is called from somewhere global (like console command), do it for all.
-    */
-    int p;
     audio_play(AUD_SWITCH, 1.0f);
-    for (p = 0; p < player_count; p++)
+    if (p >= 0 && p < MAX_PLAYERS)
     {
         players[p].goal_e = 1;
         game_cmd_goalopen(p);
@@ -946,9 +939,11 @@ void game_set_rot(float r, int p)
 
 /*---------------------------------------------------------------------------*/
 
-float curr_time_elapsed(void)
+float curr_time_elapsed(int p)
 {
-    return players[0].time_elapsed; /* Default to P0 for UI */
+    if (p >= 0 && p < MAX_PLAYERS)
+        return players[p].time_elapsed;
+    return 0.0f;
 }
 
 /*---------------------------------------------------------------------------*/
