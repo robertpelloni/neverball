@@ -606,6 +606,9 @@ static int play_loop_keybd(int c, int d)
 
 static int play_loop_buttn(int b, int d, int device_id)
 {
+    if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
+        game_set_action(d, device_id);
+
     if (d == 1)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_START, b))

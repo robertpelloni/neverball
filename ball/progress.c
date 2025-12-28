@@ -116,7 +116,7 @@ static int init_level(void)
      */
 
     if (game_client_init(level_file(level)) &&
-        game_server_init(level_file(level), level_time(level), lprog[0].goal_e))
+        game_server_init(level_file(level), level_time(level), lprog[0].goal_e, mode))
     {
         game_client_sync(demo_fp);
         audio_music_fade_to(2.0f, level_song(level));
