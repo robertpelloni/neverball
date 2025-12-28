@@ -1,85 +1,107 @@
-# Neverball to Super Monkey Ball Feature Parity Roadmap
+# Super Monkey Ball Feature Parity Roadmap
 
-This document outlines the definitive roadmap to bring Neverball to feature parity with the *Super Monkey Ball* series.
+## Executive Summary
+This document outlines a definitive roadmap to bring the *Neverball* project to feature parity with the *Super Monkey Ball (SMB)* series. The goal is to evolve the Neverball engine to support the beloved gameplay modes, physics nuances, and extensive party game library of the SMB franchise, while preserving Neverball's open-source legacy.
 
-## Phase 1: Engine Foundation (Physics & Rendering)
+The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 2) features first, followed by the vast content of the "Party Game" era, and finally the "Modern" mechanics (Jump, Stats, Online).
 
-**Objective:** Upgrade Neverball's core engine to support simultaneous multiplayer, ball-vs-ball interaction, and split-screen rendering.
+## Feature Gap Analysis
 
-### 1.1 Physics Engine Upgrade
-*   **Ball-vs-Ball Collision:**
-    *   Current Status: `sol_step` only checks collision against static geometry.
-    *   Task: Implement dynamic circle-circle collision detection and response in `share/solid_sim_sol.c`.
-    *   Requirement: Conservation of momentum calculations ($m_1v_1 + m_2v_2$).
-*   **Parameterized Ball Stats:**
-    *   Current Status: Physics constants are hardcoded or uniform.
-    *   Task: Add `mass`, `acceleration`, `speed_limit`, `jump_power` to `struct v_ball` in `share/solid_vary.h`.
-    *   Task: Update `sol_step` to utilize these per-ball parameters.
-*   **Gliding & Pin Physics (Future Proofing):**
-    *   Task: Add support for "Air State" (Gliding) physics (reduced gravity, air drag).
-    *   Task: Investigate simple rigid body physics for "Pins" (Bowling).
+| Feature Category | Super Monkey Ball Series (Target) | Current Neverball (Status) |
+| :--- | :--- | :--- |
+| **Physics** | "Snappy", high-friction, instant acceleration. | "Heavy", momentum-based, inertial. |
+| **Camera** | Auto-follow, fixed angle options, "snap" behind. | Loose follow, manual rotation focus. |
+| **Main Game** | Timer-based, Bananas = Lives, Bonus Stages. | Timer-based, Coins = Score/Life, no Bonus Stages. |
+| **Story Mode** | Cutscenes, World Map, Hub Worlds (SMB2). | Linear level progression only. |
+| **Characters** | Distinct Stats (Speed, Weight, Accel, Jump). | Uniform physics (cosmetic differences only). |
+| **Mechanics** | Tilt (Classic), Jump (Blitz/Mania), Spin Dash (Rumble). | Tilt only. |
+| **Party Games** | 50+ Minigames (Race, Fight, Target, Bowling, Golf, etc.). | Basic Race Mode (In Progress). |
+| **Multiplayer** | 4-Player Split-Screen, Online (Modern). | 4-Player Split-Screen (Basic). |
+| **Unlockables** | Shop, Characters, Costumes, Modes, Art. | Level unlocking only. |
 
-### 1.2 Rendering Engine Upgrade
-*   **Split-Screen Rendering:**
-    *   Current Status: Single viewport assumed global.
-    *   Task: Refactor `share/video.c` to support `video_push_persp_ex` taking arbitrary aspect ratios.
-    *   Task: Refactor `ball/game_draw.c` to loop through active players/cameras and render to distinct viewport rectangles (`glViewport`).
-*   **Camera System:**
-    *   Task: Decouple `game_view` from a single global state. Create an array of views `game_view[MAX_PLAYERS]`.
+## Phased Roadmap
 
-### 1.3 Input System Upgrade
-*   **Multi-Controller Support:**
-    *   Current Status: `input_current` in `ball/game_server.c` is a single struct.
-    *   Task: Arrayify `input_current` to `input_players[MAX_PLAYERS]`.
-    *   Task: Map SDL Joystick indices to Player IDs in `ball/main.c`.
+### Phase 1: The "Classic" Foundation (SMB 1 Parity)
+*Goal: Replicate the feel and core loop of the original arcade/GameCube classic.*
 
-## Phase 2: Core Gameplay & Multiplayer
+1.  **Physics & Control Overhaul**
+    *   Implement an "Arcade Physics" toggle (higher friction, faster acceleration).
+    *   Refine Camera logic: Implement "Snap-to-Back" and tighter auto-follow.
+    *   **Deliverable:** `MODE_ARCADE` in `game_server.c`.
 
-**Objective:** Enable local split-screen multiplayer for the main game (Race Mode).
+2.  **Core Game Loop Enhancements**
+    *   **Lives System:** Refactor Coin logic to grant Extra Lives (100 Bananas = 1 Life).
+    *   **Bonus Stages:** Support for "Collect All" levels with no exit (timer end = success).
+    *   **UI/UX:** Implement "Ready? GO!" and "Fall Out" announcer-style transitions.
 
-### 2.1 Game Loop Refactor
-*   **Multi-Ball Simulation:**
-    *   Task: Ensure `ball/game_server.c` steps *all* active balls in the simulation loop, not just the primary one.
-    *   Task: Handle win/loss states per player (e.g., Player 1 falls out, Player 2 keeps going).
+3.  **The "Holy Trinity" Party Games**
+    *   **Monkey Race:**
+        *   Power-ups (Speed, Missiles, Peels).
+        *   Lap counter and Waypoint system.
+    *   **Monkey Target:**
+        *   Flight Physics (Gliding state, wind resistance).
+        *   Wheel of Danger / Landing Zones.
+    *   **Monkey Fight:**
+        *   Punch mechanic (Spring attached to ball).
+        *   Knockback physics calculation.
+        *   Power-ups (Big Punch, Speed, etc.).
 
-### 2.2 Race Mode (Split-Screen)
-*   **Feature:** 2-4 Player Split-screen race on standard Neverball levels.
-*   **UI:** Add split-screen HUD (Timer, Bananas/Coins) for each viewport.
+### Phase 2: The "Deluxe" Expansion (SMB 2 Features)
+*Goal: Add depth, story, and the extended suite of beloved minigames.*
 
-## Phase 3: Party Games Implementation
+1.  **Campaign Engine**
+    *   Support for "Worlds" (groups of levels).
+    *   Cutscene playback integration (Video or In-Engine).
+    *   World Map / Hub UI.
 
-**Objective:** Implement the iconic Party Games.
+2.  **Advanced Party Games (Physics Heavy)**
+    *   **Monkey Bowling:**
+        *   Pin physics simulation.
+        *   Spin control UI.
+    *   **Monkey Golf / Mini-Golf:**
+        *   Stroke power meter.
+        *   Club selection.
+    *   **Monkey Billiards:**
+        *   Cue ball physics, spin, banking.
+        *   Rulesets (9-ball, 8-ball).
 
-### 3.1 Monkey Fight (Battle Mode)
-*   **Description:** 4 Players knock each other off a platform.
-*   **Requirements:**
-    *   Ball-vs-Ball Physics (Phase 1.1).
-    *   "Punch" mechanic: A temporary impulse/radius increase attached to the ball (boxing glove).
-    *   Maps: Simple flat or multi-tiered arenas.
+3.  **Dynamic Level Elements**
+    *   Moving/Morphing Stages (e.g., Arthropod level).
+    *   Switches that alter geometry in real-time.
+    *   Warp Gates.
 
-### 3.2 Monkey Target
-*   **Description:** Roll down a ramp, jump, glide, and land on targets.
-*   **Requirements:**
-    *   Gliding Physics: "Open Ball" state toggles physics mode.
-    *   Wind Mechanics: Global wind vector affecting flight.
-    *   Score detection: Detect landing on specific "polygons" (Target rings).
+### Phase 3: The "Modern" Mechanics (Banana Blitz/Mania)
+*Goal: Modernize the engine with features from the Wii/Switch eras.*
 
-### 3.3 Monkey Bowling
-*   **Description:** Standard bowling.
-*   **Requirements:**
-    *   Pin Physics: Implementation of 10 simple rigid bodies (Pins) that can be knocked over.
-    *   Lane Logic: Reset pins, track rounds.
+1.  **Character Class System**
+    *   Implement `struct character_stats` (Weight, Speed, Acceleration, Jump, Size).
+    *   Character Selection Screen with stats visualization.
 
-### 3.4 Monkey Golf
-*   **Status:** Already exists as **Neverputt**.
-*   **Task:** Better integration (launch Neverputt from Neverball menu?).
+2.  **New Mechanics**
+    *   **Jump:** Active ability to hop (toggleable per mode/level).
+    *   **Spin Dash:** Chargeable speed boost (Sonic-style).
 
-## Phase 4: Content & Polish
+3.  **Unlock & Economy System**
+    *   "Bananas" as persistent currency (Play Points).
+    *   In-game Shop UI to unlock Characters, Costumes, and Modes.
 
-### 4.1 UI Overhaul
-*   **Party Game Menus:** Select game, select character (with stats).
-*   **Results Screens:** Multiplayer scoreboards.
+4.  **Minigame Explosion (Prioritized List)**
+    *   *Tier 1:* Monkey Boat, Monkey Shot, Monkey Soccer.
+    *   *Tier 2:* Monkey Tennis, Monkey Baseball.
+    *   *Tier 3:* Whack-a-Mole, Hurdle Race, Hammer Throw.
 
-### 4.2 Assets
-*   **Characters:** Distinct ball models.
-*   **Levels:** Specific levels for Fight, Target, and Bowling.
+### Phase 4: Future Tech (Rumble & Online)
+*Goal: Bring Neverball into the next generation.*
+
+1.  **Online Multiplayer**
+    *   Networked Physics (Prediction/Rollback or Lockstep).
+    *   Lobby System.
+2.  **Level Editor Integration**
+    *   In-game level builder (User Generated Content).
+3.  **Ghost Data Sharing**
+    *   Global Leaderboards with replay downloads.
+
+## Immediate Action Plan
+To begin this journey, the team should focus on **Phase 1, Item 3: Monkey Target**.
+*   **Reasoning:** It requires "Flight Physics" which is distinct from rolling, pushing the engine's capabilities. It is also the most requested party game.
+*   **Prerequisite:** The shared-world architecture (recently implemented) is ready for this.
