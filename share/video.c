@@ -519,7 +519,7 @@ void video_calc_view(float *M, const float *c,
 
 /*---------------------------------------------------------------------------*/
 
-void video_push_persp(float fov, float n, float f)
+void video_push_persp_ex(float fov, float n, float f, int x, int y, int w, int h)
 {
     if (hmd_stat())
         hmd_persp(n, f);
@@ -531,8 +531,7 @@ void video_push_persp(float fov, float n, float f)
         GLfloat s = fsinf(r);
         GLfloat c = fcosf(r) / s;
 
-        GLfloat a = ((GLfloat) video.device_w /
-                     (GLfloat) video.device_h);
+        GLfloat a = ((GLfloat) w / (GLfloat) h);
 
         glMatrixMode(GL_PROJECTION);
         {
@@ -562,6 +561,11 @@ void video_push_persp(float fov, float n, float f)
             glLoadIdentity();
         }
     }
+}
+
+void video_push_persp(float fov, float n, float f)
+{
+    video_push_persp_ex(fov, n, f, 0, 0, video.device_w, video.device_h);
 }
 
 void video_push_ortho(void)

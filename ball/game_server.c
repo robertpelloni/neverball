@@ -79,6 +79,8 @@ static float jump_p[3];                 /* Jump destination                  */
  * made here.
  */
 
+#define MAX_PLAYERS 4
+
 struct input
 {
     float s;
@@ -88,74 +90,83 @@ struct input
     int   c;
 };
 
-static struct input input_current;
+static struct input input_players[MAX_PLAYERS];
 
 static void input_init(void)
 {
-    input_current.s = RESPONSE;
-    input_current.x = 0;
-    input_current.z = 0;
-    input_current.r = 0;
-    input_current.c = 0;
+    int i;
+    for (i = 0; i < MAX_PLAYERS; i++)
+    {
+        input_players[i].s = RESPONSE;
+        input_players[i].x = 0;
+        input_players[i].z = 0;
+        input_players[i].r = 0;
+        input_players[i].c = 0;
+    }
 }
 
-static void input_set_s(float s)
+static void input_set_s(int p, float s)
 {
-    input_current.s = s;
+    if (p >= 0 && p < MAX_PLAYERS)
+        input_players[p].s = s;
 }
 
-static void input_set_x(float x)
+static void input_set_x(int p, float x)
 {
     if (x < -ANGLE_BOUND) x = -ANGLE_BOUND;
     if (x >  ANGLE_BOUND) x =  ANGLE_BOUND;
 
-    input_current.x = x;
+    if (p >= 0 && p < MAX_PLAYERS)
+        input_players[p].x = x;
 }
 
-static void input_set_z(float z)
+static void input_set_z(int p, float z)
 {
     if (z < -ANGLE_BOUND) z = -ANGLE_BOUND;
     if (z >  ANGLE_BOUND) z =  ANGLE_BOUND;
 
-    input_current.z = z;
+    if (p >= 0 && p < MAX_PLAYERS)
+        input_players[p].z = z;
 }
 
-static void input_set_r(float r)
+static void input_set_r(int p, float r)
 {
     if (r < -VIEWR_BOUND) r = -VIEWR_BOUND;
     if (r >  VIEWR_BOUND) r =  VIEWR_BOUND;
 
-    input_current.r = r;
+    if (p >= 0 && p < MAX_PLAYERS)
+        input_players[p].r = r;
 }
 
-static void input_set_c(int c)
+static void input_set_c(int p, int c)
 {
-    input_current.c = c;
+    if (p >= 0 && p < MAX_PLAYERS)
+        input_players[p].c = c;
 }
 
-static float input_get_s(void)
+static float input_get_s(int p)
 {
-    return input_current.s;
+    return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].s : RESPONSE;
 }
 
-static float input_get_x(void)
+static float input_get_x(int p)
 {
-    return input_current.x;
+    return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].x : 0.0f;
 }
 
-static float input_get_z(void)
+static float input_get_z(int p)
 {
-    return input_current.z;
+    return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].z : 0.0f;
 }
 
-static float input_get_r(void)
+static float input_get_r(int p)
 {
-    return input_current.r;
+    return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].r : 0.0f;
 }
 
-static int input_get_c(void)
+static int input_get_c(int p)
 {
-    return input_current.c;
+    return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].c : 0;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -518,6 +529,9 @@ static void game_update_view(float dt)
 {
     /* Current view scale. */
 
+    /* TODO: Update for multiple views/players. For now, using Player 0 */
+    int p = 0;
+
     if (view_zoom_time < ZOOM_TIME)
     {
         view_zoom_time += dt;
@@ -541,13 +555,13 @@ static void game_update_view(float dt)
     float SCL = view_zoom_curr;
 
     float dc = view.dc * (jump_b > 0 ? 2.0f * fabsf(jump_dt - 0.5f) : 1.0f);
-    float da = 90.0f * input_get_r() * dt;
+    float da = 90.0f * input_get_r(p) * dt;
     float k;
 
     float M[16], v[3], Y[3] = { 0.0f, 1.0f, 0.0f };
     float view_v[3];
 
-    float spd = (float) cam_speed(input_get_c()) / 1000.0f;
+    float spd = (float) cam_speed(input_get_c(p)) / 1000.0f;
 
     /* Track manual rotation time. */
 
@@ -580,11 +594,11 @@ static void game_update_view(float dt)
 
     /* Center the view about the ball. */
 
-    v_cpy(view.c, vary.uv->p);
+    v_cpy(view.c, vary.uv[p].p);
 
-    view_v[0] = -vary.uv->v[0];
+    view_v[0] = -vary.uv[p].v[0];
     view_v[1] =  0.0f;
-    view_v[2] = -vary.uv->v[2];
+    view_v[2] = -vary.uv[p].v[2];
 
     /* Compute view vector. */
 
@@ -642,11 +656,11 @@ static void game_update_view(float dt)
 
     v_scl(v,    view.e[1], SCL * view.dp * view_k);
     v_mad(v, v, view.e[2], SCL * view.dz * view_k);
-    v_add(view.p, v, vary.uv->p);
+    v_add(view.p, v, vary.uv[p].p);
 
     /* Compute the new view center. */
 
-    v_cpy(view.c, vary.uv->p);
+    v_cpy(view.c, vary.uv[p].p);
     v_mad(view.c, view.c, view.e[1], SCL * dc);
 
     /* Note the current view angle. */
@@ -805,8 +819,9 @@ static int game_step(const float g[3], float dt, int bt)
 
         /* Smooth jittery or discontinuous input. */
 
-        tilt.rx += (input_get_x() - tilt.rx) * dt / MAX(dt, input_get_s());
-        tilt.rz += (input_get_z() - tilt.rz) * dt / MAX(dt, input_get_s());
+        /* TODO: Update tilt input for multiple players. For now, Player 0 controls tilt. */
+        tilt.rx += (input_get_x(0) - tilt.rx) * dt / MAX(dt, input_get_s(0));
+        tilt.rz += (input_get_z(0) - tilt.rz) * dt / MAX(dt, input_get_s(0));
 
         game_tilt_axes(&tilt, view.e);
 
@@ -918,42 +933,48 @@ void game_set_goal(void)
 
 void game_set_x(float k)
 {
-    input_set_x(-ANGLE_BOUND * k);
+    /* Default to player 0 */
+    input_set_x(0, -ANGLE_BOUND * k);
 
-    input_set_s(config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
+    input_set_s(0, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 
 void game_set_z(float k)
 {
-    input_set_z(+ANGLE_BOUND * k);
+    /* Default to player 0 */
+    input_set_z(0, +ANGLE_BOUND * k);
 
-    input_set_s(config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
+    input_set_s(0, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 
 void game_set_ang(float x, float z)
 {
-    input_set_x(x);
-    input_set_z(z);
+    /* Default to player 0 */
+    input_set_x(0, x);
+    input_set_z(0, z);
 }
 
 void game_set_pos(int x, int y)
 {
+    /* Default to player 0 */
     const float range = ANGLE_BOUND * 2;
 
-    input_set_x(input_get_x() + range * y / config_get_d(CONFIG_MOUSE_SENSE));
-    input_set_z(input_get_z() + range * x / config_get_d(CONFIG_MOUSE_SENSE));
+    input_set_x(0, input_get_x(0) + range * y / config_get_d(CONFIG_MOUSE_SENSE));
+    input_set_z(0, input_get_z(0) + range * x / config_get_d(CONFIG_MOUSE_SENSE));
 
-    input_set_s(config_get_d(CONFIG_MOUSE_RESPONSE) * 0.001f);
+    input_set_s(0, config_get_d(CONFIG_MOUSE_RESPONSE) * 0.001f);
 }
 
 void game_set_cam(int c)
 {
-    input_set_c(c);
+    /* Default to player 0 */
+    input_set_c(0, c);
 }
 
 void game_set_rot(float r)
 {
-    input_set_r(r);
+    /* Default to player 0 */
+    input_set_r(0, r);
 }
 
 /*---------------------------------------------------------------------------*/

@@ -477,120 +477,141 @@ static void game_shadow_conf(int pose, int enable)
 
 void game_draw(struct game_draw *gd, int pose, float t)
 {
+    /* TODO: Loop over active players and set up viewports for split-screen. */
+    /* For now, assuming single viewport/player or all players share same view (which is wrong but compiles). */
+    /* To properly implement split screen, we need to iterate and call this logic for each player's view */
+
+    int p_count = 1;
+    int p;
+
+    /* HACK: Just one viewport for now to ensure compilation and basic function before full split-screen logic */
+    /* This function needs significant refactoring to handle multiple views */
+
     float fov = (float) config_get_d(CONFIG_VIEW_FOV);
 
     if (gd->jump_b) fov *= 2.f * fabsf(gd->jump_dt - 0.5f);
 
     if (gd->state)
     {
-        const struct game_view *view = &gd->view;
-        struct s_rend rend;
-
-        gd->draw.shadow_ui = 0;
-
-        game_shadow_conf(pose, 1);
-        r_draw_enable(&rend);
-
-        video_push_persp(fov, 0.1f, FAR_DIST);
-        glPushMatrix();
+        for (p = 0; p < p_count; p++)
         {
-            float T[16], U[16], M[16], v[3];
+            /* TODO: Calculate viewport x,y,w,h based on p_count and p */
+            int vp_x = 0;
+            int vp_y = 0;
+            int vp_w = video.device_w;
+            int vp_h = video.device_h;
 
-            /* Compute direct and reflected view bases. */
+            glViewport(vp_x, vp_y, vp_w, vp_h);
 
-            v[0] = +view->p[0];
-            v[1] = -view->p[1];
-            v[2] = +view->p[2];
+            const struct game_view *view = &gd->view; /* TODO: use gd->views[p] */
+            struct s_rend rend;
 
-            video_calc_view(T, view->c, view->p, view->e[1]);
-            video_calc_view(U, view->c, v,       view->e[1]);
+            gd->draw.shadow_ui = 0;
 
-            m_xps(M, T);
+            game_shadow_conf(pose, 1);
+            r_draw_enable(&rend);
 
-            /* Apply the current view. */
-
-            v_sub(v, view->c, view->p);
-
-            glTranslatef(0.f, 0.f, -v_len(v));
-            glMultMatrixf(M);
-            glTranslatef(-view->c[0], -view->c[1], -view->c[2]);
-
-            /* Draw the background. */
-
-            game_draw_back(&rend, gd, pose, +1, t);
-
-            /* Draw the reflection. */
-
-            if (gd->draw.reflective && config_get_d(CONFIG_REFLECTION))
+            video_push_persp_ex(fov, 0.1f, FAR_DIST, vp_x, vp_y, vp_w, vp_h);
+            glPushMatrix();
             {
-                glEnable(GL_STENCIL_TEST);
+                float T[16], U[16], M[16], v[3];
+
+                /* Compute direct and reflected view bases. */
+
+                v[0] = +view->p[0];
+                v[1] = -view->p[1];
+                v[2] = +view->p[2];
+
+                video_calc_view(T, view->c, view->p, view->e[1]);
+                video_calc_view(U, view->c, v,       view->e[1]);
+
+                m_xps(M, T);
+
+                /* Apply the current view. */
+
+                v_sub(v, view->c, view->p);
+
+                glTranslatef(0.f, 0.f, -v_len(v));
+                glMultMatrixf(M);
+                glTranslatef(-view->c[0], -view->c[1], -view->c[2]);
+
+                /* Draw the background. */
+
+                game_draw_back(&rend, gd, pose, +1, t);
+
+                /* Draw the reflection. */
+
+                if (gd->draw.reflective && config_get_d(CONFIG_REFLECTION))
                 {
-                    /* Draw the mirrors only into the stencil buffer. */
-
-                    glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF);
-                    glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-                    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-                    glDepthMask(GL_FALSE);
-
-                    game_refl_all(&rend, gd);
-
-                    glDepthMask(GL_TRUE);
-                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-                    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
-                    glStencilFunc(GL_EQUAL, 1, 0xFFFFFFFF);
-
-                    /* Draw the scene reflected into color and depth buffers. */
-
-                    glFrontFace(GL_CW);
-                    glPushMatrix();
+                    glEnable(GL_STENCIL_TEST);
                     {
-                        glScalef(+1.0f, -1.0f, +1.0f);
+                        /* Draw the mirrors only into the stencil buffer. */
 
-                        game_draw_light(gd, -1, t);
+                        glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF);
+                        glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+                        glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                        glDepthMask(GL_FALSE);
 
-                        game_draw_back(&rend, gd, pose,    -1, t);
-                        game_draw_fore(&rend, gd, pose, U, -1, t);
+                        game_refl_all(&rend, gd);
+
+                        glDepthMask(GL_TRUE);
+                        glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+                        glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+                        glStencilFunc(GL_EQUAL, 1, 0xFFFFFFFF);
+
+                        /* Draw the scene reflected into color and depth buffers. */
+
+                        glFrontFace(GL_CW);
+                        glPushMatrix();
+                        {
+                            glScalef(+1.0f, -1.0f, +1.0f);
+
+                            game_draw_light(gd, -1, t);
+
+                            game_draw_back(&rend, gd, pose,    -1, t);
+                            game_draw_fore(&rend, gd, pose, U, -1, t);
+                        }
+                        glPopMatrix();
+                        glFrontFace(GL_CCW);
+
+                        glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
                     }
-                    glPopMatrix();
-                    glFrontFace(GL_CCW);
-
-                    glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
+                    glDisable(GL_STENCIL_TEST);
                 }
-                glDisable(GL_STENCIL_TEST);
-            }
 
-            /* Ready the lights for foreground rendering. */
+                /* Ready the lights for foreground rendering. */
 
-            game_draw_light(gd, 1, t);
+                game_draw_light(gd, 1, t);
 
-            /* When reflection is disabled, mirrors must be rendered opaque  */
-            /* to prevent the background from showing.                       */
+                /* When reflection is disabled, mirrors must be rendered opaque  */
+                /* to prevent the background from showing.                       */
 
-            if (gd->draw.reflective && !config_get_d(CONFIG_REFLECTION))
-            {
-                r_color_mtrl(&rend, 1);
+                if (gd->draw.reflective && !config_get_d(CONFIG_REFLECTION))
                 {
-                    glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
-                    game_refl_all(&rend, gd);
-                    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                    r_color_mtrl(&rend, 1);
+                    {
+                        glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+                        game_refl_all(&rend, gd);
+                        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                    }
+                    r_color_mtrl(&rend, 0);
                 }
-                r_color_mtrl(&rend, 0);
+
+                /* Draw the mirrors and the rest of the foreground. */
+
+                game_refl_all (&rend, gd);
+                game_draw_fore(&rend, gd, pose, T, +1, t);
             }
+            glPopMatrix();
+            video_pop_matrix();
 
-            /* Draw the mirrors and the rest of the foreground. */
+            /* Draw the fade overlay. */
 
-            game_refl_all (&rend, gd);
-            game_draw_fore(&rend, gd, pose, T, +1, t);
+            sol_fade(&gd->draw, &rend, gd->fade_k);
+
+            r_draw_disable(&rend);
+            game_shadow_conf(pose, 0);
         }
-        glPopMatrix();
-        video_pop_matrix();
-
-        /* Draw the fade overlay. */
-
-        sol_fade(&gd->draw, &rend, gd->fade_k);
-
-        r_draw_disable(&rend);
-        game_shadow_conf(pose, 0);
     }
 }
 

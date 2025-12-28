@@ -60,6 +60,7 @@ void video_calc_view(float *, const float *,
                               const float *);
 
 void video_push_persp(float, float, float);
+void video_push_persp_ex(float, float, float, int, int, int, int);
 void video_push_ortho(void);
 void video_pop_matrix(void);
 void video_clear(void);
