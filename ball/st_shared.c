@@ -72,7 +72,7 @@ void shared_stick(int id, int a, float v, int bump, int device_id)
 
 void shared_angle(int id, float x, float z)
 {
-    game_set_ang(x, z);
+    game_set_ang(x, z, 0);
 }
 
 int shared_click_basic(int b, int d)

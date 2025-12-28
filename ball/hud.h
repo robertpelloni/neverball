@@ -10,7 +10,7 @@ void hud_free(void);
 
 void hud_paint(int x, int y, int w, int h);
 void hud_timer(float);
-void hud_update(int);
+void hud_update(int, int);
 
 void hud_show(float delay);
 void hud_hide(void);

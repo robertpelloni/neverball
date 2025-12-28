@@ -381,7 +381,7 @@ static int play_loop_enter(struct state *st, struct state *prev, int intent)
     game_client_fly(0.0f);
 
     show_hud = 1;
-    hud_update(0);
+    hud_update(0, 0);
     hud_show(0.0f);
     loop_transition = 0;
 
@@ -432,14 +432,14 @@ static void play_loop_timer(int id, float dt)
          * and holding down both rotation buttons freezes the camera
          * rotation.
          */
-        game_set_rot(0.0f);
-        game_set_cam(CAM_3);
+        game_set_rot(0.0f, 0);
+        game_set_cam(CAM_3, 0);
         break;
 
     case ROT_ROTATE:
     case ROT_NONE:
-        game_set_rot(r * k);
-        game_set_cam(config_get_d(CONFIG_CAMERA));
+        game_set_rot(r * k, 0);
+        game_set_cam(config_get_d(CONFIG_CAMERA), 0);
         break;
     }
 
@@ -449,7 +449,7 @@ static void play_loop_timer(int id, float dt)
     game_client_sync(demo_fp);
     game_client_blend(game_server_blend());
 
-    switch (curr_status())
+    switch (curr_status(0))
     {
     case GAME_GOAL:
         progress_stat(GAME_GOAL);
@@ -474,15 +474,15 @@ static void play_loop_timer(int id, float dt)
 
 static void play_loop_point(int id, int x, int y, int dx, int dy)
 {
-    game_set_pos(dx, dy);
+    game_set_pos(dx, dy, 0);
 }
 
 static void play_loop_stick(int id, int a, float v, int bump, int device_id)
 {
     if (config_tst_d(CONFIG_JOYSTICK_AXIS_X0, a))
-        game_set_z(v);
+        game_set_z(v, device_id);
     if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y0, a))
-        game_set_x(v);
+        game_set_x(v, device_id);
     if (config_tst_d(CONFIG_JOYSTICK_AXIS_X1, a))
     {
         if      (v > 0.0f)
@@ -687,7 +687,7 @@ static int play_loop_touch(const SDL_TouchFingerEvent *event)
             int dx = (int) ((float) video.device_w * event->dx);
             int dy = (int) ((float) video.device_h * -event->dy);
 
-            game_set_pos(dx, dy);
+            game_set_pos(dx, dy, 0);
         }
     }
 

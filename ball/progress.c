@@ -142,7 +142,7 @@ void progress_step(void)
 {
     if (goal > 0)
     {
-        goal = goal_i - curr_coins();
+        goal = goal_i - curr_coins(0);
 
         if (goal <= 0)
         {
@@ -160,7 +160,7 @@ void progress_stat(int s)
 
     status = s;
 
-    coins = curr_coins();
+    coins = curr_coins(0);
     timer = (int) (curr_time_elapsed() * 100.0f);
 
     switch (status)
@@ -246,7 +246,7 @@ void progress_stop(void)
     int d;
 
     if (level)
-        d = (curr_clock() == level_time(level));
+        d = (curr_clock(0) == level_time(level));
     else
         d = 0;
 
@@ -388,8 +388,8 @@ int  progress_reward_ball(int s)
 
 struct level *curr_level(void) { return level; }
 
-int curr_balls(void) { return curr.balls; }
-int curr_score(void) { return curr.score; }
+int curr_balls(int p) { return curr.balls; }
+int curr_score(int p) { return curr.score; }
 int curr_mode (void) { return mode;       }
 int curr_goal (void) { return goal;       }
 

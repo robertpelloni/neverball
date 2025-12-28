@@ -174,27 +174,60 @@ void hud_free(void)
 
 void hud_paint(int x, int y, int w, int h)
 {
-    if (curr_mode() == MODE_CHALLENGE)
-        gui_paint(Lhud_id);
+    int p;
+    int count = config_get_d(CONFIG_MULTIBALL);
+    if (count < 1) count = 1;
+#ifdef MAX_PLAYERS
+    if (count > MAX_PLAYERS) count = MAX_PLAYERS;
+#endif
 
-    gui_paint(Rhud_id);
-    gui_paint(time_id);
+    for (p = 0; p < count; p++)
+    {
+        int vp_x = x, vp_y = y, vp_w = w, vp_h = h;
 
-    if (config_get_d(CONFIG_FPS))
-        gui_paint(fps_id);
+        if (count == 2)
+        {
+            vp_h = h / 2;
+            vp_y = y + (p == 0 ? h / 2 : 0);
+        }
+        else if (count >= 3)
+        {
+            vp_w = w / 2;
+            vp_h = h / 2;
+            if (p == 0) { vp_x = x;       vp_y = y + h/2; }
+            if (p == 1) { vp_x = x + w/2; vp_y = y + h/2; }
+            if (p == 2) { vp_x = x;       vp_y = y;       }
+            if (p == 3) { vp_x = x + w/2; vp_y = y;       }
+        }
 
-    hud_cam_paint();
-    hud_speed_paint();
-    hud_touch_paint();
+        glViewport(vp_x, vp_y, vp_w, vp_h);
+
+        hud_update(p, 0);
+
+        if (curr_mode() == MODE_CHALLENGE)
+            gui_paint(Lhud_id);
+
+        gui_paint(Rhud_id);
+        gui_paint(time_id);
+
+        if (config_get_d(CONFIG_FPS))
+            gui_paint(fps_id);
+
+        hud_cam_paint();
+        hud_speed_paint();
+        hud_touch_paint();
+    }
+
+    glViewport(x, y, w, h);
 }
 
-void hud_update(int pulse)
+void hud_update(int p, int pulse)
 {
-    int clock = curr_clock();
-    int coins = curr_coins();
+    int clock = curr_clock(p);
+    int coins = curr_coins(p);
     int goal  = curr_goal();
-    int balls = curr_balls();
-    int score = curr_score();
+    int balls = curr_balls(p);
+    int score = curr_score(p);
 
     int c_id;
     int last;
@@ -299,7 +332,7 @@ void hud_update(int pulse)
 
 void hud_timer(float dt)
 {
-    hud_update(1);
+    hud_update(0, 1);
 
     gui_timer(Rhud_id, dt);
     gui_timer(Lhud_id, dt);

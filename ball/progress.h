@@ -31,8 +31,8 @@ int  progress_set_high(void);
 
 struct level *curr_level(void);
 
-int  curr_balls(void);
-int  curr_score(void);
+int  curr_balls(int);
+int  curr_score(int);
 int  curr_mode (void);
 int  curr_goal (void);
 

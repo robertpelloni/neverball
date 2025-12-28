@@ -65,6 +65,7 @@ enum cmd_type
     CMD_TILT_AXES,
     CMD_MOVE_PATH,
     CMD_MOVE_TIME,
+    CMD_SET_PLAYER,
 
     CMD_MAX
 };
@@ -293,6 +294,12 @@ struct cmd_move_time
     float t;
 };
 
+struct cmd_set_player
+{
+    CMD_HEADER;
+    int player_index;
+};
+
 union cmd
 {
     enum cmd_type type;
@@ -333,6 +340,7 @@ union cmd
     struct cmd_tilt_axes          tiltaxes;
     struct cmd_move_path          movepath;
     struct cmd_move_time          movetime;
+    struct cmd_set_player         setplayer;
 };
 
 #undef CMD_HEADER
@@ -353,6 +361,7 @@ struct cmd_state
     int next_update;                    /* Previous command was EOU          */
     int curr_ball;                      /* Current ball index                */
     int got_tilt_axes;                  /* Received tilt axes in this update */
+    int curr_player;                    /* Current player index              */
 };
 
 #define cmd_state_init(cs) do { \
@@ -361,6 +370,7 @@ struct cmd_state
     (cs)->next_update = 0;      \
     (cs)->curr_ball = 0;        \
     (cs)->got_tilt_axes = 0;    \
+    (cs)->curr_player = 0;      \
 } while (0)
 
 /*---------------------------------------------------------------------------*/

@@ -148,7 +148,7 @@ static int fail_enter(struct state *st, struct state *prev, int intent)
     /* Note the current status if we got here from elsewhere. */
 
     if (!resume)
-        status = curr_status();
+        status = curr_status(0);
 
     return transition_slide(fail_gui(), 1, intent);
 }

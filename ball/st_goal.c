@@ -127,16 +127,16 @@ static int goal_gui(void)
                 if (resume)
                 {
                     coins = 0;
-                    score = curr_score();
-                    balls = curr_balls();
+                    score = curr_score(0);
+                    balls = curr_balls(0);
                 }
                 else
                 {
-                    coins = curr_coins();
-                    score = curr_score() - coins;
-                    balls = curr_balls();
+                    coins = curr_coins(0);
+                    score = curr_score(0) - coins;
+                    balls = curr_balls(0);
 
-                    for (i = curr_score(); i > score; i--)
+                    for (i = curr_score(0); i > score; i--)
                         if (progress_reward_ball(i))
                             balls--;
                 }

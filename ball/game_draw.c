@@ -475,43 +475,25 @@ static void game_shadow_conf(int pose, int enable)
     }
 }
 
-void game_draw(struct game_draw *gd, int pose, float t)
+void game_draw(struct game_draw *gd, int pose, float t, int vp_x, int vp_y, int vp_w, int vp_h)
 {
-    /* TODO: Loop over active players and set up viewports for split-screen. */
-    /* For now, assuming single viewport/player or all players share same view (which is wrong but compiles). */
-    /* To properly implement split screen, we need to iterate and call this logic for each player's view */
-
-    int p_count = 1;
-    int p;
-
-    /* HACK: Just one viewport for now to ensure compilation and basic function before full split-screen logic */
-    /* This function needs significant refactoring to handle multiple views */
-
     float fov = (float) config_get_d(CONFIG_VIEW_FOV);
 
     if (gd->jump_b) fov *= 2.f * fabsf(gd->jump_dt - 0.5f);
 
     if (gd->state)
     {
-        for (p = 0; p < p_count; p++)
-        {
-            /* TODO: Calculate viewport x,y,w,h based on p_count and p */
-            int vp_x = 0;
-            int vp_y = 0;
-            int vp_w = video.device_w;
-            int vp_h = video.device_h;
+        glViewport(vp_x, vp_y, vp_w, vp_h);
 
-            glViewport(vp_x, vp_y, vp_w, vp_h);
+        const struct game_view *view = &gd->view;
+        struct s_rend rend;
 
-            const struct game_view *view = &gd->view; /* TODO: use gd->views[p] */
-            struct s_rend rend;
+        gd->draw.shadow_ui = 0;
 
-            gd->draw.shadow_ui = 0;
+        game_shadow_conf(pose, 1);
+        r_draw_enable(&rend);
 
-            game_shadow_conf(pose, 1);
-            r_draw_enable(&rend);
-
-            video_push_persp_ex(fov, 0.1f, FAR_DIST, vp_x, vp_y, vp_w, vp_h);
+        video_push_persp_ex(fov, 0.1f, FAR_DIST, vp_x, vp_y, vp_w, vp_h);
             glPushMatrix();
             {
                 float T[16], U[16], M[16], v[3];
@@ -611,7 +593,6 @@ void game_draw(struct game_draw *gd, int pose, float t)
 
             r_draw_disable(&rend);
             game_shadow_conf(pose, 0);
-        }
     }
 }
 

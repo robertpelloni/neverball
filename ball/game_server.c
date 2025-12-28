@@ -36,50 +36,55 @@
 
 static int server_state = 0;
 
-static struct s_vary vary;
+#define MAX_PLAYERS 4
 
-static float time_limit = 0;            /* Effective time limit              */
-static float time_elapsed = 0;          /* Time elapsed                      */
-static float timer = 0.0f;              /* Clock                             */
-static int status = GAME_NONE;          /* Outcome of the game               */
+struct server_player
+{
+    struct s_vary vary;
 
-static struct game_tilt tilt;           /* Floor rotation                    */
-static struct game_view view;           /* Current view                      */
+    struct game_tilt tilt;
+    struct game_view view;
 
-static float view_k;
+    float view_k;
+    float view_time;
+    float view_fade;
 
-static float view_time;                 /* Manual rotation time              */
-static float view_fade;
+    float view_zoom_curr;
+    float view_zoom_start;
+    float view_zoom_end;
+    float view_zoom_time;
+
+    float time_limit;
+    float time_elapsed;
+    float timer;
+    int   status;
+    int   coins;
+
+    int   goal_e;
+    int   jump_e;
+    int   jump_b;
+    float jump_dt;
+    float jump_p[3];
+};
+
+static struct server_player players[MAX_PLAYERS];
+static int player_count = 1;
 
 #define VIEW_FADE_MIN 0.2f
 #define VIEW_FADE_MAX 1.0f
-
-static float view_zoom_curr;            /* Current zoom level                */
-static float view_zoom_start;           /* Starting zoom level               */
-static float view_zoom_end;             /* Target zoom level                 */
-static float view_zoom_time;            /* Running zoom animation time       */
 
 #define ZOOM_DELAY (GROW_TIME * 0.5f)
 #define ZOOM_TIME (ZOOM_DELAY + GROW_TIME)
 #define ZOOM_MIN 0.75f
 #define ZOOM_MAX 1.25f
 
-static int   coins  = 0;                /* Collected coins                   */
-static int   goal_e = 0;                /* Goal enabled flag                 */
-static int   jump_e = 1;                /* Jumping enabled flag              */
-static int   jump_b = 0;                /* Jump-in-progress flag             */
-static float jump_dt;                   /* Jump duration                     */
-static float jump_p[3];                 /* Jump destination                  */
-
 /*---------------------------------------------------------------------------*/
 
 /*
  * This is an abstraction of the game's input state.  All input is
- * encapsulated here, and all references to the input by the game are
+ * encapsulated here, and all references to the game's input are
  * made here.
  */
-
-#define MAX_PLAYERS 4
 
 struct input
 {
@@ -212,154 +217,145 @@ static void game_cmd_sound(const char *filename, float a)
 
 #define audio_play(s, f) game_cmd_sound((s), (f))
 
-static void game_cmd_goalopen(void)
+static void game_cmd_set_player(int p)
 {
+    cmd.type = CMD_SET_PLAYER;
+    cmd.setplayer.player_index = p;
+    game_proxy_enq(&cmd);
+}
+
+static void game_cmd_goalopen(int p)
+{
+    game_cmd_set_player(p);
     cmd.type = CMD_GOAL_OPEN;
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_updball(void)
+static void game_cmd_updball(int p)
 {
+    game_cmd_set_player(p);
+
     cmd.type = CMD_BALL_POSITION;
-    v_cpy(cmd.ballpos.p, vary.uv[0].p);
+    v_cpy(cmd.ballpos.p, players[p].vary.uv[0].p);
     game_proxy_enq(&cmd);
 
     cmd.type = CMD_BALL_BASIS;
-    v_cpy(cmd.ballbasis.e[0], vary.uv[0].e[0]);
-    v_cpy(cmd.ballbasis.e[1], vary.uv[0].e[1]);
+    v_cpy(cmd.ballbasis.e[0], players[p].vary.uv[0].e[0]);
+    v_cpy(cmd.ballbasis.e[1], players[p].vary.uv[0].e[1]);
     game_proxy_enq(&cmd);
 
     cmd.type = CMD_BALL_PEND_BASIS;
-    v_cpy(cmd.ballpendbasis.E[0], vary.uv[0].E[0]);
-    v_cpy(cmd.ballpendbasis.E[1], vary.uv[0].E[1]);
+    v_cpy(cmd.ballpendbasis.E[0], players[p].vary.uv[0].E[0]);
+    v_cpy(cmd.ballpendbasis.E[1], players[p].vary.uv[0].E[1]);
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_updview(void)
+static void game_cmd_updview(int p)
 {
+    game_cmd_set_player(p);
+
     cmd.type = CMD_VIEW_POSITION;
-    v_cpy(cmd.viewpos.p, view.p);
+    v_cpy(cmd.viewpos.p, players[p].view.p);
     game_proxy_enq(&cmd);
 
     cmd.type = CMD_VIEW_CENTER;
-    v_cpy(cmd.viewcenter.c, view.c);
+    v_cpy(cmd.viewcenter.c, players[p].view.c);
     game_proxy_enq(&cmd);
 
     cmd.type = CMD_VIEW_BASIS;
-    v_cpy(cmd.viewbasis.e[0], view.e[0]);
-    v_cpy(cmd.viewbasis.e[1], view.e[1]);
+    v_cpy(cmd.viewbasis.e[0], players[p].view.e[0]);
+    v_cpy(cmd.viewbasis.e[1], players[p].view.e[1]);
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_ballradius(void)
+static void game_cmd_ballradius(int p)
 {
+    game_cmd_set_player(p);
     cmd.type         = CMD_BALL_RADIUS;
-    cmd.ballradius.r = vary.uv[0].r;
+    cmd.ballradius.r = players[p].vary.uv[0].r;
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_init_balls(void)
+static void game_cmd_init_balls(int p)
 {
-    int i;
-    int count = config_get_d(CONFIG_MULTIBALL);
-
+    game_cmd_set_player(p);
     cmd.type = CMD_CLEAR_BALLS;
     game_proxy_enq(&cmd);
 
-    /* Ensure we have at least one ball */
-    if (count < 1) count = 1;
-
-    /* Initialize the first ball (already allocated by sol_load_vary) */
+    /* Initialize the single ball for this player */
     cmd.type = CMD_MAKE_BALL;
     game_proxy_enq(&cmd);
 
-    /* Allocate and initialize extra balls */
-    if (count > 1)
-    {
-        struct v_ball *new_uv = realloc(vary.uv, sizeof(struct v_ball) * count);
-        if (new_uv)
-        {
-            vary.uv = new_uv;
-
-            for (i = 1; i < count; i++)
-            {
-                cmd.type = CMD_MAKE_BALL;
-                game_proxy_enq(&cmd);
-
-                vary.uv[i] = vary.uv[0]; /* Copy first ball properties */
-
-                /* Offset subsequent balls so they don't spawn inside each other */
-                /* Simple offset for now, maybe circle formation later */
-                vary.uv[i].p[0] += (float)i * 1.5f;
-                vary.uv[i].p[2] += (float)i * 1.5f;
-            }
-            vary.uc = count;
-        }
-    }
-
-    game_cmd_updball();
-    game_cmd_ballradius();
+    game_cmd_updball(p);
+    game_cmd_ballradius(p);
 }
 
-static void game_cmd_pkitem(int hi)
+static void game_cmd_pkitem(int p, int hi)
 {
+    game_cmd_set_player(p);
     cmd.type      = CMD_PICK_ITEM;
     cmd.pkitem.hi = hi;
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_jump(int e)
+static void game_cmd_jump(int p, int e)
 {
+    game_cmd_set_player(p);
     cmd.type = e ? CMD_JUMP_ENTER : CMD_JUMP_EXIT;
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_tiltangles(void)
+static void game_cmd_tiltangles(int p)
 {
+    game_cmd_set_player(p);
     cmd.type = CMD_TILT_ANGLES;
 
-    cmd.tiltangles.x = tilt.rx;
-    cmd.tiltangles.z = tilt.rz;
+    cmd.tiltangles.x = players[p].tilt.rx;
+    cmd.tiltangles.z = players[p].tilt.rz;
 
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_tiltaxes(void)
+static void game_cmd_tiltaxes(int p)
 {
+    game_cmd_set_player(p);
     cmd.type = CMD_TILT_AXES;
 
-    v_cpy(cmd.tiltaxes.x, tilt.x);
-    v_cpy(cmd.tiltaxes.z, tilt.z);
+    v_cpy(cmd.tiltaxes.x, players[p].tilt.x);
+    v_cpy(cmd.tiltaxes.z, players[p].tilt.z);
 
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_timer(void)
+static void game_cmd_timer(int p)
 {
+    game_cmd_set_player(p);
     cmd.type    = CMD_TIMER;
-    cmd.timer.t = timer;
+    cmd.timer.t = players[p].timer;
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_coins(void)
+static void game_cmd_coins(int p)
 {
+    game_cmd_set_player(p);
     cmd.type    = CMD_COINS;
-    cmd.coins.n = coins;
+    cmd.coins.n = players[p].coins;
     game_proxy_enq(&cmd);
 }
 
-static void game_cmd_status(void)
+static void game_cmd_status(int p)
 {
+    game_cmd_set_player(p);
     cmd.type     = CMD_STATUS;
-    cmd.status.t = status;
+    cmd.status.t = players[p].status;
     game_proxy_enq(&cmd);
 }
 
 /*---------------------------------------------------------------------------*/
 
-static int grow_init(int type)
+static int grow_init(int p, int type)
 {
-    struct v_ball *up = &vary.uv[0];
+    struct v_ball *up = &players[p].vary.uv[0];
 
     int size = up->size;
 
@@ -387,9 +383,9 @@ static int grow_init(int type)
     return 0;
 }
 
-static void grow_step(float dt)
+static void grow_step(int p, float dt)
 {
-    struct v_ball *up = &vary.uv[0];
+    struct v_ball *up = &players[p].vary.uv[0];
 
     if (up->r_vel != 0.0f)
     {
@@ -413,7 +409,7 @@ static void grow_step(float dt)
         up->p[1] += dr;
         up->r     = r;
 
-        game_cmd_ballradius();
+        game_cmd_ballradius(p);
     }
 }
 
@@ -421,42 +417,75 @@ static void grow_step(float dt)
 
 static struct lockstep server_step;
 
+static void game_player_init(int p, int t, int e)
+{
+    struct server_player *pl = &players[p];
+
+    pl->time_limit = (float) t / 100.0f;
+    pl->time_elapsed = 0.0f;
+    pl->timer = 0.0f;
+    pl->status = GAME_NONE;
+    pl->coins = 0;
+
+    /* Load vary from shared game_base */
+    sol_load_vary(&pl->vary, &game_base);
+
+    game_tilt_init(&pl->tilt);
+
+    pl->jump_e = 1;
+    pl->jump_b = 0;
+    pl->goal_e = e ? 1 : 0;
+
+    /* Offset ball position for multiple players */
+    if (p > 0)
+    {
+        /* Simple offset logic */
+        pl->vary.uv[0].p[0] += (float)p * 1.5f;
+        pl->vary.uv[0].p[2] += (float)p * 1.5f;
+    }
+
+    game_view_fly(&pl->view, &pl->vary, 0.0f);
+
+    pl->view_k = 1.0f;
+    pl->view_time = 0.0f;
+    pl->view_fade = 0.0f;
+    pl->view_zoom_curr = 1.0f;
+    pl->view_zoom_time = ZOOM_TIME;
+
+    sol_init_sim(&pl->vary);
+
+    game_cmd_timer(p);
+    if (pl->goal_e) game_cmd_goalopen(p);
+    game_cmd_init_balls(p);
+    game_cmd_updview(p);
+}
+
 int game_server_init(const char *file_name, int t, int e)
 {
     struct { int x, y; } version;
-    int i;
-
-    time_limit = (float) t / 100.0f;
-    time_elapsed = 0.0f;
-
-    timer = 0.0f;
-    status = GAME_NONE;
-    coins = 0;
+    int i, p;
 
     game_server_free(file_name);
 
-    /* Load SOL data. */
-
+    /* Load shared base geometry */
     if (!game_base_load(file_name))
         return (server_state = 0);
 
-    if (!sol_load_vary(&vary, &game_base))
-    {
-        game_base_free(NULL);
-        return (server_state = 0);
-    }
+    /* Determine number of players */
+    player_count = config_get_d(CONFIG_MULTIBALL);
+    if (player_count < 1) player_count = 1;
+    if (player_count > MAX_PLAYERS) player_count = MAX_PLAYERS;
 
     server_state = 1;
 
-    /* Get SOL version. */
-
+    /* Get version from base (shared) */
     version.x = 0;
     version.y = 0;
 
-    for (i = 0; i < vary.base->dc; i++)
+    for (i = 0; i < game_base.dc; i++)
     {
-        char *k = vary.base->av + vary.base->dv[i].ai;
-        char *v = vary.base->av + vary.base->dv[i].aj;
+        char *k = game_base.av + game_base.dv[i].ai;
+        char *v = game_base.av + game_base.dv[i].aj;
 
         if (strcmp(k, "version") == 0)
             sscanf(v, "%d.%d", &version.x, &version.y);
@@ -464,46 +493,15 @@ int game_server_init(const char *file_name, int t, int e)
 
     input_init();
 
-    game_tilt_init(&tilt);
-
-    /* Initialize jump and goal states. */
-
-    jump_e = 1;
-    jump_b = 0;
-
-    goal_e = e ? 1 : 0;
-
-    /* Initialize the view (and put it at the ball). */
-
-    game_view_fly(&view, &vary, 0.0f);
-
-    view_k = 1.0f;
-
-    view_time = 0.0f;
-    view_fade = 0.0f;
-
-    view_zoom_curr = 1.0f;
-    view_zoom_time = ZOOM_TIME;
-
-    /* Initialize simulation. */
-
-    sol_init_sim(&vary);
-
-    /* Send initial update. */
-
     game_cmd_map(file_name, version.x, version.y);
     game_cmd_ups();
-    game_cmd_timer();
 
-    if (goal_e)
-        game_cmd_goalopen();
+    for (p = 0; p < player_count; p++)
+    {
+        game_player_init(p, t, e);
+    }
 
-    game_cmd_init_balls();
-
-    game_cmd_updview();
     game_cmd_eou();
-
-    /* Reset lockstep state. */
 
     lockstep_clr(&server_step);
 
@@ -512,10 +510,15 @@ int game_server_init(const char *file_name, int t, int e)
 
 void game_server_free(const char *next)
 {
+    int p;
     if (server_state)
     {
         sol_quit_sim();
-        sol_free_vary(&vary);
+
+        for (p = 0; p < player_count; p++)
+        {
+            sol_free_vary(&players[p].vary);
+        }
 
         game_base_free(next);
 
@@ -525,36 +528,35 @@ void game_server_free(const char *next)
 
 /*---------------------------------------------------------------------------*/
 
-static void game_update_view(float dt)
+static void game_update_view(int p, float dt)
 {
+    struct server_player *pl = &players[p];
+
     /* Current view scale. */
 
-    /* TODO: Update for multiple views/players. For now, using Player 0 */
-    int p = 0;
-
-    if (view_zoom_time < ZOOM_TIME)
+    if (pl->view_zoom_time < ZOOM_TIME)
     {
-        view_zoom_time += dt;
+        pl->view_zoom_time += dt;
 
-        if (view_zoom_time >= ZOOM_TIME)
+        if (pl->view_zoom_time >= ZOOM_TIME)
         {
-            view_zoom_time = ZOOM_TIME;
-            view_zoom_curr = view_zoom_end;
-            view_zoom_end = 0.0f;
+            pl->view_zoom_time = ZOOM_TIME;
+            pl->view_zoom_curr = pl->view_zoom_end;
+            pl->view_zoom_end = 0.0f;
         }
-        else if (view_zoom_time >= ZOOM_DELAY)
+        else if (pl->view_zoom_time >= ZOOM_DELAY)
         {
-            float a = (view_zoom_time - ZOOM_DELAY) / (ZOOM_TIME - ZOOM_DELAY);
+            float a = (pl->view_zoom_time - ZOOM_DELAY) / (ZOOM_TIME - ZOOM_DELAY);
 
             a = easeInOutBack(a);
 
-            view_zoom_curr = view_zoom_start + (view_zoom_end - view_zoom_start) * a;
+            pl->view_zoom_curr = pl->view_zoom_start + (pl->view_zoom_end - pl->view_zoom_start) * a;
         }
     }
 
-    float SCL = view_zoom_curr;
+    float SCL = pl->view_zoom_curr;
 
-    float dc = view.dc * (jump_b > 0 ? 2.0f * fabsf(jump_dt - 0.5f) : 1.0f);
+    float dc = pl->view.dc * (pl->jump_b > 0 ? 2.0f * fabsf(pl->jump_dt - 0.5f) : 1.0f);
     float da = 90.0f * input_get_r(p) * dt;
     float k;
 
@@ -567,153 +569,130 @@ static void game_update_view(float dt)
 
     if (da == 0.0f)
     {
-        if (view_time < 0.0f)
+        if (pl->view_time < 0.0f)
         {
-            /* Transition time is influenced by activity time. */
-
-            view_fade = CLAMP(VIEW_FADE_MIN, -view_time, VIEW_FADE_MAX);
-            view_time = 0.0f;
+            pl->view_fade = CLAMP(VIEW_FADE_MIN, -pl->view_time, VIEW_FADE_MAX);
+            pl->view_time = 0.0f;
         }
-
-        /* Inactivity. */
-
-        view_time += dt;
+        pl->view_time += dt;
     }
     else
     {
-        if (view_time > 0.0f)
+        if (pl->view_time > 0.0f)
         {
-            view_fade = 0.0f;
-            view_time = 0.0f;
+            pl->view_fade = 0.0f;
+            pl->view_time = 0.0f;
         }
-
-        /* Activity (yes, this is negative). */
-
-        view_time -= dt;
+        pl->view_time -= dt;
     }
 
     /* Center the view about the ball. */
 
-    v_cpy(view.c, vary.uv[p].p);
+    v_cpy(pl->view.c, pl->vary.uv[0].p);
 
-    view_v[0] = -vary.uv[p].v[0];
+    view_v[0] = -pl->vary.uv[0].v[0];
     view_v[1] =  0.0f;
-    view_v[2] = -vary.uv[p].v[2];
+    view_v[2] = -pl->vary.uv[0].v[2];
 
     /* Compute view vector. */
 
     if (spd >= 0.0f)
     {
-        /* Viewpoint chases ball position. */
-
         if (da == 0.0f)
         {
             float s;
 
-            v_sub(view.e[2], view.p, view.c);
-            v_nrm(view.e[2], view.e[2]);
+            v_sub(pl->view.e[2], pl->view.p, pl->view.c);
+            v_nrm(pl->view.e[2], pl->view.e[2]);
 
-            /* Gradually restore view vector convergence rate. */
-
-            s = fpowf(view_time, 3.0f) / fpowf(view_fade, 3.0f);
+            s = fpowf(pl->view_time, 3.0f) / fpowf(pl->view_fade, 3.0f);
             s = CLAMP(0.0f, s, 1.0f);
 
-            v_mad(view.e[2], view.e[2], view_v, v_len(view_v) * spd * s * dt);
+            v_mad(pl->view.e[2], pl->view.e[2], view_v, v_len(view_v) * spd * s * dt);
         }
     }
     else
     {
-        /* View vector is given by view angle. */
-
-        view.e[2][0] = fsinf(V_RAD(view.a));
-        view.e[2][1] = 0.0;
-        view.e[2][2] = fcosf(V_RAD(view.a));
+        pl->view.e[2][0] = fsinf(V_RAD(pl->view.a));
+        pl->view.e[2][1] = 0.0;
+        pl->view.e[2][2] = fcosf(V_RAD(pl->view.a));
     }
-
-    /* Apply manual rotation. */
 
     if (da != 0.0f)
     {
         m_rot(M, Y, V_RAD(da));
-        m_vxfm(v, M, view.e[2]);
-        v_cpy(view.e[2], v);
+        m_vxfm(v, M, pl->view.e[2]);
+        v_cpy(pl->view.e[2], v);
     }
 
-    /* Orthonormalize the new view reference frame. */
+    v_crs(pl->view.e[0], pl->view.e[1], pl->view.e[2]);
+    v_crs(pl->view.e[2], pl->view.e[0], pl->view.e[1]);
+    v_nrm(pl->view.e[0], pl->view.e[0]);
+    v_nrm(pl->view.e[2], pl->view.e[2]);
 
-    v_crs(view.e[0], view.e[1], view.e[2]);
-    v_crs(view.e[2], view.e[0], view.e[1]);
-    v_nrm(view.e[0], view.e[0]);
-    v_nrm(view.e[2], view.e[2]);
+    k = 1.0f + v_dot(pl->view.e[2], view_v) / 10.0f;
 
-    /* Compute the new view position. */
+    pl->view_k = pl->view_k + (k - pl->view_k) * dt;
 
-    k = 1.0f + v_dot(view.e[2], view_v) / 10.0f;
+    if (pl->view_k < 0.5f) pl->view_k = 0.5;
 
-    view_k = view_k + (k - view_k) * dt;
+    v_scl(v,    pl->view.e[1], SCL * pl->view.dp * pl->view_k);
+    v_mad(v, v, pl->view.e[2], SCL * pl->view.dz * pl->view_k);
+    v_add(pl->view.p, v, pl->vary.uv[0].p);
 
-    if (view_k < 0.5f) view_k = 0.5;
+    v_cpy(pl->view.c, pl->vary.uv[0].p);
+    v_mad(pl->view.c, pl->view.c, pl->view.e[1], SCL * dc);
 
-    v_scl(v,    view.e[1], SCL * view.dp * view_k);
-    v_mad(v, v, view.e[2], SCL * view.dz * view_k);
-    v_add(view.p, v, vary.uv[p].p);
+    pl->view.a = V_DEG(fatan2f(pl->view.e[2][0], pl->view.e[2][2]));
 
-    /* Compute the new view center. */
-
-    v_cpy(view.c, vary.uv[p].p);
-    v_mad(view.c, view.c, view.e[1], SCL * dc);
-
-    /* Note the current view angle. */
-
-    view.a = V_DEG(fatan2f(view.e[2][0], view.e[2][2]));
-
-    game_cmd_updview();
+    game_cmd_updview(p);
 }
 
-static void game_update_time(float dt, int b)
+static void game_update_time(int p, float dt, int b)
 {
+    struct server_player *pl = &players[p];
     if (b)
     {
-        time_elapsed += dt;
+        pl->time_elapsed += dt;
 
-        if (time_limit > 0.0f && time_elapsed > time_limit)
-            time_elapsed = time_limit;
+        if (pl->time_limit > 0.0f && pl->time_elapsed > pl->time_limit)
+            pl->time_elapsed = pl->time_limit;
 
-        /* Something that works for both timed and untimed levels. */
+        pl->timer = fabsf(pl->time_limit - pl->time_elapsed);
 
-        timer = fabsf(time_limit - time_elapsed);
-
-        game_cmd_timer();
+        game_cmd_timer(p);
     }
 }
 
 /*
  * Start view zoom animation.
  */
-static void zoom_init(float target)
+static void zoom_init(int p, float target)
 {
-    view_zoom_time = 0.0f;
-    view_zoom_start = view_zoom_curr;
-    view_zoom_end = CLAMP(ZOOM_MIN, target, ZOOM_MAX);
+    struct server_player *pl = &players[p];
+    pl->view_zoom_time = 0.0f;
+    pl->view_zoom_start = pl->view_zoom_curr;
+    pl->view_zoom_end = CLAMP(ZOOM_MIN, target, ZOOM_MAX);
 }
 
-static int game_update_state(int bt)
+static int game_update_state(int p, int bt)
 {
+    struct server_player *pl = &players[p];
     struct b_goal *zp;
     int hi;
 
     /* Test for an item. */
 
-    if (bt && (hi = sol_item_test(&vary, NULL, ITEM_RADIUS)) != -1)
+    if (bt && (hi = sol_item_test(&pl->vary, NULL, ITEM_RADIUS)) != -1)
     {
-        struct v_item *hp = vary.hv + hi;
+        struct v_item *hp = pl->vary.hv + hi;
 
-        game_cmd_pkitem(hi);
+        game_cmd_pkitem(p, hi);
 
         if (hp->t == ITEM_COIN)
         {
-            coins += hp->n;
-            game_cmd_coins();
+            pl->coins += hp->n;
+            game_cmd_coins(p);
         }
         else if (hp->t == ITEM_CLOCK)
         {
@@ -721,71 +700,65 @@ static int game_update_state(int bt)
 
             audio_play(AUD_CLOCK, 1.f);
 
-            /* For timed levels, increase the effective time limit. */
-            /* For untimed levels, reduce time elapsed for a better highscore. */
-
-            if (time_limit > 0.0f)
-                time_limit = time_limit + value;
+            if (pl->time_limit > 0.0f)
+                pl->time_limit = pl->time_limit + value;
             else
-                time_elapsed = MAX(0.0f, time_elapsed - value);
+                pl->time_elapsed = MAX(0.0f, pl->time_elapsed - value);
 
-            game_update_time(0.0f, bt);
+            game_update_time(p, 0.0f, bt);
         }
         else if (hp->t == ITEM_GROW || hp->t == ITEM_SHRINK)
         {
-            switch (grow_init(hp->t))
+            switch (grow_init(p, hp->t))
             {
                 case -1:
                     audio_play(AUD_SHRINK, 1.0f);
-                    zoom_init(vary.uv->sizes[vary.uv->size] / vary.uv->sizes[1]);
+                    zoom_init(p, pl->vary.uv->sizes[pl->vary.uv->size] / pl->vary.uv->sizes[1]);
                     break;
 
                 case +1:
                     audio_play(AUD_GROW, 1.0f);
-                    zoom_init(vary.uv->sizes[vary.uv->size] / vary.uv->sizes[1]);
+                    zoom_init(p, pl->vary.uv->sizes[pl->vary.uv->size] / pl->vary.uv->sizes[1]);
                     break;
 
                 case 0:
-                    /* TODO: buzzer wrong (wasted item). */
                     break;
             }
         }
 
         audio_play(AUD_COIN, 1.f);
 
-        /* Discard item. */
-
         hp->t = ITEM_NONE;
     }
 
     /* Test for a switch. */
 
-    if (sol_swch_test(&vary, game_proxy_enq, 0) == SWCH_INSIDE)
+    if (sol_swch_test(&pl->vary, game_proxy_enq, 0) == SWCH_INSIDE)
         audio_play(AUD_SWITCH, 1.f);
 
     /* Test for a jump. */
 
-    if (jump_e == 1 && jump_b == 0 && (sol_jump_test(&vary, jump_p, 0) ==
+    if (pl->jump_e == 1 && pl->jump_b == 0 && (sol_jump_test(&pl->vary, pl->jump_p, 0) ==
                                        JUMP_INSIDE))
     {
-        jump_b  = 1;
-        jump_e  = 0;
-        jump_dt = 0.f;
+        pl->jump_b  = 1;
+        pl->jump_e  = 0;
+        pl->jump_dt = 0.f;
 
         audio_play(AUD_JUMP, 1.f);
 
-        game_cmd_jump(1);
+        game_cmd_jump(p, 1);
     }
-    if (jump_e == 0 && jump_b == 0 && (sol_jump_test(&vary, jump_p, 0) ==
+    if (pl->jump_e == 0 && pl->jump_b == 0 && (sol_jump_test(&pl->vary, pl->jump_p, 0) ==
                                        JUMP_OUTSIDE))
     {
-        jump_e = 1;
-        game_cmd_jump(0);
+        pl->jump_e = 1;
+        game_cmd_jump(p, 0);
     }
 
     /* Test for a goal. */
 
-    if (bt && goal_e && (zp = sol_goal_test(&vary, NULL, 0)))
+    if (bt && pl->goal_e && (zp = sol_goal_test(&pl->vary, NULL, 0)))
     {
         audio_play(AUD_GOAL, 1.0f);
         return GAME_GOAL;
@@ -793,7 +766,7 @@ static int game_update_state(int bt)
 
     /* Test for time-out. */
 
-    if (bt && time_limit > 0.0f && time_elapsed >= time_limit)
+    if (bt && pl->time_limit > 0.0f && pl->time_elapsed >= pl->time_limit)
     {
         audio_play(AUD_TIME, 1.0f);
         return GAME_TIME;
@@ -801,7 +774,7 @@ static int game_update_state(int bt)
 
     /* Test for fall-out. */
 
-    if (bt && (vary.base->vc == 0 || vary.uv[0].p[1] < vary.base->vv[0].p[1]))
+    if (bt && (pl->vary.base->vc == 0 || pl->vary.uv[0].p[1] < pl->vary.base->vv[0].p[1]))
     {
         audio_play(AUD_FALL, 1.0f);
         return GAME_FALL;
@@ -810,98 +783,91 @@ static int game_update_state(int bt)
     return GAME_NONE;
 }
 
-static int game_step(const float g[3], float dt, int bt)
+static int game_step(int p, const float g[3], float dt, int bt)
 {
+    struct server_player *pl = &players[p];
     if (server_state)
     {
         float h[3];
         int i;
 
-        /* Smooth jittery or discontinuous input. */
+        pl->tilt.rx += (input_get_x(p) - pl->tilt.rx) * dt / MAX(dt, input_get_s(p));
+        pl->tilt.rz += (input_get_z(p) - pl->tilt.rz) * dt / MAX(dt, input_get_s(p));
 
-        /* TODO: Update tilt input for multiple players. For now, Player 0 controls tilt. */
-        tilt.rx += (input_get_x(0) - tilt.rx) * dt / MAX(dt, input_get_s(0));
-        tilt.rz += (input_get_z(0) - tilt.rz) * dt / MAX(dt, input_get_s(0));
+        game_tilt_axes(&pl->tilt, pl->view.e);
 
-        game_tilt_axes(&tilt, view.e);
+        game_cmd_tiltaxes(p);
+        game_cmd_tiltangles(p);
 
-        game_cmd_tiltaxes();
-        game_cmd_tiltangles();
+        grow_step(p, dt);
 
-        grow_step(dt);
+        game_tilt_grav(h, g, &pl->tilt);
 
-        game_tilt_grav(h, g, &tilt);
-
-        if (jump_b > 0)
+        if (pl->jump_b > 0)
         {
-            jump_dt += dt;
+            pl->jump_dt += dt;
 
-            /* Handle a jump. */
-
-            if (jump_dt >= 0.5f)
+            if (pl->jump_dt >= 0.5f)
             {
-                /* Translate view at the exact instant of the jump. */
-
-                if (jump_b == 1)
+                if (pl->jump_b == 1)
                 {
                     float dp[3];
 
-                    v_sub(dp,     jump_p, vary.uv->p);
-                    v_add(view.p, view.p, dp);
+                    v_sub(dp, pl->jump_p, pl->vary.uv->p);
+                    v_add(pl->view.p, pl->view.p, dp);
 
-                    jump_b = 2;
+                    pl->jump_b = 2;
                 }
 
-                /* Translate ball and hold it at the destination. */
-
-                v_cpy(vary.uv->p, jump_p);
+                v_cpy(pl->vary.uv->p, pl->jump_p);
             }
 
-            if (jump_dt >= 1.0f)
-                jump_b = 0;
+            if (pl->jump_dt >= 1.0f)
+                pl->jump_b = 0;
         }
         else
         {
-            /* Run the sim. */
-
-            for (i = 0; i < vary.uc; i++)
+            /* Run the sim for this player's ball (singular). */
+            for (i = 0; i < pl->vary.uc; i++)
             {
-                float b = sol_step(&vary, game_proxy_enq, h, dt, i, NULL);
-
-                /* Mix the sound of a ball bounce. */
+                float b = sol_step(&pl->vary, game_proxy_enq, h, dt, i, NULL);
 
                 if (b > 0.5f)
                 {
                     float k = (b - 0.5f) * 2.0f;
 
-                    if      (vary.uv[i].r > vary.uv[i].sizes[1]) audio_play(AUD_BUMPL, k);
-                    else if (vary.uv[i].r < vary.uv[i].sizes[1]) audio_play(AUD_BUMPS, k);
+                    if      (pl->vary.uv[i].r > pl->vary.uv[i].sizes[1]) audio_play(AUD_BUMPL, k);
+                    else if (pl->vary.uv[i].r < pl->vary.uv[i].sizes[1]) audio_play(AUD_BUMPS, k);
                     else                                         audio_play(AUD_BUMPM, k);
                 }
             }
         }
 
-        game_cmd_updball();
+        game_cmd_updball(p);
 
-        game_update_view(dt);
-        game_update_time(dt, bt);
+        game_update_view(p, dt);
+        game_update_time(p, dt, bt);
 
-        return game_update_state(bt);
+        return game_update_state(p, bt);
     }
     return GAME_NONE;
 }
 
 static void game_server_iter(float dt)
 {
-    switch (status)
+    int p;
+    for (p = 0; p < player_count; p++)
     {
-    case GAME_GOAL: game_step(GRAVITY_UP, dt, 0); break;
-    case GAME_FALL: game_step(GRAVITY_DN, dt, 0); break;
+        switch (players[p].status)
+        {
+        case GAME_GOAL: game_step(p, GRAVITY_UP, dt, 0); break;
+        case GAME_FALL: game_step(p, GRAVITY_DN, dt, 0); break;
 
-    case GAME_NONE:
-        if ((status = game_step(GRAVITY_DN, dt, 1)) != GAME_NONE)
-            game_cmd_status();
-        break;
+        case GAME_NONE:
+            if ((players[p].status = game_step(p, GRAVITY_DN, dt, 1)) != GAME_NONE)
+                game_cmd_status(p);
+            break;
+        }
     }
 
     game_cmd_eou();
@@ -923,65 +889,66 @@ float game_server_blend(void)
 
 void game_set_goal(void)
 {
+    /* Enable goal for all players? Or per player?
+       In independent worlds, opening a goal might be a shared event (e.g. collecting coins).
+       Or per player.
+       If coins are per player, goal opens per player.
+       If game_set_goal is called from somewhere global (like console command), do it for all.
+    */
+    int p;
     audio_play(AUD_SWITCH, 1.0f);
-    goal_e = 1;
-
-    game_cmd_goalopen();
+    for (p = 0; p < player_count; p++)
+    {
+        players[p].goal_e = 1;
+        game_cmd_goalopen(p);
+    }
 }
 
 /*---------------------------------------------------------------------------*/
 
-void game_set_x(float k)
+void game_set_x(float k, int p)
 {
-    /* Default to player 0 */
-    input_set_x(0, -ANGLE_BOUND * k);
-
-    input_set_s(0, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
+    input_set_x(p, -ANGLE_BOUND * k);
+    input_set_s(p, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 
-void game_set_z(float k)
+void game_set_z(float k, int p)
 {
-    /* Default to player 0 */
-    input_set_z(0, +ANGLE_BOUND * k);
-
-    input_set_s(0, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
+    input_set_z(p, +ANGLE_BOUND * k);
+    input_set_s(p, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 
-void game_set_ang(float x, float z)
+void game_set_ang(float x, float z, int p)
 {
-    /* Default to player 0 */
-    input_set_x(0, x);
-    input_set_z(0, z);
+    input_set_x(p, x);
+    input_set_z(p, z);
 }
 
-void game_set_pos(int x, int y)
+void game_set_pos(int x, int y, int p)
 {
-    /* Default to player 0 */
     const float range = ANGLE_BOUND * 2;
 
-    input_set_x(0, input_get_x(0) + range * y / config_get_d(CONFIG_MOUSE_SENSE));
-    input_set_z(0, input_get_z(0) + range * x / config_get_d(CONFIG_MOUSE_SENSE));
+    input_set_x(p, input_get_x(p) + range * y / config_get_d(CONFIG_MOUSE_SENSE));
+    input_set_z(p, input_get_z(p) + range * x / config_get_d(CONFIG_MOUSE_SENSE));
 
-    input_set_s(0, config_get_d(CONFIG_MOUSE_RESPONSE) * 0.001f);
+    input_set_s(p, config_get_d(CONFIG_MOUSE_RESPONSE) * 0.001f);
 }
 
-void game_set_cam(int c)
+void game_set_cam(int c, int p)
 {
-    /* Default to player 0 */
-    input_set_c(0, c);
+    input_set_c(p, c);
 }
 
-void game_set_rot(float r)
+void game_set_rot(float r, int p)
 {
-    /* Default to player 0 */
-    input_set_r(0, r);
+    input_set_r(p, r);
 }
 
 /*---------------------------------------------------------------------------*/
 
 float curr_time_elapsed(void)
 {
-    return time_elapsed;
+    return players[0].time_elapsed; /* Default to P0 for UI */
 }
 
 /*---------------------------------------------------------------------------*/

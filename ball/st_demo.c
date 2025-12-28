@@ -508,7 +508,7 @@ static int demo_play_enter(struct state *st, struct state *prev, int intent)
     speed = SPEED_NORMAL;
     demo_replay_speed(speed);
     show_hud = 1;
-    hud_update(0);
+    hud_update(0, 0);
     hud_show(0.9f);
     transition = 0;
 

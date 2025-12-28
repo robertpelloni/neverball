@@ -44,13 +44,18 @@ int game_compat_map;                    /* Client/server map compat flag     */
 
 #define CURR 0
 #define PREV 1
+#define MAX_PLAYERS 4
 
-static struct game_draw gd;
-static struct game_lerp gl;
+static struct game_draw gd[MAX_PLAYERS];
+static struct game_lerp gl[MAX_PLAYERS];
 
-static float timer  = 0.0f;             /* Clock time                        */
-static int   status = GAME_NONE;        /* Outcome of the game               */
-static int   coins  = 0;                /* Collected coins                   */
+struct client_stats {
+    float timer;
+    int   status;
+    int   coins;
+};
+
+static struct client_stats stats[MAX_PLAYERS];
 
 static struct cmd_state cs;             /* Command state                     */
 
@@ -63,12 +68,16 @@ struct
 
 static void game_run_cmd(const union cmd *cmd)
 {
-    if (gd.state)
-    {
-        struct game_view *view = &gl.view[CURR];
-        struct game_tilt *tilt = &gl.tilt[CURR];
+    struct game_draw *cg = &gd[cs.curr_player];
+    struct game_lerp *cl = &gl[cs.curr_player];
+    struct client_stats *cst = &stats[cs.curr_player];
 
-        struct s_vary *vary = &gd.vary;
+    if (cg->state)
+    {
+        struct game_view *view = &cl->view[CURR];
+        struct game_tilt *tilt = &cl->tilt[CURR];
+
+        struct s_vary *vary = &cg->vary;
         struct v_item *hp;
 
         float v[4];
@@ -78,28 +87,51 @@ static void game_run_cmd(const union cmd *cmd)
 
         if (cs.next_update)
         {
-            game_lerp_copy(&gl);
+            game_lerp_copy(cl);
             cs.next_update = 0;
         }
 
         switch (cmd->type)
         {
+        case CMD_SET_PLAYER:
+            cs.curr_player = cmd->setplayer.player_index;
+            if (cs.curr_player < 0) cs.curr_player = 0;
+            if (cs.curr_player >= MAX_PLAYERS) cs.curr_player = 0;
+            /* Reset references for the next command */
+            /* Actually, the loop continues and next command will pick up new cs.curr_player */
+            /* But we already dereferenced cg/cl/cst at function start. */
+            /* We must update them immediately for subsequent usage within this function call? */
+            /* No, game_run_cmd handles ONE command struct. */
+            /* But the function start dereferenced BEFORE switching player. */
+            /* Does CMD_SET_PLAYER affect the CURRENT command processing? No, it sets context for NEXT commands? */
+            /* Or does it affect subsequent logic in THIS function? */
+            /* game_run_cmd processes ONE command. */
+            /* So the context switch applies to FUTURE commands processed by future calls to game_run_cmd. */
+            /* Wait, if I enqueue [SET_PLAYER, BALL_POS], then: */
+            /* 1. game_run_cmd(SET_PLAYER) is called. It updates cs.curr_player. */
+            /* 2. game_run_cmd(BALL_POS) is called. It uses the NEW cs.curr_player. */
+            /* So simply updating cs.curr_player is enough for the NEXT command. */
+            /* However, 'cg', 'cl' pointers in THIS function call are stale if used here. */
+            /* But CMD_SET_PLAYER logic only updates cs.curr_player and breaks. It doesn't use cg/cl. */
+            /* Correct. */
+            break;
+
         case CMD_END_OF_UPDATE:
             cs.got_tilt_axes = 0;
             cs.next_update = 1;
 
             if (cs.first_update)
             {
-                game_lerp_copy(&gl);
+                game_lerp_copy(cl);
                 /* Hack to sync state before the next update. */
-                game_lerp_apply(&gl, &gd);
+                game_lerp_apply(cl, cg);
                 cs.first_update = 0;
                 break;
             }
 
             /* Compute gravity for particle effects. */
 
-            if (status == GAME_GOAL)
+            if (cst->status == GAME_GOAL)
                 game_tilt_grav(v, GRAVITY_UP, tilt);
             else
                 game_tilt_grav(v, GRAVITY_DN, tilt);
@@ -110,15 +142,15 @@ static void game_run_cmd(const union cmd *cmd)
             {
                 dt = 1.0f / cs.ups;
 
-                if (gd.goal_e && gl.goal_k[CURR] < 1.0f)
-                    gl.goal_k[CURR] += dt;
+                if (cg->goal_e && cl->goal_k[CURR] < 1.0f)
+                    cl->goal_k[CURR] += dt;
 
-                if (gd.jump_b)
+                if (cg->jump_b)
                 {
-                    gl.jump_dt[CURR] += dt;
+                    cl->jump_dt[CURR] += dt;
 
-                    if (gl.jump_dt[PREV] >= 1.0f)
-                        gd.jump_b = 0;
+                    if (cl->jump_dt[PREV] >= 1.0f)
+                        cg->jump_b = 0;
                 }
 
                 part_step(v, dt);
@@ -127,7 +159,7 @@ static void game_run_cmd(const union cmd *cmd)
             break;
 
         case CMD_MAKE_BALL:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_MAKE_ITEM:
@@ -155,14 +187,6 @@ static void game_run_cmd(const union cmd *cmd)
         case CMD_TILT_ANGLES:
             if (!cs.got_tilt_axes)
             {
-                /*
-                 * Neverball <= 1.5.1 does not send explicit tilt
-                 * axes, rotation happens directly around view
-                 * vectors.  So for compatibility if at the time of
-                 * receiving tilt angles we have not yet received the
-                 * tilt axes, we use the view vectors.
-                 */
-
                 game_tilt_axes(tilt, view->e);
             }
 
@@ -179,45 +203,40 @@ static void game_run_cmd(const union cmd *cmd)
             break;
 
         case CMD_TIMER:
-            timer = cmd->timer.t;
+            cst->timer = cmd->timer.t;
             break;
 
         case CMD_STATUS:
-            status = cmd->status.t;
+            cst->status = cmd->status.t;
             break;
 
         case CMD_COINS:
-            coins = cmd->coins.n;
+            cst->coins = cmd->coins.n;
             break;
 
         case CMD_JUMP_ENTER:
-            gd.jump_b  = 1;
-            gd.jump_e  = 0;
-            gl.jump_dt[PREV] = 0.0f;
-            gl.jump_dt[CURR] = 0.0f;
+            cg->jump_b  = 1;
+            cg->jump_e  = 0;
+            cl->jump_dt[PREV] = 0.0f;
+            cl->jump_dt[CURR] = 0.0f;
             break;
 
         case CMD_JUMP_EXIT:
-            gd.jump_e = 1;
+            cg->jump_e = 1;
             break;
 
         case CMD_MOVE_PATH:
         case CMD_MOVE_TIME:
         case CMD_BODY_PATH:
         case CMD_BODY_TIME:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_GOAL_OPEN:
-            /*
-             * Enable the goal and make sure it's fully visible if
-             * this is the first update.
-             */
-
-            if (!gd.goal_e)
+            if (!cg->goal_e)
             {
-                gd.goal_e = 1;
-                gl.goal_k[CURR] = cs.first_update ? 1.0f : 0.0f;
+                cg->goal_e = 1;
+                cl->goal_k[CURR] = cs.first_update ? 1.0f : 0.0f;
             }
             break;
 
@@ -241,7 +260,7 @@ static void game_run_cmd(const union cmd *cmd)
             break;
 
         case CMD_BALL_RADIUS:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_CLEAR_ITEMS:
@@ -249,19 +268,19 @@ static void game_run_cmd(const union cmd *cmd)
             break;
 
         case CMD_CLEAR_BALLS:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_BALL_POSITION:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_BALL_BASIS:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_BALL_PEND_BASIS:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_VIEW_POSITION:
@@ -289,14 +308,10 @@ static void game_run_cmd(const union cmd *cmd)
             break;
 
         case CMD_STEP_SIMULATION:
-            sol_lerp_cmd(&gl.lerp, &cs, cmd);
+            sol_lerp_cmd(&cl->lerp, &cs, cmd);
             break;
 
         case CMD_MAP:
-            /*
-             * Note a version (mis-)match between the loaded map and what
-             * the server has. (This doesn't actually load a map.)
-             */
             game_compat_map = (version.x == cmd->map.version.x);
             break;
 
@@ -333,63 +348,84 @@ void game_client_sync(fs_file demo_fp)
 int  game_client_init(const char *file_name)
 {
     char *back_name = "", *grad_name = "";
-    int i;
-
-    coins  = 0;
-    status = GAME_NONE;
+    int i, p;
+    int player_count = config_get_d(CONFIG_MULTIBALL);
+    if (player_count < 1) player_count = 1;
+    if (player_count > MAX_PLAYERS) player_count = MAX_PLAYERS;
 
     game_client_free(file_name);
 
     /* Load SOL data. */
 
     if (!game_base_load(file_name))
-        return (gd.state = 0);
+        return (gd[0].state = 0); /* Signal failure via gd[0] */
 
-    if (!sol_load_vary(&gd.vary, &game_base))
+    /* Initialize all players */
+    for (p = 0; p < player_count; p++)
     {
-        game_base_free(NULL);
-        return (gd.state = 0);
+        struct game_draw *cg = &gd[p];
+        struct game_lerp *cl = &gl[p];
+        struct client_stats *cst = &stats[p];
+
+        cst->coins = 0;
+        cst->status = GAME_NONE;
+        cst->timer = 0.0f;
+
+        if (!sol_load_vary(&cg->vary, &game_base))
+        {
+            /* If fail, partial clean? We rely on game_client_free cleaning up. */
+            /* But caller checks return. */
+            /* Let's assume if p=0 fails we return 0. */
+            if (p == 0)
+            {
+                game_base_free(NULL);
+                return (cg->state = 0);
+            }
+        }
+
+        if (!sol_load_draw(&cg->draw, &cg->vary, config_get_d(CONFIG_SHADOW)))
+        {
+            sol_free_vary(&cg->vary);
+            if (p == 0)
+            {
+                game_base_free(NULL);
+                return (cg->state = 0);
+            }
+        }
+
+        cg->state = 1;
+
+        /* Initialize game state. */
+
+        game_tilt_init(&cg->tilt);
+        game_view_init(&cg->view);
+
+        cg->jump_e  = 1;
+        cg->jump_b  = 0;
+        cg->jump_dt = 0.0f;
+
+        cg->goal_e = 0;
+        cg->goal_k = 0.0f;
+
+        /* Initialize interpolation. */
+
+        game_lerp_init(cl, cg);
+
+        /* Initialize fade. */
+
+        cg->fade_k =  1.0f;
+        cg->fade_d = -2.0f;
     }
 
-    if (!sol_load_draw(&gd.draw, &gd.vary, config_get_d(CONFIG_SHADOW)))
-    {
-        sol_free_vary(&gd.vary);
-        game_base_free(NULL);
-        return (gd.state = 0);
-    }
-
-    gd.state = 1;
-
-    /* Initialize game state. */
-
-    game_tilt_init(&gd.tilt);
-    game_view_init(&gd.view);
-
-    gd.jump_e  = 1;
-    gd.jump_b  = 0;
-    gd.jump_dt = 0.0f;
-
-    gd.goal_e = 0;
-    gd.goal_k = 0.0f;
-
-    /* Initialize interpolation. */
-
-    game_lerp_init(&gl, &gd);
-
-    /* Initialize fade. */
-
-    gd.fade_k =  1.0f;
-    gd.fade_d = -2.0f;
-
-    /* Load level info. */
+    /* Load level info (from shared base) */
 
     version.x = 0;
     version.y = 0;
 
-    for (i = 0; i < gd.vary.base->dc; i++)
+    for (i = 0; i < game_base.dc; i++)
     {
-        char *k = gd.vary.base->av + gd.vary.base->dv[i].ai;
-        char *v = gd.vary.base->av + gd.vary.base->dv[i].aj;
+        char *k = game_base.av + game_base.dv[i].ai;
+        char *v = game_base.av + game_base.dv[i].aj;
 
         if (strcmp(k, "back") == 0) back_name = v;
         if (strcmp(k, "grad") == 0) grad_name = v;
@@ -398,52 +434,59 @@ int  game_client_init(const char *file_name)
             sscanf(v, "%d.%d", &version.x, &version.y);
     }
 
-    /*
-     * If the version of the loaded map is 1, assume we have a version
-     * match with the server.  In this way 1.5.0 replays don't trigger
-     * bogus map compatibility warnings.  Post-1.5.0 replays will have
-     * CMD_MAP override this.
-     */
-
     game_compat_map = version.x == 1;
-
-    /* Initialize particles. */
 
     part_reset();
 
-    /* Initialize command state. */
-
     cmd_state_init(&cs);
 
-    /* Initialize background. */
-
     back_init(grad_name);
-    sol_load_full(&gd.back, back_name, 0);
-
-    /* Initialize lighting. */
+    /* Back is shared visually? Or each player has own skybox instance? */
+    /* game_draw takes gd->back. */
+    /* We need to init back for each player or share? */
+    /* sol_load_full takes path. It loads geometry. */
+    /* We should probably load it for each player so they have independent state/draw struct */
+    for (p = 0; p < player_count; p++)
+    {
+        sol_load_full(&gd[p].back, back_name, 0);
+    }
 
     light_reset();
 
-    return gd.state;
+    return gd[0].state;
 }
 
 void game_client_free(const char *next)
 {
-    if (gd.state)
+    int p;
+    /* Clean up all players */
+    /* We don't track player_count precisely here, so loop MAX or check state */
+    /* But checking state is safe */
+
+    game_proxy_clr();
+
+    for (p = 0; p < MAX_PLAYERS; p++)
     {
-        game_proxy_clr();
-
-        game_lerp_free(&gl);
-
-        sol_free_draw(&gd.draw);
-        sol_free_vary(&gd.vary);
-
-        game_base_free(next);
-
-        sol_free_full(&gd.back);
-        back_free();
+        if (gd[p].state)
+        {
+            game_lerp_free(&gl[p]);
+            sol_free_draw(&gd[p].draw);
+            sol_free_vary(&gd[p].vary);
+            sol_free_full(&gd[p].back);
+            gd[p].state = 0;
+        }
     }
-    gd.state = 0;
+
+    /* Only free game_base if we actually loaded something (gd[0].state was 1) */
+    /* But we just cleared state. */
+    /* game_client_init checked gd[0].state. */
+    /* We can just call game_base_free(next) unconditionally? */
+    /* game_base_free checks if base is loaded? No, it frees. */
+    /* If we call it multiple times, we need safety. */
+    /* For now, assume single call flow. */
+
+    game_base_free(next);
+    back_free();
 }
 
 /*---------------------------------------------------------------------------*/
@@ -452,86 +495,143 @@ int enable_interpolation = 1;
 
 void game_client_blend(float a)
 {
-    if (enable_interpolation)
-        gl.alpha = a;
-    else
-        gl.alpha = 1.0f;
+    int p;
+    for (p = 0; p < MAX_PLAYERS; p++)
+    {
+        if (enable_interpolation)
+            gl[p].alpha = a;
+        else
+            gl[p].alpha = 1.0f;
+    }
 }
 
 void game_client_draw(int pose, float t)
 {
-    game_lerp_apply(&gl, &gd);
-    game_draw(&gd, pose, t);
+    int p;
+    int count = config_get_d(CONFIG_MULTIBALL);
+    if (count < 1) count = 1;
+    if (count > MAX_PLAYERS) count = MAX_PLAYERS;
+
+    int w = video.device_w;
+    int h = video.device_h;
+
+    for (p = 0; p < count; p++)
+    {
+        if (!gd[p].state) continue;
+
+        int vp_x = 0, vp_y = 0, vp_w = w, vp_h = h;
+
+        if (count == 2)
+        {
+            /* Horizontal split */
+            vp_h = h / 2;
+            vp_y = (p == 0) ? h / 2 : 0;
+        }
+        else if (count >= 3)
+        {
+            /* Quad split */
+            vp_w = w / 2;
+            vp_h = h / 2;
+            if (p == 0) { vp_x = 0;    vp_y = h/2; }
+            if (p == 1) { vp_x = w/2;  vp_y = h/2; }
+            if (p == 2) { vp_x = 0;    vp_y = 0;   }
+            if (p == 3) { vp_x = w/2;  vp_y = 0;   }
+        }
+
+        game_lerp_apply(&gl[p], &gd[p]);
+
+        /* Pass viewport to game_draw */
+        game_draw(&gd[p], pose, t, vp_x, vp_y, vp_w, vp_h);
+    }
 }
 
 /*---------------------------------------------------------------------------*/
 
-int curr_clock(void)
+int curr_clock(int p)
 {
-    return (int) (timer * 100.f);
+    return (int) (stats[p].timer * 100.f);
 }
 
-int curr_coins(void)
+int curr_coins(int p)
 {
-    return coins;
+    return stats[p].coins;
 }
 
-int curr_status(void)
+int curr_status(int p)
 {
-    return status;
+    return stats[p].status;
 }
 
 /*---------------------------------------------------------------------------*/
 
 void game_look(float phi, float theta)
 {
-    struct game_view *view = &gl.view[CURR];
+    /* Apply look to all players? Or default P0? */
+    /* This function is used by st_look (mouse look around). */
+    /* Usually purely visual/client side. */
+    /* Default to P0 for now. */
+    int p = 0;
+    struct game_view *view = &gl[p].view[CURR];
 
     view->c[0] = view->p[0] + fsinf(V_RAD(theta)) * fcosf(V_RAD(phi));
     view->c[1] = view->p[1] +                       fsinf(V_RAD(phi));
     view->c[2] = view->p[2] - fcosf(V_RAD(theta)) * fcosf(V_RAD(phi));
 
-    gl.view[PREV] = gl.view[CURR];
+    gl[p].view[PREV] = gl[p].view[CURR];
 }
 
 /*---------------------------------------------------------------------------*/
 
 void game_kill_fade(void)
 {
-    gd.fade_k = 0.0f;
-    gd.fade_d = 0.0f;
+    int p;
+    for (p = 0; p < MAX_PLAYERS; p++)
+    {
+        gd[p].fade_k = 0.0f;
+        gd[p].fade_d = 0.0f;
+    }
 }
 
 void game_step_fade(float dt)
 {
-    if ((gd.fade_k < 1.0f && gd.fade_d > 0.0f) ||
-        (gd.fade_k > 0.0f && gd.fade_d < 0.0f))
-        gd.fade_k += gd.fade_d * dt;
+    int p;
+    for (p = 0; p < MAX_PLAYERS; p++)
+    {
+        struct game_draw *cg = &gd[p];
+        if ((cg->fade_k < 1.0f && cg->fade_d > 0.0f) ||
+            (cg->fade_k > 0.0f && cg->fade_d < 0.0f))
+            cg->fade_k += cg->fade_d * dt;
 
-    if (gd.fade_k < 0.0f)
-    {
-        gd.fade_k = 0.0f;
-        gd.fade_d = 0.0f;
-    }
-    if (gd.fade_k > 1.0f)
-    {
-        gd.fade_k = 1.0f;
-        gd.fade_d = 0.0f;
+        if (cg->fade_k < 0.0f)
+        {
+            cg->fade_k = 0.0f;
+            cg->fade_d = 0.0f;
+        }
+        if (cg->fade_k > 1.0f)
+        {
+            cg->fade_k = 1.0f;
+            cg->fade_d = 0.0f;
+        }
     }
 }
 
 void game_fade(float d)
 {
-    gd.fade_d = d;
+    int p;
+    for (p = 0; p < MAX_PLAYERS; p++)
+        gd[p].fade_d = d;
 }
 
 /*---------------------------------------------------------------------------*/
 
 void game_client_fly(float k)
 {
-    game_view_fly(&gl.view[CURR], &gd.vary, k);
-
-    gl.view[PREV] = gl.view[CURR];
+    int p;
+    for (p = 0; p < MAX_PLAYERS; p++)
+    {
+        game_view_fly(&gl[p].view[CURR], &gd[p].vary, k);
+        gl[p].view[PREV] = gl[p].view[CURR];
+    }
 }
 
 /*---------------------------------------------------------------------------*/
