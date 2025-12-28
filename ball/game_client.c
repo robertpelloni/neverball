@@ -544,7 +544,7 @@ void game_client_draw(int pose, float t)
         game_lerp_apply(&gl[p], &gd[p]);
 
         /* Pass viewport to game_draw */
-        game_draw(&gd[p], pose, t, vp_x, vp_y, vp_w, vp_h);
+        game_draw(gd, p, count, pose, t, vp_x, vp_y, vp_w, vp_h);
     }
 }
 

@@ -353,6 +353,7 @@ static int loop_transition;
 #define MAX_PLAYERS 4
 static float respawn_timer[MAX_PLAYERS];
 static int last_status[MAX_PLAYERS];
+static int finished_mask = 0;
 
 static int play_loop_gui(void)
 {
@@ -380,6 +381,7 @@ static int play_loop_enter(struct state *st, struct state *prev, int intent)
         respawn_timer[i] = 0.0f;
         last_status[i] = GAME_NONE;
     }
+    finished_mask = 0;
 
     if (prev == &st_pause)
     {
@@ -473,8 +475,11 @@ static void play_loop_timer(int id, float dt)
         switch (status)
         {
         case GAME_GOAL:
-            if (p == 0)
-                goto_state(&st_goal);
+            if (!(finished_mask & (1 << p)))
+            {
+                progress_stat(GAME_GOAL, p);
+                finished_mask |= (1 << p);
+            }
             break;
 
         case GAME_FALL:
@@ -488,13 +493,25 @@ static void play_loop_timer(int id, float dt)
             break;
 
         case GAME_TIME:
-            if (p == 0)
-                goto_state(&st_fail);
+            if (!(finished_mask & (1 << p)))
+            {
+                progress_stat(GAME_TIME, p);
+                finished_mask |= (1 << p);
+            }
             break;
         }
     }
 
     progress_step();
+
+    {
+        int finished_count = 0;
+        for (p = 0; p < count; p++)
+            if (finished_mask & (1 << p)) finished_count++;
+
+        if (finished_count == count)
+            goto_state(&st_goal);
+    }
 }
 
 static void play_loop_point(int id, int x, int y, int dx, int dy)

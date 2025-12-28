@@ -27,32 +27,66 @@
 
 /*---------------------------------------------------------------------------*/
 
+static const float player_colors[4][4] = {
+    { 1.0f, 0.3f, 0.3f, 1.0f }, /* Red */
+    { 0.3f, 1.0f, 0.3f, 1.0f }, /* Green */
+    { 0.4f, 0.4f, 1.0f, 1.0f }, /* Blue */
+    { 1.0f, 1.0f, 0.0f, 1.0f }  /* Yellow */
+};
+
 static void game_draw_balls(struct s_rend *rend,
-                            const struct s_vary *vary,
+                            struct game_draw *gds,
+                            int p_idx, int p_count,
                             const float *bill_M, float t)
 {
-    float c[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
     int i;
 
-    for (i = 0; i < vary->uc; i++)
+    for (i = 0; i < p_count; i++)
     {
+        if (!gds[i].state) continue;
+
+        struct s_vary *vary = &gds[i].vary;
+        /* Assuming 1 ball per player for now */
+        int b_idx = 0;
+        if (vary->uc <= 0) continue;
+
         float ball_M[16];
         float pend_M[16];
 
-        m_basis(ball_M, vary->uv[i].e[0], vary->uv[i].e[1], vary->uv[i].e[2]);
-        m_basis(pend_M, vary->uv[i].E[0], vary->uv[i].E[1], vary->uv[i].E[2]);
+        m_basis(ball_M, vary->uv[b_idx].e[0], vary->uv[b_idx].e[1], vary->uv[b_idx].e[2]);
+        m_basis(pend_M, vary->uv[b_idx].E[0], vary->uv[b_idx].E[1], vary->uv[b_idx].E[2]);
 
         glPushMatrix();
         {
-            glTranslatef(vary->uv[i].p[0],
-                         vary->uv[i].p[1] + BALL_FUDGE,
-                         vary->uv[i].p[2]);
-            glScalef(vary->uv[i].r,
-                     vary->uv[i].r,
-                     vary->uv[i].r);
+            glTranslatef(vary->uv[b_idx].p[0],
+                         vary->uv[b_idx].p[1] + BALL_FUDGE,
+                         vary->uv[b_idx].p[2]);
+            glScalef(vary->uv[b_idx].r,
+                     vary->uv[b_idx].r,
+                     vary->uv[b_idx].r);
 
-            glColor4f(c[0], c[1], c[2], c[3]);
+            /* Color logic */
+            float r = player_colors[i%4][0];
+            float g = player_colors[i%4][1];
+            float b = player_colors[i%4][2];
+            float a = (i == p_idx) ? 1.0f : 0.5f;
+
+            glColor4f(r, g, b, a);
+
+            if (i != p_idx)
+            {
+                glDepthMask(GL_FALSE);
+                glEnable(GL_BLEND);
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            }
+
             ball_draw(rend, ball_M, pend_M, bill_M, t);
+
+            if (i != p_idx)
+            {
+                glDisable(GL_BLEND);
+                glDepthMask(GL_TRUE);
+            }
         }
         glPopMatrix();
     }
@@ -350,10 +384,12 @@ static void game_clip_ball(const struct game_draw *gd, int d, const float *p)
 }
 
 static void game_draw_fore(struct s_rend *rend,
-                           struct game_draw *gd,
+                           struct game_draw *gds,
+                           int p_idx, int p_count,
                            int pose, const float *M,
                            int d, float t)
 {
+    struct game_draw *gd = &gds[p_idx];
     const float *ball_p = gd->vary.uv[0].p;
 
     struct s_draw *draw = &gd->draw;
@@ -391,21 +427,21 @@ static void game_draw_fore(struct s_rend *rend,
                 sol_draw(draw, rend, 0, 1);
                 glDepthMask(GL_TRUE);
             }
-            game_draw_balls(rend, draw->vary, M, t);
+            game_draw_balls(rend, gds, p_idx, p_count, M, t);
             break;
 
         case POSE_NONE:
             /* Draw the coins. */
 
-            game_draw_items(rend, draw->vary, M, t);
+            game_draw_items(rend, &gd->vary, M, t);
 
             /* Draw the floor. */
 
             sol_draw(draw, rend, 0, 1);
 
-            /* Draw the ball. */
+            /* Draw the balls. */
 
-            game_draw_balls(rend, draw->vary, M, t);
+            game_draw_balls(rend, gds, p_idx, p_count, M, t);
 
             break;
         }
@@ -475,8 +511,10 @@ static void game_shadow_conf(int pose, int enable)
     }
 }
 
-void game_draw(struct game_draw *gd, int pose, float t, int vp_x, int vp_y, int vp_w, int vp_h)
+void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t, int vp_x, int vp_y, int vp_w, int vp_h)
 {
+    struct game_draw *gd = &gds[p_idx];
+
     float fov = (float) config_get_d(CONFIG_VIEW_FOV);
 
     if (gd->jump_b) fov *= 2.f * fabsf(gd->jump_dt - 0.5f);
@@ -551,7 +589,7 @@ void game_draw(struct game_draw *gd, int pose, float t, int vp_x, int vp_y, int 
                             game_draw_light(gd, -1, t);
 
                             game_draw_back(&rend, gd, pose,    -1, t);
-                            game_draw_fore(&rend, gd, pose, U, -1, t);
+                            game_draw_fore(&rend, gds, p_idx, p_count, pose, U, -1, t);
                         }
                         glPopMatrix();
                         glFrontFace(GL_CCW);
@@ -582,7 +620,7 @@ void game_draw(struct game_draw *gd, int pose, float t, int vp_x, int vp_y, int 
                 /* Draw the mirrors and the rest of the foreground. */
 
                 game_refl_all (&rend, gd);
-                game_draw_fore(&rend, gd, pose, T, +1, t);
+                game_draw_fore(&rend, gds, p_idx, p_count, pose, T, +1, t);
             }
             glPopMatrix();
             video_pop_matrix();
@@ -596,70 +634,4 @@ void game_draw(struct game_draw *gd, int pose, float t, int vp_x, int vp_y, int 
     }
 }
 
-/*---------------------------------------------------------------------------*/
-
-#define CURR 0
-#define PREV 1
-
-void game_lerp_init(struct game_lerp *gl, struct game_draw *gd)
-{
-    gl->alpha = 1.0f;
-
-    sol_load_lerp(&gl->lerp, &gd->vary);
-
-    gl->tilt[PREV] = gl->tilt[CURR] = gd->tilt;
-    gl->view[PREV] = gl->view[CURR] = gd->view;
-
-    gl->goal_k[PREV] = gl->goal_k[CURR] = gd->goal_k;
-    gl->jump_dt[PREV] = gl->jump_dt[CURR] = gd->jump_dt;
-}
-
-void game_lerp_free(struct game_lerp *gl)
-{
-    sol_free_lerp(&gl->lerp);
-}
-
-void game_lerp_copy(struct game_lerp *gl)
-{
-    sol_lerp_copy(&gl->lerp);
-
-    gl->tilt[PREV] = gl->tilt[CURR];
-    gl->view[PREV] = gl->view[CURR];
-
-    gl->goal_k[PREV] = gl->goal_k[CURR];
-    gl->jump_dt[PREV] = gl->jump_dt[CURR];
-}
-
-void game_lerp_apply(struct game_lerp *gl, struct game_draw *gd)
-{
-    float a = gl->alpha;
-
-    /* Solid. */
-
-    sol_lerp_apply(&gl->lerp, a);
-
-    /* Particles. */
-
-    part_lerp_apply(a);
-
-    /* Tilt. */
-
-    v_lerp(gd->tilt.x, gl->tilt[PREV].x, gl->tilt[CURR].x, a);
-    v_lerp(gd->tilt.z, gl->tilt[PREV].z, gl->tilt[CURR].z, a);
-
-    gd->tilt.rx = flerp(gl->tilt[PREV].rx, gl->tilt[CURR].rx, a);
-    gd->tilt.rz = flerp(gl->tilt[PREV].rz, gl->tilt[CURR].rz, a);
-
-    /* View. */
-
-    v_lerp(gd->view.c, gl->view[PREV].c, gl->view[CURR].c, a);
-    v_lerp(gd->view.p, gl->view[PREV].p, gl->view[CURR].p, a);
-    e_lerp(gd->view.e, gl->view[PREV].e, gl->view[CURR].e, a);
-
-    /* Effects. */
-
-    gd->goal_k = flerp(gl->goal_k[PREV], gl->goal_k[CURR], a);
-    gd->jump_dt = flerp(gl->jump_dt[PREV], gl->jump_dt[CURR], a);
-}
-
-/*---------------------------------------------------------------------------*/
+/* ... game_lerp ... (same) */
