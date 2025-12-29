@@ -350,7 +350,6 @@ static int fast_rotate;
 static int show_hud;
 static int loop_transition;
 
-#define MAX_PLAYERS 4
 static float respawn_timer[MAX_PLAYERS];
 static int last_status[MAX_PLAYERS];
 static int finished_mask = 0;

@@ -44,7 +44,6 @@ int game_compat_map;                    /* Client/server map compat flag     */
 
 #define CURR 0
 #define PREV 1
-#define MAX_PLAYERS 4
 
 static struct game_draw gd[MAX_PLAYERS];
 static struct game_lerp gl[MAX_PLAYERS];

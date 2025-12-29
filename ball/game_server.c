@@ -38,8 +38,6 @@
 static int server_state = 0;
 static int game_mode = MODE_NORMAL;
 
-#define MAX_PLAYERS 4
-
 struct server_player
 {
     struct s_vary vary;
@@ -80,6 +78,9 @@ struct server_player
     /* Fight Physics State */
     int   punch_state; /* 0=None, 1=Extending, 2=Retracting */
     float punch_timer;
+
+    /* Billiards State */
+    float shot_power;
 
     int   action_prev;
 };
@@ -286,6 +287,10 @@ static void game_cmd_updball(int p)
 
     game_cmd_set_player(p);
 
+    cmd.type = CMD_CURRENT_BALL;
+    cmd.currball.ui = pl->ball_index;
+    game_proxy_enq(&cmd);
+
     cmd.type = CMD_BALL_POSITION;
     v_cpy(cmd.ballpos.p, b->p);
     game_proxy_enq(&cmd);
@@ -299,6 +304,38 @@ static void game_cmd_updball(int p)
     v_cpy(cmd.ballpendbasis.E[0], b->E[0]);
     v_cpy(cmd.ballpendbasis.E[1], b->E[1]);
     game_proxy_enq(&cmd);
+}
+
+/* Update ALL balls for the given player's view */
+static void game_cmd_upd_all_balls(int p)
+{
+    struct server_player *pl = &players[p];
+    int i;
+
+    for (i = 0; i < pl->sim_state->uc; i++)
+    {
+        struct v_ball *b = &pl->sim_state->uv[i];
+
+        game_cmd_set_player(p);
+
+        cmd.type = CMD_CURRENT_BALL;
+        cmd.currball.ui = i;
+        game_proxy_enq(&cmd);
+
+        cmd.type = CMD_BALL_POSITION;
+        v_cpy(cmd.ballpos.p, b->p);
+        game_proxy_enq(&cmd);
+
+        cmd.type = CMD_BALL_BASIS;
+        v_cpy(cmd.ballbasis.e[0], b->e[0]);
+        v_cpy(cmd.ballbasis.e[1], b->e[1]);
+        game_proxy_enq(&cmd);
+
+        cmd.type = CMD_BALL_PEND_BASIS;
+        v_cpy(cmd.ballpendbasis.E[0], b->E[0]);
+        v_cpy(cmd.ballpendbasis.E[1], b->E[1]);
+        game_proxy_enq(&cmd);
+    }
 }
 
 static void game_cmd_updview(int p)
@@ -322,23 +359,34 @@ static void game_cmd_updview(int p)
 static void game_cmd_ballradius(int p)
 {
     struct server_player *pl = &players[p];
-    game_cmd_set_player(p);
-    cmd.type         = CMD_BALL_RADIUS;
-    cmd.ballradius.r = pl->sim_state->uv[pl->ball_index].r;
-    game_proxy_enq(&cmd);
+
+    /* Sync ALL ball radii */
+    int i;
+    for (i = 0; i < pl->sim_state->uc; i++) {
+        game_cmd_set_player(p);
+        cmd.type = CMD_CURRENT_BALL;
+        cmd.currball.ui = i;
+        game_proxy_enq(&cmd);
+
+        cmd.type = CMD_BALL_RADIUS;
+        cmd.ballradius.r = pl->sim_state->uv[i].r;
+        game_proxy_enq(&cmd);
+    }
 }
 
-static void game_cmd_init_balls(int p)
+static void game_cmd_init_balls(int p, int count)
 {
+    int i;
     game_cmd_set_player(p);
     cmd.type = CMD_CLEAR_BALLS;
     game_proxy_enq(&cmd);
 
-    /* Initialize the single ball for this player (on client) */
-    cmd.type = CMD_MAKE_BALL;
-    game_proxy_enq(&cmd);
+    for (i = 0; i < count; i++) {
+        cmd.type = CMD_MAKE_BALL;
+        game_proxy_enq(&cmd);
+    }
 
-    game_cmd_updball(p);
+    game_cmd_upd_all_balls(p);
     game_cmd_ballradius(p);
 }
 
@@ -479,6 +527,7 @@ static void game_player_init(int p, int t, int e, int mode)
 {
     struct server_player *pl = &players[p];
     int i;
+    int ball_count = 1;
 
     pl->time_limit = (float) t / 100.0f;
     pl->time_elapsed = 0.0f;
@@ -493,10 +542,13 @@ static void game_player_init(int p, int t, int e, int mode)
     pl->punch_state = 0;
     pl->punch_timer = 0.0f;
 
+    pl->shot_power = 0.0f;
+
     pl->action_prev = 0;
 
     if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT)
     {
+        ball_count = player_count;
         if (p == 0)
         {
             /* Master simulation */
@@ -505,19 +557,19 @@ static void game_player_init(int p, int t, int e, int mode)
             pl->sim_owner = 1;
 
             /* Resize balls */
-            if (player_count > 1)
+            if (ball_count > 1)
             {
-                 struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * player_count);
+                 struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * ball_count);
                  if (new_uv)
                  {
                      pl->vary.uv = new_uv;
-                     for (i = 1; i < player_count; i++)
+                     for (i = 1; i < ball_count; i++)
                      {
                          pl->vary.uv[i] = pl->vary.uv[0];
                          pl->vary.uv[i].p[0] += (float)i * 1.5f;
                          pl->vary.uv[i].p[2] += (float)i * 1.5f;
                      }
-                     pl->vary.uc = player_count;
+                     pl->vary.uc = ball_count;
                  }
             }
         }
@@ -526,13 +578,60 @@ static void game_player_init(int p, int t, int e, int mode)
             /* Slave */
             pl->sim_state = &players[0].vary;
             pl->sim_owner = 0;
-            /* pl->vary is unused/empty */
         }
         pl->ball_index = p;
+    }
+    else if (mode == MODE_BILLIARDS)
+    {
+        ball_count = 16;
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+
+            /* Resize balls */
+            struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * ball_count);
+            if (new_uv)
+            {
+                pl->vary.uv = new_uv;
+                pl->vary.uc = ball_count;
+
+                /* Init Billiard Positions (Triangle) */
+                float x = pl->vary.uv[0].p[0];
+                float z = pl->vary.uv[0].p[2] + 5.0f; /* Start further down */
+                float r = pl->vary.uv[0].r;
+                float d = r * 2.05f; /* Diameter + padding */
+
+                int b = 1;
+                int row, col;
+                for (row = 0; row < 5; row++) {
+                    float z_row = z + row * d * 0.866f; /* sin(60) */
+                    float x_start = x - (row * d) * 0.5f;
+                    for (col = 0; col <= row; col++) {
+                        if (b < ball_count) {
+                            pl->vary.uv[b] = pl->vary.uv[0];
+                            pl->vary.uv[b].p[0] = x_start + col * d;
+                            pl->vary.uv[b].p[2] = z_row;
+                            b++;
+                        }
+                    }
+                }
+            }
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+        /* All players control cue ball (0) for now, or turn based? */
+        /* Let's assume P0 controls Cue. */
+        pl->ball_index = 0;
     }
     else
     {
         /* Race / Independent */
+        ball_count = 1;
         sol_load_vary(&pl->vary, &game_base);
         pl->sim_state = &pl->vary;
         pl->sim_owner = 1;
@@ -566,7 +665,7 @@ static void game_player_init(int p, int t, int e, int mode)
 
     game_cmd_timer(p);
     if (pl->goal_e) game_cmd_goalopen(p);
-    game_cmd_init_balls(p);
+    game_cmd_init_balls(p, ball_count);
     game_cmd_updview(p);
 }
 
@@ -741,18 +840,13 @@ static void game_update_view(int p, float dt)
         float speed = v_len(b->v);
         if (speed > 5.0f)
         {
-            /* If view vector (e[2]) and velocity are misaligned, rotate towards velocity */
             float vel_n[3];
             v_cpy(vel_n, b->v);
             v_nrm(vel_n, vel_n);
 
-            float view_n[3];
-            v_cpy(view_n, pl->view.e[2]);
-            /* e[2] points towards camera. Velocity points away. So align e[2] with -vel */
             float target_n[3];
             v_scl(target_n, vel_n, -1.0f);
 
-            /* Linear interp towards target */
             v_lerp(pl->view.e[2], pl->view.e[2], target_n, 5.0f * dt);
             v_nrm(pl->view.e[2], pl->view.e[2]);
         }
@@ -992,13 +1086,11 @@ static void game_fight_step(int p, float dt)
         float punch_range = b->r * 2.0f;
         float punch_vec[3];
 
-        /* Punch direction: View Forward */
-        /* Use view.e[2] (Z) which points BACK. So -view.e[2] is forward. */
         v_cpy(punch_vec, pl->view.e[2]);
         v_scl(punch_vec, punch_vec, -1.0f);
 
-        for (i = 0; i < player_count; i++) {
-            if (i == p) continue;
+        for (i = 0; i < pl->sim_state->uc; i++) {
+            if (i == pl->ball_index) continue;
 
             struct v_ball *other = &pl->sim_state->uv[i];
             float dist_vec[3];
@@ -1006,14 +1098,12 @@ static void game_fight_step(int p, float dt)
             float dist = v_len(dist_vec);
 
             if (dist < (b->r + other->r + punch_range)) {
-                /* Check if in front (dot product) */
                 float d = v_dot(punch_vec, dist_vec);
                 if (d > 0) {
                     /* HIT */
                     float force[3];
                     v_cpy(force, punch_vec);
-                    /* Knockback force */
-                    v_scl(force, force, 20.0f * dt); /* Impulse */
+                    v_scl(force, force, 20.0f * dt);
                     v_add(other->v, other->v, force);
 
                     audio_play(AUD_BUMPL, 1.0f);
@@ -1027,6 +1117,40 @@ static void game_fight_step(int p, float dt)
         if (pl->punch_timer <= 0.0f) {
             pl->punch_state = 0;
             game_cmd_punch(p, 0);
+        }
+    }
+}
+
+static void game_billiards_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+
+    /* Billiards Logic */
+    /* Input rotates view around ball (already handled by game_update_view?) */
+    /* game_update_view handles rotation using input_get_r. */
+    /* So we just need to handle Shot Power. */
+
+    int action = input_get_action(p);
+
+    if (action) {
+        /* Charging */
+        pl->shot_power += dt * 2.0f;
+        if (pl->shot_power > 1.0f) pl->shot_power = 1.0f;
+    } else {
+        if (pl->shot_power > 0.0f) {
+            /* Release - Shoot */
+            struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+            float fwd[3];
+            /* View Forward = -e[2] */
+            v_cpy(fwd, pl->view.e[2]);
+            v_scl(fwd, fwd, -1.0f);
+
+            float force = pl->shot_power * 30.0f; /* Max speed */
+            v_mad(b->v, b->v, fwd, force);
+
+            audio_play(AUD_BUMPL, pl->shot_power);
+
+            pl->shot_power = 0.0f;
         }
     }
 }
@@ -1063,6 +1187,10 @@ static int game_step(int p, const float g[3], float dt, int bt)
         {
             game_fight_step(p, dt);
         }
+        else if (game_mode == MODE_BILLIARDS)
+        {
+            game_billiards_step(p, dt);
+        }
 
         pl->action_prev = action;
 
@@ -1074,6 +1202,12 @@ static int game_step(int p, const float g[3], float dt, int bt)
             /* Disable board tilt input, dampen existing tilt */
             pl->tilt.rx *= 0.9f;
             pl->tilt.rz *= 0.9f;
+        }
+        else if (game_mode == MODE_BILLIARDS)
+        {
+            /* No board tilt in billiards */
+            pl->tilt.rx = 0.0f;
+            pl->tilt.rz = 0.0f;
         }
         else
         {
@@ -1153,6 +1287,24 @@ static int game_step(int p, const float g[3], float dt, int bt)
             /* Run the sim */
             if (pl->sim_owner)
             {
+                /* Sync ALL balls position to clients */
+                /* We need to do this somewhere? */
+                /* game_cmd_updball only updates CURRENT ball of player p */
+                /* We need game_cmd_upd_all_balls if p is sim_owner? */
+                /* Or game_cmd_updball needs to loop? */
+                /* But game_step is called for each player p. */
+                /* If multiple players share sim, only ONE should send updates for non-player balls? */
+                /* Or just send everything. */
+                /* Let's have P0 send all updates in Shared mode. */
+
+                if (pl->sim_owner) {
+                    game_cmd_upd_all_balls(p);
+                } else {
+                    /* Slave doesn't send ball updates? */
+                    /* But we need to update View. */
+                    /* game_cmd_updview is called at end. */
+                }
+
                 for (i = 0; i < pl->sim_state->uc; i++)
                 {
                     float b = sol_step(pl->sim_state, game_proxy_enq, h, dt, i, NULL);
@@ -1168,6 +1320,9 @@ static int game_step(int p, const float g[3], float dt, int bt)
             }
         }
 
+        /* We already called game_cmd_upd_all_balls if owner */
+        /* But game_cmd_updball(p) updates P's ball/view context */
+        /* game_cmd_updball sets CMD_CURRENT_BALL to P's ball. */
         game_cmd_updball(p);
 
         game_update_view(p, dt);
@@ -1240,6 +1395,8 @@ void game_respawn(int p)
 
         pl->punch_state = 0;
         pl->punch_timer = 0.0f;
+
+        pl->shot_power = 0.0f;
 
         game_view_fly(&pl->view, pl->sim_state, 0.0f);
 

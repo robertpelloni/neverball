@@ -36,6 +36,26 @@ static const float player_colors[4][4] = {
     { 1.0f, 1.0f, 0.0f, 1.0f }  /* Yellow */
 };
 
+/* Billiard Colors (Standard Pool) */
+static const float billiard_colors[16][4] = {
+    { 1.0f, 1.0f, 1.0f, 1.0f }, /* 0: Cue (White) */
+    { 1.0f, 1.0f, 0.0f, 1.0f }, /* 1: Yellow */
+    { 0.0f, 0.0f, 1.0f, 1.0f }, /* 2: Blue */
+    { 1.0f, 0.0f, 0.0f, 1.0f }, /* 3: Red */
+    { 0.5f, 0.0f, 0.5f, 1.0f }, /* 4: Purple */
+    { 1.0f, 0.5f, 0.0f, 1.0f }, /* 5: Orange */
+    { 0.0f, 0.5f, 0.0f, 1.0f }, /* 6: Green */
+    { 0.5f, 0.0f, 0.0f, 1.0f }, /* 7: Maroon */
+    { 0.1f, 0.1f, 0.1f, 1.0f }, /* 8: Black */
+    { 1.0f, 1.0f, 0.0f, 1.0f }, /* 9: Yellow */
+    { 0.0f, 0.0f, 1.0f, 1.0f }, /* 10: Blue */
+    { 1.0f, 0.0f, 0.0f, 1.0f }, /* 11: Red */
+    { 0.5f, 0.0f, 0.5f, 1.0f }, /* 12: Purple */
+    { 1.0f, 0.5f, 0.0f, 1.0f }, /* 13: Orange */
+    { 0.0f, 0.5f, 0.0f, 1.0f }, /* 14: Green */
+    { 0.5f, 0.0f, 0.0f, 1.0f }  /* 15: Maroon */
+};
+
 static void game_draw_target(void)
 {
     const struct target_zone *zones = game_get_zones();
@@ -88,77 +108,138 @@ static void game_draw_balls(struct s_rend *rend,
 {
     int i;
 
-    for (i = 0; i < p_count; i++)
+    int mode = curr_mode();
+
+    if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT || mode == MODE_BILLIARDS)
     {
-        if (!gds[i].state) continue;
+        struct s_vary *vary = &gds[p_idx].vary;
+        int b;
 
-        struct s_vary *vary = &gds[i].vary;
-        int b_idx = 0;
-        if (vary->uc <= 0) continue;
-
-        float ball_M[16];
-        float pend_M[16];
-
-        m_basis(ball_M, vary->uv[b_idx].e[0], vary->uv[b_idx].e[1], vary->uv[b_idx].e[2]);
-        m_basis(pend_M, vary->uv[b_idx].E[0], vary->uv[b_idx].E[1], vary->uv[b_idx].E[2]);
-
-        glPushMatrix();
+        for (b = 0; b < vary->uc; b++)
         {
-            glTranslatef(vary->uv[b_idx].p[0],
-                         vary->uv[b_idx].p[1] + BALL_FUDGE,
-                         vary->uv[b_idx].p[2]);
+            float ball_M[16];
+            float pend_M[16];
 
-            /* Render Glove if punching */
-            if (gds[i].punch_active)
+            m_basis(ball_M, vary->uv[b].e[0], vary->uv[b].e[1], vary->uv[b].e[2]);
+            m_basis(pend_M, vary->uv[b].E[0], vary->uv[b].E[1], vary->uv[b].E[2]);
+
+            glPushMatrix();
             {
-                glPushMatrix();
+                glTranslatef(vary->uv[b].p[0],
+                             vary->uv[b].p[1] + BALL_FUDGE,
+                             vary->uv[b].p[2]);
+
+                if (mode == MODE_FIGHT && b < MAX_PLAYERS && gds[b].punch_active)
                 {
-                    float vec[3];
-                    v_cpy(vec, gds[i].view.e[2]);
-                    v_scl(vec, vec, -1.0f); /* Forward */
+                    glPushMatrix();
+                    {
+                        float vec[3];
+                        v_cpy(vec, gds[b].view.e[2]);
+                        v_scl(vec, vec, -1.0f);
 
-                    float offset = vary->uv[b_idx].r * 1.5f;
-                    glTranslatef(vec[0]*offset, vec[1]*offset, vec[2]*offset);
+                        float offset = vary->uv[b].r * 1.5f;
+                        glTranslatef(vec[0]*offset, vec[1]*offset, vec[2]*offset);
 
-                    float s = vary->uv[b_idx].r * 0.5f;
-                    glScalef(s, s, s);
+                        float s = vary->uv[b].r * 0.5f;
+                        glScalef(s, s, s);
 
-                    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+                        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
 
-                    float ident[16];
-                    m_ident(ident);
-                    ball_draw(rend, ident, ident, bill_M, t);
+                        float ident[16];
+                        m_ident(ident);
+                        ball_draw(rend, ident, ident, bill_M, t);
+                    }
+                    glPopMatrix();
                 }
-                glPopMatrix();
+
+                glScalef(vary->uv[b].r,
+                         vary->uv[b].r,
+                         vary->uv[b].r);
+
+                if (mode == MODE_BILLIARDS)
+                {
+                    int c_idx = b % 16;
+                    glColor4fv(billiard_colors[c_idx]);
+                }
+                else
+                {
+                    int c_idx = b % 4;
+                    float r = player_colors[c_idx][0];
+                    float g = player_colors[c_idx][1];
+                    float b = player_colors[c_idx][2];
+                    float a = (b == p_idx) ? 1.0f : 0.5f;
+
+                    glColor4f(r, g, b, a);
+                }
+
+                if (mode != MODE_BILLIARDS && b != p_idx)
+                {
+                    glDepthMask(GL_FALSE);
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                }
+
+                ball_draw(rend, ball_M, pend_M, bill_M, t);
+
+                if (mode != MODE_BILLIARDS && b != p_idx)
+                {
+                    glDisable(GL_BLEND);
+                    glDepthMask(GL_TRUE);
+                }
             }
-
-            glScalef(vary->uv[b_idx].r,
-                     vary->uv[b_idx].r,
-                     vary->uv[b_idx].r);
-
-            float r = player_colors[i%4][0];
-            float g = player_colors[i%4][1];
-            float b = player_colors[i%4][2];
-            float a = (i == p_idx) ? 1.0f : 0.5f;
-
-            glColor4f(r, g, b, a);
-
-            if (i != p_idx)
-            {
-                glDepthMask(GL_FALSE);
-                glEnable(GL_BLEND);
-                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-            }
-
-            ball_draw(rend, ball_M, pend_M, bill_M, t);
-
-            if (i != p_idx)
-            {
-                glDisable(GL_BLEND);
-                glDepthMask(GL_TRUE);
-            }
+            glPopMatrix();
         }
-        glPopMatrix();
+    }
+    else
+    {
+        for (i = 0; i < p_count; i++)
+        {
+            if (!gds[i].state) continue;
+
+            struct s_vary *vary = &gds[i].vary;
+            int b_idx = 0;
+            if (vary->uc <= 0) continue;
+
+            float ball_M[16];
+            float pend_M[16];
+
+            m_basis(ball_M, vary->uv[b_idx].e[0], vary->uv[b_idx].e[1], vary->uv[b_idx].e[2]);
+            m_basis(pend_M, vary->uv[b_idx].E[0], vary->uv[b_idx].E[1], vary->uv[b_idx].E[2]);
+
+            glPushMatrix();
+            {
+                glTranslatef(vary->uv[b_idx].p[0],
+                             vary->uv[b_idx].p[1] + BALL_FUDGE,
+                             vary->uv[b_idx].p[2]);
+
+                glScalef(vary->uv[b_idx].r,
+                         vary->uv[b_idx].r,
+                         vary->uv[b_idx].r);
+
+                float r = player_colors[i%4][0];
+                float g = player_colors[i%4][1];
+                float b = player_colors[i%4][2];
+                float a = (i == p_idx) ? 1.0f : 0.5f;
+
+                glColor4f(r, g, b, a);
+
+                if (i != p_idx)
+                {
+                    glDepthMask(GL_FALSE);
+                    glEnable(GL_BLEND);
+                    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                }
+
+                ball_draw(rend, ball_M, pend_M, bill_M, t);
+
+                if (i != p_idx)
+                {
+                    glDisable(GL_BLEND);
+                    glDepthMask(GL_TRUE);
+                }
+            }
+            glPopMatrix();
+        }
     }
 }
 
