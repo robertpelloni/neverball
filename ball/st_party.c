@@ -19,14 +19,17 @@
 enum {
     PARTY_MODE = GUI_LAST,
     PARTY_PLAYERS,
+    PARTY_PHYSICS,
     PARTY_START
 };
 
 static int party_mode = MODE_TARGET;
 static int party_players = 1;
+static int party_physics = 0;
 
 static int mode_id;
 static int player_id;
+static int physics_id;
 
 static const char *get_mode_label(int m) {
     if (m == MODE_TARGET) return "Mode: Monkey Target";
@@ -42,6 +45,8 @@ static void update_labels(void) {
 
     sprintf(buf, "Players: %d", party_players);
     gui_set_label(player_id, buf);
+
+    gui_set_label(physics_id, party_physics ? "Physics: Arcade" : "Physics: Normal");
 }
 
 static int party_action(int tok, int val) {
@@ -62,8 +67,14 @@ static int party_action(int tok, int val) {
             update_labels();
             break;
 
+        case PARTY_PHYSICS:
+            party_physics = !party_physics;
+            update_labels();
+            break;
+
         case PARTY_START:
             config_set_d(CONFIG_MULTIBALL, party_players);
+            config_set_d(CONFIG_PHYSICS, party_physics);
             progress_init(party_mode);
 
             /* Initialize sets if not done (st_set usually does this) */
@@ -87,6 +98,7 @@ static int party_gui(void) {
 
         mode_id = gui_state(root, get_mode_label(party_mode), GUI_MED, PARTY_MODE, 0);
         player_id = gui_state(root, "Players: 1", GUI_MED, PARTY_PLAYERS, 0);
+        physics_id = gui_state(root, "Physics: Normal", GUI_MED, PARTY_PHYSICS, 0);
 
         gui_space(root);
         gui_state(root, "Start Game", GUI_MED, PARTY_START, 0);

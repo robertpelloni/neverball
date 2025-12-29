@@ -109,6 +109,11 @@ struct input
 
 static struct input input_players[MAX_PLAYERS];
 
+static float get_angle_bound(void)
+{
+    return config_get_d(CONFIG_PHYSICS) ? 60.0f : ANGLE_BOUND;
+}
+
 static void input_init(void)
 {
     int i;
@@ -131,8 +136,9 @@ static void input_set_s(int p, float s)
 
 static void input_set_x(int p, float x)
 {
-    if (x < -ANGLE_BOUND) x = -ANGLE_BOUND;
-    if (x >  ANGLE_BOUND) x =  ANGLE_BOUND;
+    float bound = get_angle_bound();
+    if (x < -bound) x = -bound;
+    if (x >  bound) x =  bound;
 
     if (p >= 0 && p < MAX_PLAYERS)
         input_players[p].x = x;
@@ -140,8 +146,9 @@ static void input_set_x(int p, float x)
 
 static void input_set_z(int p, float z)
 {
-    if (z < -ANGLE_BOUND) z = -ANGLE_BOUND;
-    if (z >  ANGLE_BOUND) z =  ANGLE_BOUND;
+    float bound = get_angle_bound();
+    if (z < -bound) z = -bound;
+    if (z >  bound) z =  bound;
 
     if (p >= 0 && p < MAX_PLAYERS)
         input_players[p].z = z;
@@ -170,7 +177,9 @@ static void input_set_action(int p, int a)
 
 static float input_get_s(int p)
 {
-    return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].s : RESPONSE;
+    float s = (p >= 0 && p < MAX_PLAYERS) ? input_players[p].s : RESPONSE;
+    if (config_get_d(CONFIG_PHYSICS)) return s * 0.2f; /* Faster response */
+    return s;
 }
 
 static float input_get_x(int p)
@@ -726,6 +735,29 @@ static void game_update_view(int p, float dt)
         v_cpy(pl->view.e[2], v);
     }
 
+    /* Arcade Camera Snap */
+    if (config_get_d(CONFIG_PHYSICS))
+    {
+        float speed = v_len(b->v);
+        if (speed > 5.0f)
+        {
+            /* If view vector (e[2]) and velocity are misaligned, rotate towards velocity */
+            float vel_n[3];
+            v_cpy(vel_n, b->v);
+            v_nrm(vel_n, vel_n);
+
+            float view_n[3];
+            v_cpy(view_n, pl->view.e[2]);
+            /* e[2] points towards camera. Velocity points away. So align e[2] with -vel */
+            float target_n[3];
+            v_scl(target_n, vel_n, -1.0f);
+
+            /* Linear interp towards target */
+            v_lerp(pl->view.e[2], pl->view.e[2], target_n, 5.0f * dt);
+            v_nrm(pl->view.e[2], pl->view.e[2]);
+        }
+    }
+
     v_crs(pl->view.e[0], pl->view.e[1], pl->view.e[2]);
     v_crs(pl->view.e[2], pl->view.e[0], pl->view.e[1]);
     v_nrm(pl->view.e[0], pl->view.e[0]);
@@ -1221,13 +1253,13 @@ void game_respawn(int p)
 
 void game_set_x(float k, int p)
 {
-    input_set_x(p, -ANGLE_BOUND * k);
+    input_set_x(p, -get_angle_bound() * k);
     input_set_s(p, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 
 void game_set_z(float k, int p)
 {
-    input_set_z(p, +ANGLE_BOUND * k);
+    input_set_z(p, +get_angle_bound() * k);
     input_set_s(p, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 
