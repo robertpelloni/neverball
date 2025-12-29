@@ -352,6 +352,7 @@ BALL_OBJS := \
 	ball/st_name.o      \
 	ball/st_shared.o    \
 	ball/st_pause.o     \
+	ball/st_party.o     \
 	ball/st_ball.o      \
 	ball/main.o
 PUTT_OBJS := \
