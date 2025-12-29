@@ -24,6 +24,8 @@
 #include "solid_draw.h"
 
 #include "game_draw.h"
+#include "game_server.h"
+#include "progress.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -33,6 +35,54 @@ static const float player_colors[4][4] = {
     { 0.4f, 0.4f, 1.0f, 1.0f }, /* Blue */
     { 1.0f, 1.0f, 0.0f, 1.0f }  /* Yellow */
 };
+
+static void game_draw_target(void)
+{
+    const struct target_zone *zones = game_get_zones();
+    int count = game_get_zone_count();
+    int i;
+
+    /* Draw rings on Y=0.05 plane to be above floor */
+    float y = 0.05f;
+
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    /* Draw from largest to smallest to ensure visibility */
+    for (i = count - 1; i >= 0; i--)
+    {
+        float r = zones[i].radius;
+        const float *c = zones[i].color;
+        int segments = 64;
+        int j;
+
+        glColor4fv(c);
+
+        glBegin(GL_TRIANGLE_FAN);
+        glVertex3f(0.0f, y, 0.0f);
+        for (j = 0; j <= segments; j++)
+        {
+            float theta = 2.0f * 3.14159f * (float)j / (float)segments;
+            glVertex3f(r * cosf(theta), y, r * sinf(theta));
+        }
+        glEnd();
+
+        /* Draw outline */
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINE_LOOP);
+        for (j = 0; j <= segments; j++)
+        {
+            float theta = 2.0f * 3.14159f * (float)j / (float)segments;
+            glVertex3f(r * cosf(theta), y + 0.01f, r * sinf(theta));
+        }
+        glEnd();
+    }
+
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+}
 
 static void game_draw_balls(struct s_rend *rend,
                             struct game_draw *gds,
@@ -438,6 +488,10 @@ static void game_draw_fore(struct s_rend *rend,
             /* Draw the floor. */
 
             sol_draw(draw, rend, 0, 1);
+
+            /* Draw Target Zones */
+            if (curr_mode() == MODE_TARGET)
+                game_draw_target();
 
             /* Draw the balls. */
 

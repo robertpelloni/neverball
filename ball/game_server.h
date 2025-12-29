@@ -9,6 +9,14 @@
 
 /*---------------------------------------------------------------------------*/
 
+struct target_zone {
+    float radius;
+    int score;
+    float color[4]; /* RGBA */
+};
+
+/*---------------------------------------------------------------------------*/
+
 int   game_server_init(const char *, int, int, int);
 void  game_server_free(const char *);
 void  game_server_step(float);
@@ -28,6 +36,9 @@ void  game_set_action(int, int);
 float curr_time_elapsed(int p);
 float curr_speed(int p);
 float curr_altitude(int p);
+
+int game_get_zone_count(void);
+const struct target_zone *game_get_zones(void);
 
 /*---------------------------------------------------------------------------*/
 

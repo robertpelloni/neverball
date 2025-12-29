@@ -195,6 +195,26 @@ static int input_get_action(int p)
 
 /*---------------------------------------------------------------------------*/
 
+/* Target Zones Configuration */
+static const struct target_zone zones[] = {
+    {  2.0f, 500, { 1.0f, 0.0f, 0.0f, 0.5f } }, /* Red Bullseye */
+    {  5.0f, 300, { 1.0f, 1.0f, 0.0f, 0.5f } }, /* Yellow Inner */
+    { 10.0f, 100, { 0.0f, 0.0f, 1.0f, 0.5f } }, /* Blue Outer */
+    { 15.0f,  50, { 1.0f, 1.0f, 1.0f, 0.5f } }  /* White Edge */
+};
+
+int game_get_zone_count(void)
+{
+    return sizeof(zones) / sizeof(zones[0]);
+}
+
+const struct target_zone *game_get_zones(void)
+{
+    return zones;
+}
+
+/*---------------------------------------------------------------------------*/
+
 static union cmd cmd;
 
 static void game_cmd_map(const char *name, int ver_x, int ver_y)
@@ -938,9 +958,17 @@ static int game_step(int p, const float g[3], float dt, int bt)
                  {
                      /* Landed */
                      float dist = sqrtf(b->p[0] * b->p[0] + b->p[2] * b->p[2]);
+                     int points = 0;
+                     int j;
+                     int count = game_get_zone_count();
+                     const struct target_zone *z = game_get_zones();
 
-                     int points = 5000 - (int)(dist * 50.0f);
-                     if (points < 0) points = 0;
+                     for (j = 0; j < count; j++) {
+                         if (dist <= z[j].radius) {
+                             points = z[j].score;
+                             break;
+                         }
+                     }
 
                      if (pl->status == GAME_NONE)
                      {
