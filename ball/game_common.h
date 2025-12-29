@@ -40,6 +40,7 @@ enum
     GAME_TIME,
     GAME_GOAL,
     GAME_FALL,
+    GAME_WARP,
 
     GAME_MAX
 };

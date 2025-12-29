@@ -89,6 +89,9 @@ struct server_player
     float bowling_pin_start[10][3];
     int   shot_state; /* 0=Aim, 1=Power, 2=Rolling */
 
+    /* Hub State */
+    int   warp_id;
+
     int   action_prev;
 };
 
@@ -557,6 +560,8 @@ static void game_player_init(int p, int t, int e, int mode)
     pl->bowling_throw = 1;
     for(i=0; i<10; i++) pl->bowling_pins[i] = 0;
     pl->shot_state = 0;
+
+    pl->warp_id = -1;
 
     if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT)
     {
@@ -1253,20 +1258,15 @@ static void game_bowling_step(int p, float dt)
 {
     struct server_player *pl = &players[p];
 
-    /* Aiming (Position) before rolling */
     if (pl->shot_state == 0)
     {
-        /* Allow moving left/right with X input */
         float dx = input_get_x(p);
         struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
         b->p[0] += dx * 5.0f * dt;
 
-        /* Clamp position to lane width? */
-        /* Assuming lane width 10 */
         if (b->p[0] < -5.0f) b->p[0] = -5.0f;
         if (b->p[0] >  5.0f) b->p[0] =  5.0f;
 
-        /* Start Charge */
         if (input_get_action(p)) {
              pl->shot_state = 1;
              pl->shot_power = 0.0f;
@@ -1274,16 +1274,13 @@ static void game_bowling_step(int p, float dt)
     }
     else if (pl->shot_state == 1)
     {
-        /* Charging */
         pl->shot_power += dt * 2.0f;
         if (pl->shot_power > 1.0f) pl->shot_power = 1.0f;
 
         if (!input_get_action(p)) {
-            /* Release */
             pl->shot_state = 2;
             struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
-            float fwd[3] = {0,0,1}; /* Forward along Z? */
-            /* Assuming lanes aligned with Z */
+            float fwd[3] = {0,0,1};
 
             float force = pl->shot_power * 40.0f;
             v_mad(b->v, b->v, fwd, force);
@@ -1292,68 +1289,70 @@ static void game_bowling_step(int p, float dt)
     }
     else if (pl->shot_state == 2)
     {
-        /* Rolling / Scoring */
-        /* Check if all balls stopped */
         int moving = 0;
         int i;
         for (i = 0; i < pl->sim_state->uc; i++) {
             struct v_ball *b = &pl->sim_state->uv[i];
 
-            /* Apply rolling friction to stop them eventually */
              v_scl(b->v, b->v, 0.99f);
              if (v_len(b->v) < 0.05f) v_zero(b->v);
              else moving = 1;
         }
 
         if (!moving) {
-             /* Scoring */
              int pins_down = 0;
              for (i = 1; i < pl->sim_state->uc; i++) {
-                 /* Check displacement */
                  struct v_ball *b = &pl->sim_state->uv[i];
                  float d[3];
                  v_sub(d, b->p, pl->bowling_pin_start[i-1]);
                  if (v_len(d) > 0.5f) {
                      pins_down++;
-                     /* Remove it */
                      b->p[1] = -1000.0f;
                  }
              }
 
-             /* Calculate score delta */
-             int new_points = pins_down; /* Total pins down */
-             /* We need to track how many were already down? */
-             /* Yes. But for prototype, just count total. */
-
+             int new_points = pins_down;
              pl->coins = new_points * 100;
              game_cmd_coins(p);
 
-             /* Reset logic */
-             /* If Strike (10) or Throw 2 done -> Reset All */
              if (pins_down == 10 || pl->bowling_throw == 2) {
-                 /* Reset Rack */
                  pl->bowling_frame++;
                  pl->bowling_throw = 1;
-                 /* Reset Pins */
-                 game_respawn(p); /* Resets pins and player ball */
-                 /* Need to restore pins from start pos? */
-                 /* game_respawn calls game_player_init style reset? */
-                 /* No, game_respawn resets ball 0. */
-                 /* We need to reset pins 1..10 */
-                 /* Loop and restore from bowling_pin_start */
+                 game_respawn(p);
                  for (i = 1; i < pl->sim_state->uc; i++) {
                      v_cpy(pl->sim_state->uv[i].p, pl->bowling_pin_start[i-1]);
                      v_zero(pl->sim_state->uv[i].v);
                  }
              } else {
-                 /* Next Throw */
                  pl->bowling_throw++;
-                 /* Reset Player Ball Only */
                  v_cpy(pl->sim_state->uv[0].p, pl->start_p);
                  v_zero(pl->sim_state->uv[0].v);
              }
 
              pl->shot_state = 0;
+        }
+    }
+}
+
+static void game_hub_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+    struct s_vary *vary = pl->sim_state;
+    int i;
+
+    /* Check Switches for Warp */
+    for (i = 0; i < vary->xc; i++) {
+        struct v_swch *xp = vary->xv + i;
+        struct v_ball *b = &vary->uv[pl->ball_index];
+        float d[3];
+        v_sub(d, b->p, xp->base->p);
+
+        /* Simple check radius */
+        if (v_len(d) < (b->r + xp->base->r)) {
+             pl->status = GAME_WARP;
+             pl->warp_id = i;
+             game_cmd_status(p);
+             return;
         }
     }
 }
@@ -1397,6 +1396,10 @@ static int game_step(int p, const float g[3], float dt, int bt)
         else if (game_mode == MODE_BOWLING)
         {
             game_bowling_step(p, dt);
+        }
+        else if (game_mode == MODE_HUB)
+        {
+            game_hub_step(p, dt);
         }
 
         pl->action_prev = action;
@@ -1535,6 +1538,10 @@ static void game_server_iter(float dt)
         case GAME_GOAL: game_step(p, GRAVITY_UP, dt, 0); break;
         case GAME_FALL: game_step(p, GRAVITY_DN, dt, 0); break;
 
+        case GAME_WARP:
+            /* Halt processing for this player, waiting for client transition */
+            break;
+
         case GAME_NONE:
             if ((players[p].status = game_step(p, GRAVITY_DN, dt, 1)) != GAME_NONE)
                 game_cmd_status(p);
@@ -1670,6 +1677,15 @@ float curr_altitude(int p)
         return b->p[1];
     }
     return 0.0f;
+}
+
+/*---------------------------------------------------------------------------*/
+
+int curr_warp_id(int p)
+{
+    if (p >= 0 && p < MAX_PLAYERS)
+        return players[p].warp_id;
+    return -1;
 }
 
 /*---------------------------------------------------------------------------*/

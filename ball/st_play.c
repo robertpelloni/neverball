@@ -481,6 +481,34 @@ static void play_loop_timer(int id, float dt)
             }
             break;
 
+        case GAME_WARP:
+            /* Transition to next level immediately */
+            if (!(finished_mask & (1 << p)))
+            {
+                 /* Could check curr_warp_id(p) to know WHERE to go. */
+                 /* For now, just rely on progress_next() via st_goal if we use that,
+                    OR better yet, handle it here. */
+
+                 /* But we want to simulate a "goal" to advance the level list. */
+                 progress_stat(GAME_GOAL, p);
+                 finished_mask |= (1 << p);
+
+                 /* Skip the goal text, just go! */
+                 /* Actually, st_goal does the level loading logic in `st_goal.c`.
+                    We should probably create a `st_warp` state or modify st_goal. */
+
+                 /* For MVP: just use st_goal. It will look like a goal but that is fine. */
+                 /* Or we can jump directly to st_play_ready of the NEXT level? */
+
+                 /* progress_next() updates current level index. */
+                 /* We need to call progress_next() AND reload level. */
+
+                 /* Let's trigger st_goal for now to keep it safe. */
+                 goto_state(&st_goal);
+                 return;
+            }
+            break;
+
         case GAME_FALL:
             respawn_timer[p] += dt;
             if (respawn_timer[p] > 1.5f)

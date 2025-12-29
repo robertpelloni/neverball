@@ -44,6 +44,7 @@
 #include "st_shared.h"
 #include "st_package.h"
 #include "st_party.h"
+#include "st_story.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -91,6 +92,7 @@ static int play_id = 0;
 enum
 {
     TITLE_PLAY = GUI_LAST,
+    TITLE_STORY,
     TITLE_PARTY,
     TITLE_HELP,
     TITLE_DEMO,
@@ -118,6 +120,10 @@ static int title_action(int tok, int val)
             return goto_name(&st_set, &st_title, 0);
         else
             return goto_state(&st_set);
+        break;
+
+    case TITLE_STORY:
+        return goto_state(&st_story);
         break;
 
     case TITLE_PARTY: return goto_state(&st_party); break;
@@ -197,6 +203,7 @@ static int title_gui(void)
                         play_id = gui_start(kd, gt_prefix("menu^Play"),
                                             GUI_MED, TITLE_PLAY, 0);
 
+                    gui_state(kd, "Story Mode",              GUI_MED, TITLE_STORY, 0);
                     gui_state(kd, "Party Games",             GUI_MED, TITLE_PARTY, 0);
                     gui_state(kd, gt_prefix("menu^Replay"),  GUI_MED, TITLE_DEMO, 0);
                     gui_state(kd, gt_prefix("menu^Help"),    GUI_MED, TITLE_HELP, 0);

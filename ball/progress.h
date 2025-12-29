@@ -59,6 +59,7 @@ enum
     MODE_FIGHT,
     MODE_BILLIARDS,
     MODE_BOWLING,
+    MODE_HUB,
 
     MODE_MAX
 };
