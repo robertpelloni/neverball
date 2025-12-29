@@ -152,6 +152,33 @@ static void game_draw_balls(struct s_rend *rend,
                     glPopMatrix();
                 }
 
+                if (mode == MODE_BILLIARDS && b == 0)
+                {
+                    /* Draw Aim Line */
+                    glPushMatrix();
+                    glDisable(GL_LIGHTING);
+                    glDisable(GL_TEXTURE_2D);
+                    glLineWidth(2.0f);
+                    glColor4f(1.0f, 1.0f, 1.0f, 0.5f);
+
+                    float start[3] = {0,0,0}; /* Local origin */
+                    float end[3];
+                    float dir[3];
+
+                    v_cpy(dir, gds[0].view.e[2]);
+                    v_scl(dir, dir, -1.0f);
+                    v_scl(end, dir, 10.0f);
+
+                    glBegin(GL_LINES);
+                    glVertex3fv(start);
+                    glVertex3fv(end);
+                    glEnd();
+
+                    glEnable(GL_TEXTURE_2D);
+                    glEnable(GL_LIGHTING);
+                    glPopMatrix();
+                }
+
                 glScalef(vary->uv[b].r,
                          vary->uv[b].r,
                          vary->uv[b].r);

@@ -32,9 +32,10 @@ static int player_id;
 static int physics_id;
 
 static const char *get_mode_label(int m) {
-    if (m == MODE_TARGET) return "Mode: Monkey Target";
-    if (m == MODE_BATTLE) return "Mode: Battle (Shared)";
-    if (m == MODE_FIGHT)  return "Mode: Monkey Fight";
+    if (m == MODE_TARGET)    return "Mode: Monkey Target";
+    if (m == MODE_BATTLE)    return "Mode: Battle (Shared)";
+    if (m == MODE_FIGHT)     return "Mode: Monkey Fight";
+    if (m == MODE_BILLIARDS) return "Mode: Monkey Billiards";
     return "Mode: Unknown";
 }
 
@@ -55,9 +56,10 @@ static int party_action(int tok, int val) {
             return goto_state(&st_title);
 
         case PARTY_MODE:
-            if (party_mode == MODE_TARGET) party_mode = MODE_BATTLE;
-            else if (party_mode == MODE_BATTLE) party_mode = MODE_FIGHT;
-            else if (party_mode == MODE_FIGHT)  party_mode = MODE_TARGET;
+            if (party_mode == MODE_TARGET)         party_mode = MODE_BATTLE;
+            else if (party_mode == MODE_BATTLE)    party_mode = MODE_FIGHT;
+            else if (party_mode == MODE_FIGHT)     party_mode = MODE_BILLIARDS;
+            else if (party_mode == MODE_BILLIARDS) party_mode = MODE_TARGET;
             update_labels();
             break;
 

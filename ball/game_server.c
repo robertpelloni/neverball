@@ -1124,11 +1124,9 @@ static void game_fight_step(int p, float dt)
 static void game_billiards_step(int p, float dt)
 {
     struct server_player *pl = &players[p];
+    int i;
 
     /* Billiards Logic */
-    /* Input rotates view around ball (already handled by game_update_view?) */
-    /* game_update_view handles rotation using input_get_r. */
-    /* So we just need to handle Shot Power. */
 
     int action = input_get_action(p);
 
@@ -1151,6 +1149,45 @@ static void game_billiards_step(int p, float dt)
             audio_play(AUD_BUMPL, pl->shot_power);
 
             pl->shot_power = 0.0f;
+        }
+    }
+
+    /* Friction */
+    for (i = 0; i < pl->sim_state->uc; i++) {
+        struct v_ball *b = &pl->sim_state->uv[i];
+        if (v_len(b->v) > 0.0f) {
+             v_scl(b->v, b->v, 0.99f);
+             if (v_len(b->v) < 0.05f) v_zero(b->v);
+        }
+    }
+
+    /* Pocket Detection */
+    struct s_vary *vary = pl->sim_state;
+    if (vary->base->zc > 0) {
+        for (i = 0; i < vary->uc; i++) {
+            struct v_ball *b = &vary->uv[i];
+            struct b_goal *goal = &vary->base->zv[0];
+
+            float d[3];
+            v_sub(d, b->p, goal->p);
+            /* Check distance to goal in XZ plane (ignore Y if goal is cylinder/sphere) */
+            /* Goals are usually spheres. */
+            if (v_len(d) < (b->r + goal->r)) {
+                if (i == 0) {
+                    /* Scratch */
+                    audio_play(AUD_FALL, 1.0f);
+                    v_cpy(b->p, pl->start_p);
+                    v_zero(b->v);
+                } else {
+                    /* Scored */
+                    b->p[1] = -1000.0f; /* Remove */
+                    v_zero(b->v);
+
+                    pl->coins += 100;
+                    game_cmd_coins(p);
+                    audio_play(AUD_GOAL, 1.0f);
+                }
+            }
         }
     }
 }
@@ -1288,21 +1325,8 @@ static int game_step(int p, const float g[3], float dt, int bt)
             if (pl->sim_owner)
             {
                 /* Sync ALL balls position to clients */
-                /* We need to do this somewhere? */
-                /* game_cmd_updball only updates CURRENT ball of player p */
-                /* We need game_cmd_upd_all_balls if p is sim_owner? */
-                /* Or game_cmd_updball needs to loop? */
-                /* But game_step is called for each player p. */
-                /* If multiple players share sim, only ONE should send updates for non-player balls? */
-                /* Or just send everything. */
-                /* Let's have P0 send all updates in Shared mode. */
-
                 if (pl->sim_owner) {
                     game_cmd_upd_all_balls(p);
-                } else {
-                    /* Slave doesn't send ball updates? */
-                    /* But we need to update View. */
-                    /* game_cmd_updview is called at end. */
                 }
 
                 for (i = 0; i < pl->sim_state->uc; i++)
@@ -1321,8 +1345,6 @@ static int game_step(int p, const float g[3], float dt, int bt)
         }
 
         /* We already called game_cmd_upd_all_balls if owner */
-        /* But game_cmd_updball(p) updates P's ball/view context */
-        /* game_cmd_updball sets CMD_CURRENT_BALL to P's ball. */
         game_cmd_updball(p);
 
         game_update_view(p, dt);
