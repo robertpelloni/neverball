@@ -22,6 +22,7 @@
 #include "video.h"
 #include "cmd.h"
 #include "key.h"
+#include "set.h"
 
 #include "game_common.h"
 #include "game_server.h"
@@ -485,26 +486,48 @@ static void play_loop_timer(int id, float dt)
             /* Transition to next level immediately */
             if (!(finished_mask & (1 << p)))
             {
-                 /* Could check curr_warp_id(p) to know WHERE to go. */
-                 /* For now, just rely on progress_next() via st_goal if we use that,
-                    OR better yet, handle it here. */
+                 int next_level_ready = 0;
 
-                 /* But we want to simulate a "goal" to advance the level list. */
-                 progress_stat(GAME_GOAL, p);
+                 /* Mark as done */
                  finished_mask |= (1 << p);
+                 progress_stat(GAME_GOAL, p);
 
-                 /* Skip the goal text, just go! */
-                 /* Actually, st_goal does the level loading logic in `st_goal.c`.
-                    We should probably create a `st_warp` state or modify st_goal. */
+                 /* Determine Target Level */
+                 if (curr_mode() == MODE_HUB)
+                 {
+                     /* Map Switch Index (warp_id) to Level Index */
+                     /* MVP: Hub Switch X -> Level X+1 */
+                     /* This assumes standard set ordering. */
+                     int warp_id = curr_warp_id(p);
+                     /* Note: get_level() takes absolute index in current set */
 
-                 /* For MVP: just use st_goal. It will look like a goal but that is fine. */
-                 /* Or we can jump directly to st_play_ready of the NEXT level? */
+                     /* We want to warp to (warp_id + 1).
+                        Wait, usually Hub is level 0.
+                        So Switch 0 -> Level 1.
+                        Switch 1 -> Level 2.
+                        So index = warp_id + 1. */
 
-                 /* progress_next() updates current level index. */
-                 /* We need to call progress_next() AND reload level. */
+                     struct level *target = get_level(warp_id + 1);
+                     if (target) {
+                         progress_play(target);
+                         next_level_ready = 1;
+                     }
+                 }
 
-                 /* Let's trigger st_goal for now to keep it safe. */
-                 goto_state(&st_goal);
+                 if (!next_level_ready)
+                 {
+                     /* Fallback: Linear Progress */
+                     if (progress_next()) {
+                         next_level_ready = 1;
+                     }
+                 }
+
+                 if (next_level_ready) {
+                     goto_state(&st_level);
+                 } else {
+                     goto_state(&st_goal);
+                 }
+
                  return;
             }
             break;
