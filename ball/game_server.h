@@ -26,6 +26,8 @@ void  game_set_rot(float, int);
 void  game_set_action(int, int);
 
 float curr_time_elapsed(int p);
+float curr_speed(int p);
+float curr_altitude(int p);
 
 /*---------------------------------------------------------------------------*/
 

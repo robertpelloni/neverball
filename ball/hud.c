@@ -26,6 +26,7 @@
 
 #include "game_common.h"
 #include "game_client.h"
+#include "game_server.h"
 
 #include "st_pause.h"
 
@@ -46,6 +47,11 @@ static int msg_id;
 
 static int speed_id;
 static int speed_ids[SPEED_MAX];
+
+/* Target Mode HUD */
+static int target_hud_id;
+static int spd_val_id;
+static int alt_val_id;
 
 static const char *speed_labels[SPEED_MAX] = {
     "", "8", "4", "2", "1", "2", "4", "8"
@@ -159,6 +165,23 @@ void hud_init(void)
         gui_set_rect(speed_id, GUI_LFT);
         gui_layout(speed_id, +1, 0);
     }
+
+    /* Target Mode HUD */
+    if ((target_hud_id = gui_hstack(0)))
+    {
+        if ((id = gui_vstack(target_hud_id)))
+        {
+            gui_label(id, _("SPD"), GUI_SML, gui_wht, gui_wht);
+            gui_label(id, _("ALT"), GUI_SML, gui_wht, gui_wht);
+        }
+        if ((id = gui_vstack(target_hud_id)))
+        {
+            spd_val_id = gui_count(id, 1000, GUI_SML);
+            alt_val_id = gui_count(id, 1000, GUI_SML);
+        }
+        gui_set_rect(target_hud_id, GUI_BOT);
+        gui_layout(target_hud_id, 0, 1);
+    }
 }
 
 void hud_free(void)
@@ -174,6 +197,7 @@ void hud_free(void)
     gui_delete(msg_id);
 
     gui_delete(speed_id);
+    gui_delete(target_hud_id);
 
     for (i = SPEED_NONE + 1; i < SPEED_MAX; i++)
         gui_delete(speed_ids[i]);
@@ -220,6 +244,9 @@ void hud_paint(int x, int y, int w, int h)
 
         if (config_get_d(CONFIG_FPS))
             gui_paint(fps_id);
+
+        if (curr_mode() == MODE_TARGET)
+            gui_paint(target_hud_id);
 
         hud_cam_paint();
         hud_speed_paint();
@@ -310,6 +337,12 @@ void hud_update(int p, int pulse)
         break;
     }
 
+    if (curr_mode() == MODE_TARGET)
+    {
+        gui_set_count(spd_val_id, (int)(curr_speed(p) * 100.0f));
+        gui_set_count(alt_val_id, (int)(curr_altitude(p) * 10.0f));
+    }
+
 
     /* coins and pulse */
 
@@ -358,6 +391,9 @@ void hud_timer(float dt)
     gui_timer(time_id, dt);
     gui_timer(msg_id, dt);
 
+    if (curr_mode() == MODE_TARGET)
+        gui_timer(target_hud_id, dt);
+
     hud_cam_timer(dt);
     hud_speed_timer(dt);
     hud_touch_timer(dt);
@@ -368,6 +404,9 @@ void hud_show(float delay)
     gui_slide(Lhud_id, GUI_S | GUI_EASE_BACK, delay + 0.0f, 0.3f, 0);
     gui_slide(time_id, GUI_S | GUI_EASE_BACK, delay + 0.1f, 0.3f, 0);
     gui_slide(Rhud_id, GUI_S | GUI_EASE_BACK, delay + 0.2f, 0.3f, 0);
+
+    if (curr_mode() == MODE_TARGET)
+        gui_slide(target_hud_id, GUI_S | GUI_EASE_BACK, delay + 0.3f, 0.3f, 0);
 }
 
 void hud_hide(void)
@@ -375,6 +414,8 @@ void hud_hide(void)
     gui_slide(Lhud_id, GUI_S | GUI_EASE_BACK | GUI_BACKWARD, 0, 0.3f, 0);
     gui_slide(time_id, GUI_S | GUI_EASE_BACK | GUI_BACKWARD, 0, 0.3f, 0);
     gui_slide(Rhud_id, GUI_S | GUI_EASE_BACK | GUI_BACKWARD, 0, 0.3f, 0);
+
+    gui_slide(target_hud_id, GUI_S | GUI_EASE_BACK | GUI_BACKWARD, 0, 0.3f, 0);
 
     if (touch_timer > 0.0f)
     {

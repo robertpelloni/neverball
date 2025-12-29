@@ -852,8 +852,6 @@ static void game_fly_step(int p, float dt)
     /* Control Pitch */
     float z_input = input_get_z(p) / ANGLE_BOUND; /* Normalize to -1..1 range approximately */
     /* If Stick Up (Forward), Pitch Down. If Stick Down (Back), Pitch Up. */
-    /* Input z is usually "Tilt Board Z". Stick Up -> Negative Z? Need to check polarity. */
-    /* Usually Stick Up -> Negative Z -> Tilt Forward. */
 
     pl->fly_pitch += z_input * 2.0f * dt; /* 2 degrees per second? */
     pl->fly_pitch = CLAMP(-45.0f, pl->fly_pitch, 45.0f);
@@ -863,10 +861,9 @@ static void game_fly_step(int p, float dt)
 
     if (speed > 1.0f)
     {
-        float lift_dir[3] = { 0.0f, 1.0f, 0.0f }; /* Up for now. Should be relative to velocity/right? */
-        /* Simplified: Lift is always UP, Drag is always against V */
+        float lift_dir[3] = { 0.0f, 1.0f, 0.0f }; /* Up for now. */
 
-        float lift_force = speed * speed * 0.05f * (pl->fly_pitch + 10.0f); /* Bias +10 deg so flat flies a bit */
+        float lift_force = speed * speed * 0.05f * (pl->fly_pitch + 10.0f); /* Bias +10 deg */
         float drag_force = speed * speed * 0.01f;
 
         float drag_vec[3];
@@ -878,7 +875,6 @@ static void game_fly_step(int p, float dt)
         v_scl(lift_vec, lift_dir, lift_force);
 
         /* Apply forces directly to velocity */
-        /* Note: sol_step adds gravity later. */
         v_mad(b->v, b->v, drag_vec, dt);
         v_mad(b->v, b->v, lift_vec, dt);
     }
@@ -927,6 +923,33 @@ static int game_step(int p, const float g[3], float dt, int bt)
             /* Normal Tilt */
             pl->tilt.rx += (input_get_x(p) - pl->tilt.rx) * dt / MAX(dt, input_get_s(p));
             pl->tilt.rz += (input_get_z(p) - pl->tilt.rz) * dt / MAX(dt, input_get_s(p));
+        }
+
+        /* Monkey Target Landing Logic */
+        if (game_mode == MODE_TARGET && !pl->fly_active)
+        {
+             if (pl->fly_done || pl->time_elapsed > 3.0f)
+             {
+                 struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+                 float speed = v_len(b->v);
+
+                 /* If speed is very low and we are not falling */
+                 if (speed < 0.05f)
+                 {
+                     /* Landed */
+                     float dist = sqrtf(b->p[0] * b->p[0] + b->p[2] * b->p[2]);
+
+                     int points = 5000 - (int)(dist * 50.0f);
+                     if (points < 0) points = 0;
+
+                     if (pl->status == GAME_NONE)
+                     {
+                         pl->coins += points;
+                         game_cmd_coins(p);
+                         return GAME_GOAL;
+                     }
+                 }
+             }
         }
 
         game_tilt_axes(&pl->tilt, pl->view.e);
@@ -1109,6 +1132,26 @@ float curr_time_elapsed(int p)
 {
     if (p >= 0 && p < MAX_PLAYERS)
         return players[p].time_elapsed;
+    return 0.0f;
+}
+
+float curr_speed(int p)
+{
+    if (p >= 0 && p < MAX_PLAYERS)
+    {
+        struct v_ball *b = &players[p].sim_state->uv[players[p].ball_index];
+        return v_len(b->v);
+    }
+    return 0.0f;
+}
+
+float curr_altitude(int p)
+{
+    if (p >= 0 && p < MAX_PLAYERS)
+    {
+        struct v_ball *b = &players[p].sim_state->uv[players[p].ball_index];
+        return b->p[1];
+    }
     return 0.0f;
 }
 
