@@ -38,6 +38,8 @@
 static int server_state = 0;
 static int game_mode = MODE_NORMAL;
 
+#define MAX_PLAYERS 4
+
 struct server_player
 {
     struct s_vary vary;
@@ -79,8 +81,13 @@ struct server_player
     int   punch_state; /* 0=None, 1=Extending, 2=Retracting */
     float punch_timer;
 
-    /* Billiards State */
+    /* Billiards/Bowling State */
     float shot_power;
+    int   bowling_frame;
+    int   bowling_throw;
+    int   bowling_pins[10];
+    float bowling_pin_start[10][3];
+    int   shot_state; /* 0=Aim, 1=Power, 2=Rolling */
 
     int   action_prev;
 };
@@ -546,6 +553,11 @@ static void game_player_init(int p, int t, int e, int mode)
 
     pl->action_prev = 0;
 
+    pl->bowling_frame = 1;
+    pl->bowling_throw = 1;
+    for(i=0; i<10; i++) pl->bowling_pins[i] = 0;
+    pl->shot_state = 0;
+
     if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT)
     {
         ball_count = player_count;
@@ -624,8 +636,55 @@ static void game_player_init(int p, int t, int e, int mode)
             pl->sim_state = &players[0].vary;
             pl->sim_owner = 0;
         }
-        /* All players control cue ball (0) for now, or turn based? */
-        /* Let's assume P0 controls Cue. */
+        pl->ball_index = 0;
+    }
+    else if (mode == MODE_BOWLING)
+    {
+        ball_count = 11; /* 1 Player + 10 Pins */
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+
+            struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * ball_count);
+            if (new_uv)
+            {
+                pl->vary.uv = new_uv;
+                pl->vary.uc = ball_count;
+
+                /* Setup Pins (Triangle) at end of lane */
+                /* Assuming standard lane length, e.g. 20m? */
+                /* Base position for pins */
+                float x = pl->vary.uv[0].p[0];
+                float z = pl->vary.uv[0].p[2] + 20.0f;
+                float r = pl->vary.uv[0].r;
+                float d = r * 2.5f; /* Pins spaced out a bit */
+
+                int b = 1;
+                int row, col;
+                for (row = 0; row < 4; row++) { /* 4 rows for 10 pins */
+                    float z_row = z + row * d * 0.866f;
+                    float x_start = x - (row * d) * 0.5f;
+                    for (col = 0; col <= row; col++) {
+                         if (b < ball_count) {
+                            pl->vary.uv[b] = pl->vary.uv[0];
+                            pl->vary.uv[b].p[0] = x_start + col * d;
+                            pl->vary.uv[b].p[2] = z_row;
+
+                            /* Store start pos */
+                            v_cpy(pl->bowling_pin_start[b-1], pl->vary.uv[b].p);
+                            b++;
+                         }
+                    }
+                }
+            }
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
         pl->ball_index = 0;
     }
     else
@@ -1170,8 +1229,6 @@ static void game_billiards_step(int p, float dt)
 
             float d[3];
             v_sub(d, b->p, goal->p);
-            /* Check distance to goal in XZ plane (ignore Y if goal is cylinder/sphere) */
-            /* Goals are usually spheres. */
             if (v_len(d) < (b->r + goal->r)) {
                 if (i == 0) {
                     /* Scratch */
@@ -1188,6 +1245,115 @@ static void game_billiards_step(int p, float dt)
                     audio_play(AUD_GOAL, 1.0f);
                 }
             }
+        }
+    }
+}
+
+static void game_bowling_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+
+    /* Aiming (Position) before rolling */
+    if (pl->shot_state == 0)
+    {
+        /* Allow moving left/right with X input */
+        float dx = input_get_x(p);
+        struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+        b->p[0] += dx * 5.0f * dt;
+
+        /* Clamp position to lane width? */
+        /* Assuming lane width 10 */
+        if (b->p[0] < -5.0f) b->p[0] = -5.0f;
+        if (b->p[0] >  5.0f) b->p[0] =  5.0f;
+
+        /* Start Charge */
+        if (input_get_action(p)) {
+             pl->shot_state = 1;
+             pl->shot_power = 0.0f;
+        }
+    }
+    else if (pl->shot_state == 1)
+    {
+        /* Charging */
+        pl->shot_power += dt * 2.0f;
+        if (pl->shot_power > 1.0f) pl->shot_power = 1.0f;
+
+        if (!input_get_action(p)) {
+            /* Release */
+            pl->shot_state = 2;
+            struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+            float fwd[3] = {0,0,1}; /* Forward along Z? */
+            /* Assuming lanes aligned with Z */
+
+            float force = pl->shot_power * 40.0f;
+            v_mad(b->v, b->v, fwd, force);
+            audio_play(AUD_BUMPL, pl->shot_power);
+        }
+    }
+    else if (pl->shot_state == 2)
+    {
+        /* Rolling / Scoring */
+        /* Check if all balls stopped */
+        int moving = 0;
+        int i;
+        for (i = 0; i < pl->sim_state->uc; i++) {
+            struct v_ball *b = &pl->sim_state->uv[i];
+
+            /* Apply rolling friction to stop them eventually */
+             v_scl(b->v, b->v, 0.99f);
+             if (v_len(b->v) < 0.05f) v_zero(b->v);
+             else moving = 1;
+        }
+
+        if (!moving) {
+             /* Scoring */
+             int pins_down = 0;
+             for (i = 1; i < pl->sim_state->uc; i++) {
+                 /* Check displacement */
+                 struct v_ball *b = &pl->sim_state->uv[i];
+                 float d[3];
+                 v_sub(d, b->p, pl->bowling_pin_start[i-1]);
+                 if (v_len(d) > 0.5f) {
+                     pins_down++;
+                     /* Remove it */
+                     b->p[1] = -1000.0f;
+                 }
+             }
+
+             /* Calculate score delta */
+             int new_points = pins_down; /* Total pins down */
+             /* We need to track how many were already down? */
+             /* Yes. But for prototype, just count total. */
+
+             pl->coins = new_points * 100;
+             game_cmd_coins(p);
+
+             /* Reset logic */
+             /* If Strike (10) or Throw 2 done -> Reset All */
+             if (pins_down == 10 || pl->bowling_throw == 2) {
+                 /* Reset Rack */
+                 pl->bowling_frame++;
+                 pl->bowling_throw = 1;
+                 /* Reset Pins */
+                 game_respawn(p); /* Resets pins and player ball */
+                 /* Need to restore pins from start pos? */
+                 /* game_respawn calls game_player_init style reset? */
+                 /* No, game_respawn resets ball 0. */
+                 /* We need to reset pins 1..10 */
+                 /* Loop and restore from bowling_pin_start */
+                 for (i = 1; i < pl->sim_state->uc; i++) {
+                     v_cpy(pl->sim_state->uv[i].p, pl->bowling_pin_start[i-1]);
+                     v_zero(pl->sim_state->uv[i].v);
+                 }
+             } else {
+                 /* Next Throw */
+                 pl->bowling_throw++;
+                 /* Reset Player Ball Only */
+                 v_cpy(pl->sim_state->uv[0].p, pl->start_p);
+                 v_zero(pl->sim_state->uv[0].v);
+             }
+
+             pl->shot_state = 0;
         }
     }
 }
@@ -1228,6 +1394,10 @@ static int game_step(int p, const float g[3], float dt, int bt)
         {
             game_billiards_step(p, dt);
         }
+        else if (game_mode == MODE_BOWLING)
+        {
+            game_bowling_step(p, dt);
+        }
 
         pl->action_prev = action;
 
@@ -1240,9 +1410,9 @@ static int game_step(int p, const float g[3], float dt, int bt)
             pl->tilt.rx *= 0.9f;
             pl->tilt.rz *= 0.9f;
         }
-        else if (game_mode == MODE_BILLIARDS)
+        else if (game_mode == MODE_BILLIARDS || game_mode == MODE_BOWLING)
         {
-            /* No board tilt in billiards */
+            /* No board tilt */
             pl->tilt.rx = 0.0f;
             pl->tilt.rz = 0.0f;
         }

@@ -110,7 +110,7 @@ static void game_draw_balls(struct s_rend *rend,
 
     int mode = curr_mode();
 
-    if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT || mode == MODE_BILLIARDS)
+    if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT || mode == MODE_BILLIARDS || mode == MODE_BOWLING)
     {
         struct s_vary *vary = &gds[p_idx].vary;
         int b;
@@ -152,7 +152,7 @@ static void game_draw_balls(struct s_rend *rend,
                     glPopMatrix();
                 }
 
-                if (mode == MODE_BILLIARDS && b == 0)
+                if ((mode == MODE_BILLIARDS || mode == MODE_BOWLING) && b == 0)
                 {
                     /* Draw Aim Line */
                     glPushMatrix();
@@ -179,6 +179,13 @@ static void game_draw_balls(struct s_rend *rend,
                     glPopMatrix();
                 }
 
+                if (mode == MODE_BOWLING && b > 0)
+                {
+                    /* Render Pin */
+                    /* Elongate vertically */
+                    glScalef(1.0f, 2.5f, 1.0f);
+                }
+
                 glScalef(vary->uv[b].r,
                          vary->uv[b].r,
                          vary->uv[b].r);
@@ -187,6 +194,17 @@ static void game_draw_balls(struct s_rend *rend,
                 {
                     int c_idx = b % 16;
                     glColor4fv(billiard_colors[c_idx]);
+                }
+                else if (mode == MODE_BOWLING)
+                {
+                    if (b == 0) {
+                        /* Player */
+                        int c_idx = b % 4;
+                        glColor4fv(player_colors[c_idx]);
+                    } else {
+                        /* Pin: White */
+                        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                    }
                 }
                 else
                 {
@@ -199,7 +217,7 @@ static void game_draw_balls(struct s_rend *rend,
                     glColor4f(r, g, b, a);
                 }
 
-                if (mode != MODE_BILLIARDS && b != p_idx)
+                if (mode != MODE_BILLIARDS && mode != MODE_BOWLING && b != p_idx)
                 {
                     glDepthMask(GL_FALSE);
                     glEnable(GL_BLEND);
@@ -208,7 +226,7 @@ static void game_draw_balls(struct s_rend *rend,
 
                 ball_draw(rend, ball_M, pend_M, bill_M, t);
 
-                if (mode != MODE_BILLIARDS && b != p_idx)
+                if (mode != MODE_BILLIARDS && mode != MODE_BOWLING && b != p_idx)
                 {
                     glDisable(GL_BLEND);
                     glDepthMask(GL_TRUE);
