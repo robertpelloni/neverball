@@ -27,6 +27,8 @@ struct game_draw
 
     float fade_k;                       /* Fade in/out level                 */
     float fade_d;                       /* Fade in/out direction             */
+
+    int   punch_active;                 /* Fight punch state                 */
 };
 
 /* FIXME: this is just for POSE_* constants. */
@@ -47,6 +49,8 @@ struct game_lerp
 
     float goal_k[2];
     float jump_dt[2];
+
+    int   punch_active[2];              /* Interpolation state (discrete)    */
 };
 
 void game_lerp_init(struct game_lerp *, struct game_draw *);

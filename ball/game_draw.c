@@ -42,7 +42,6 @@ static void game_draw_target(void)
     int count = game_get_zone_count();
     int i;
 
-    /* Draw rings on Y=0.05 plane to be above floor */
     float y = 0.05f;
 
     glDisable(GL_LIGHTING);
@@ -50,7 +49,6 @@ static void game_draw_target(void)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    /* Draw from largest to smallest to ensure visibility */
     for (i = count - 1; i >= 0; i--)
     {
         float r = zones[i].radius;
@@ -69,7 +67,6 @@ static void game_draw_target(void)
         }
         glEnd();
 
-        /* Draw outline */
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         glBegin(GL_LINE_LOOP);
         for (j = 0; j <= segments; j++)
@@ -96,7 +93,6 @@ static void game_draw_balls(struct s_rend *rend,
         if (!gds[i].state) continue;
 
         struct s_vary *vary = &gds[i].vary;
-        /* Assuming 1 ball per player for now */
         int b_idx = 0;
         if (vary->uc <= 0) continue;
 
@@ -111,11 +107,35 @@ static void game_draw_balls(struct s_rend *rend,
             glTranslatef(vary->uv[b_idx].p[0],
                          vary->uv[b_idx].p[1] + BALL_FUDGE,
                          vary->uv[b_idx].p[2]);
+
+            /* Render Glove if punching */
+            if (gds[i].punch_active)
+            {
+                glPushMatrix();
+                {
+                    float vec[3];
+                    v_cpy(vec, gds[i].view.e[2]);
+                    v_scl(vec, vec, -1.0f); /* Forward */
+
+                    float offset = vary->uv[b_idx].r * 1.5f;
+                    glTranslatef(vec[0]*offset, vec[1]*offset, vec[2]*offset);
+
+                    float s = vary->uv[b_idx].r * 0.5f;
+                    glScalef(s, s, s);
+
+                    glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+
+                    float ident[16];
+                    m_ident(ident);
+                    ball_draw(rend, ident, ident, bill_M, t);
+                }
+                glPopMatrix();
+            }
+
             glScalef(vary->uv[b_idx].r,
                      vary->uv[b_idx].r,
                      vary->uv[b_idx].r);
 
-            /* Color logic */
             float r = player_colors[i%4][0];
             float g = player_colors[i%4][1];
             float b = player_colors[i%4][2];
@@ -154,8 +174,6 @@ static void game_draw_items(struct s_rend *rend,
 
         float item_p[3], item_e[4], u[3], a;
 
-        /* Skip picked up items. */
-
         if (hp->t == ITEM_NONE)
             continue;
 
@@ -163,8 +181,6 @@ static void game_draw_items(struct s_rend *rend,
         sol_entity_e(item_e, vary, hp->mi, hp->mj);
 
         q_as_axisangle(item_e, u, &a);
-
-        /* Draw model. */
 
         glPushMatrix();
         {
@@ -193,8 +209,6 @@ static void game_draw_beams(struct s_rend *rend, const struct game_draw *gd)
     float beam_p[3], beam_e[4], u[3], a;
     int i;
 
-    /* Goal beams */
-
     if (gd->goal_e)
         for (i = 0; i < base->zc; i++)
         {
@@ -212,8 +226,6 @@ static void game_draw_beams(struct s_rend *rend, const struct game_draw *gd)
             glPopMatrix();
         }
 
-    /* Jump beams */
-
     for (i = 0; i < base->jc; i++)
     {
         sol_entity_p(beam_p, vary, vary->jv[i].mi, vary->jv[i].mj);
@@ -229,8 +241,6 @@ static void game_draw_beams(struct s_rend *rend, const struct game_draw *gd)
         }
         glPopMatrix();
     }
-
-    /* Switch beams */
 
     for (i = 0; i < base->xc; i++)
         if (!vary->xv[i].base->i)
@@ -310,8 +320,6 @@ static void game_draw_tilt(const struct game_draw *gd, int d)
     const struct game_tilt *tilt = &gd->tilt;
     const float *ball_p = gd->vary.uv[0].p;
 
-    /* Rotate the environment about the position of the ball. */
-
     glTranslatef(+ball_p[0], +ball_p[1] * d, +ball_p[2]);
     glRotatef(-tilt->rz * d, tilt->z[0], tilt->z[1], tilt->z[2]);
     glRotatef(-tilt->rx * d, tilt->x[0], tilt->x[1], tilt->x[2]);
@@ -323,9 +331,6 @@ static void game_refl_all(struct s_rend *rend, const struct game_draw *gd)
     glPushMatrix();
     {
         game_draw_tilt(gd, 1);
-
-        /* Draw the floor. */
-
         sol_refl(&gd->draw, rend);
     }
     glPopMatrix();
@@ -337,11 +342,7 @@ static void game_draw_light(const struct game_draw *gd, int d, float t)
 {
     GLfloat p[4];
 
-    /* Configure the lighting. */
-
     light_conf();
-
-    /* Overrride light 2 position. */
 
     p[0] = cosf(t);
     p[1] = 0.0f;
@@ -349,8 +350,6 @@ static void game_draw_light(const struct game_draw *gd, int d, float t)
     p[3] = 0.0f;
 
     glLightfv(GL_LIGHT2, GL_POSITION, p);
-
-    /* Enable scene lights. */
 
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
@@ -389,16 +388,12 @@ static void game_draw_back(struct s_rend *rend,
 
 static void game_clip_refl(int d)
 {
-    /* Fudge to eliminate the floor from reflection. */
-
     glClipPlane4f_(GL_CLIP_PLANE0, 0, 1, 0, -0.00001);
 }
 
 static void game_clip_ball(const struct game_draw *gd, int d, const float *p)
 {
     GLfloat r, c[3], pz[4], nz[4];
-
-    /* Compute the plane giving the front of the ball, as seen from view.p. */
 
     c[0] = p[0];
     c[1] = p[1] * d;
@@ -417,14 +412,10 @@ static void game_clip_ball(const struct game_draw *gd, int d, const float *p)
               pz[1] * c[1] +
               pz[2] * c[2]);
 
-    /* Find the plane giving the back of the ball, as seen from view.p. */
-
     nz[0] = -pz[0];
     nz[1] = -pz[1];
     nz[2] = -pz[2];
     nz[3] = -pz[3];
-
-    /* Reflect these planes as necessary, and store them in the GL state. */
 
     pz[1] *= d;
     nz[1] *= d;
@@ -446,12 +437,7 @@ static void game_draw_fore(struct s_rend *rend,
 
     glPushMatrix();
     {
-        /* Rotate the environment about the position of the ball. */
-
         game_draw_tilt(gd, d);
-
-        /* Compute clipping planes for reflection and ball facing. */
-
         game_clip_refl(d);
         game_clip_ball(gd, d, ball_p);
 
@@ -467,12 +453,6 @@ static void game_draw_fore(struct s_rend *rend,
         case POSE_BALL:
             if (curr_tex_env == &tex_env_pose)
             {
-                /*
-                 * We need the check above because otherwise the
-                 * active texture env is set up in a way that makes
-                 * level geometry visible, and we don't want that.
-                 */
-
                 glDepthMask(GL_FALSE);
                 sol_draw(draw, rend, 0, 1);
                 glDepthMask(GL_TRUE);
@@ -481,35 +461,22 @@ static void game_draw_fore(struct s_rend *rend,
             break;
 
         case POSE_NONE:
-            /* Draw the coins. */
-
             game_draw_items(rend, &gd->vary, M, t);
-
-            /* Draw the floor. */
-
             sol_draw(draw, rend, 0, 1);
 
-            /* Draw Target Zones */
             if (curr_mode() == MODE_TARGET)
                 game_draw_target();
 
-            /* Draw the balls. */
-
             game_draw_balls(rend, gds, p_idx, p_count, M, t);
-
             break;
         }
 
 
         glDepthMask(GL_FALSE);
         {
-            /* Draw the billboards, entity beams, and coin particles. */
-
             sol_bill(draw, rend, M, t);
             game_draw_beams(rend, gd);
             part_draw_coin(draw, rend, M, t);
-
-            /* Draw the entity particles using only the sparkle light. */
 
             glDisable(GL_LIGHT0);
             glDisable(GL_LIGHT1);
@@ -539,19 +506,16 @@ static void game_shadow_conf(int pose, int enable)
         switch (pose)
         {
         case POSE_LEVEL:
-            /* No shadow. */
             tex_env_active(&tex_env_default);
             break;
 
         case POSE_BALL:
-            /* Shadow only. */
             tex_env_select(&tex_env_pose,
                            &tex_env_default,
                            NULL);
             break;
 
         default:
-            /* Regular shadow. */
             tex_env_select(&tex_env_shadow_clip,
                            &tex_env_shadow,
                            &tex_env_default,
@@ -590,8 +554,6 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
             {
                 float T[16], U[16], M[16], v[3];
 
-                /* Compute direct and reflected view bases. */
-
                 v[0] = +view->p[0];
                 v[1] = -view->p[1];
                 v[2] = +view->p[2];
@@ -601,26 +563,18 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
 
                 m_xps(M, T);
 
-                /* Apply the current view. */
-
                 v_sub(v, view->c, view->p);
 
                 glTranslatef(0.f, 0.f, -v_len(v));
                 glMultMatrixf(M);
                 glTranslatef(-view->c[0], -view->c[1], -view->c[2]);
 
-                /* Draw the background. */
-
                 game_draw_back(&rend, gd, pose, +1, t);
-
-                /* Draw the reflection. */
 
                 if (gd->draw.reflective && config_get_d(CONFIG_REFLECTION))
                 {
                     glEnable(GL_STENCIL_TEST);
                     {
-                        /* Draw the mirrors only into the stencil buffer. */
-
                         glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF);
                         glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
                         glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
@@ -632,8 +586,6 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
                         glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
                         glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
                         glStencilFunc(GL_EQUAL, 1, 0xFFFFFFFF);
-
-                        /* Draw the scene reflected into color and depth buffers. */
 
                         glFrontFace(GL_CW);
                         glPushMatrix();
@@ -653,12 +605,7 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
                     glDisable(GL_STENCIL_TEST);
                 }
 
-                /* Ready the lights for foreground rendering. */
-
                 game_draw_light(gd, 1, t);
-
-                /* When reflection is disabled, mirrors must be rendered opaque  */
-                /* to prevent the background from showing.                       */
 
                 if (gd->draw.reflective && !config_get_d(CONFIG_REFLECTION))
                 {
@@ -671,15 +618,11 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
                     r_color_mtrl(&rend, 0);
                 }
 
-                /* Draw the mirrors and the rest of the foreground. */
-
                 game_refl_all (&rend, gd);
                 game_draw_fore(&rend, gds, p_idx, p_count, pose, T, +1, t);
             }
             glPopMatrix();
             video_pop_matrix();
-
-            /* Draw the fade overlay. */
 
             sol_fade(&gd->draw, &rend, gd->fade_k);
 
@@ -688,4 +631,67 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
     }
 }
 
-/* ... game_lerp ... (same) */
+/*---------------------------------------------------------------------------*/
+
+void game_lerp_init(struct game_lerp *l, struct game_draw *d)
+{
+    sol_load_lerp(&l->lerp, &d->vary);
+
+    l->tilt[0] = l->tilt[1] = d->tilt;
+    l->view[0] = l->view[1] = d->view;
+
+    l->goal_k[0] = l->goal_k[1] = d->goal_k;
+    l->jump_dt[0] = l->jump_dt[1] = d->jump_dt;
+
+    l->punch_active[0] = l->punch_active[1] = d->punch_active;
+}
+
+void game_lerp_free(struct game_lerp *l)
+{
+    sol_free_lerp(&l->lerp);
+}
+
+void game_lerp_copy(struct game_lerp *l)
+{
+    sol_lerp_copy(&l->lerp);
+
+    l->tilt[1] = l->tilt[0];
+    l->view[1] = l->view[0];
+
+    l->goal_k[1] = l->goal_k[0];
+    l->jump_dt[1] = l->jump_dt[0];
+
+    l->punch_active[1] = l->punch_active[0];
+}
+
+void game_lerp_apply(struct game_lerp *l, struct game_draw *d)
+{
+    float a = l->alpha;
+    int i, j;
+
+    sol_lerp_apply(&l->lerp, a);
+
+    d->goal_k = l->goal_k[1] + (l->goal_k[0] - l->goal_k[1]) * a;
+    d->jump_dt = l->jump_dt[1] + (l->jump_dt[0] - l->jump_dt[1]) * a;
+
+    d->punch_active = l->punch_active[0];
+
+    d->tilt.rx = l->tilt[1].rx + (l->tilt[0].rx - l->tilt[1].rx) * a;
+    d->tilt.rz = l->tilt[1].rz + (l->tilt[0].rz - l->tilt[1].rz) * a;
+
+    for (i=0; i<3; i++) {
+        d->tilt.x[i] = l->tilt[1].x[i] + (l->tilt[0].x[i] - l->tilt[1].x[i]) * a;
+        d->tilt.z[i] = l->tilt[1].z[i] + (l->tilt[0].z[i] - l->tilt[1].z[i]) * a;
+    }
+
+    for (i=0; i<3; i++) {
+        d->view.p[i] = l->view[1].p[i] + (l->view[0].p[i] - l->view[1].p[i]) * a;
+        d->view.c[i] = l->view[1].c[i] + (l->view[0].c[i] - l->view[1].c[i]) * a;
+    }
+
+    for (j=0; j<3; j++)
+        for (i=0; i<3; i++)
+            d->view.e[j][i] = l->view[1].e[j][i] + (l->view[0].e[j][i] - l->view[1].e[j][i]) * a;
+}
+
+/*---------------------------------------------------------------------------*/

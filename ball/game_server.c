@@ -76,6 +76,11 @@ struct server_player
     int   fly_active;
     int   fly_done;
     float fly_pitch;
+
+    /* Fight Physics State */
+    int   punch_state; /* 0=None, 1=Extending, 2=Retracting */
+    float punch_timer;
+
     int   action_prev;
 };
 
@@ -343,6 +348,14 @@ static void game_cmd_jump(int p, int e)
     game_proxy_enq(&cmd);
 }
 
+static void game_cmd_punch(int p, int e)
+{
+    game_cmd_set_player(p);
+    cmd.type = CMD_PUNCH;
+    cmd.punch.active = e;
+    game_proxy_enq(&cmd);
+}
+
 static void game_cmd_tiltangles(int p)
 {
     game_cmd_set_player(p);
@@ -467,9 +480,13 @@ static void game_player_init(int p, int t, int e, int mode)
     pl->fly_active = 0;
     pl->fly_done = 0;
     pl->fly_pitch = 0.0f;
+
+    pl->punch_state = 0;
+    pl->punch_timer = 0.0f;
+
     pl->action_prev = 0;
 
-    if (mode == MODE_BATTLE || mode == MODE_TARGET)
+    if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT)
     {
         if (p == 0)
         {
@@ -900,6 +917,68 @@ static void game_fly_step(int p, float dt)
     }
 }
 
+static void game_fight_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+
+    if (input_get_action(p) && !pl->action_prev && pl->punch_state == 0) {
+        pl->punch_state = 1;
+        pl->punch_timer = 0.0f;
+        game_cmd_punch(p, 1);
+        audio_play(AUD_JUMP, 1.0f); /* Sound */
+    }
+
+    if (pl->punch_state == 1) {
+        pl->punch_timer += dt;
+        if (pl->punch_timer > 0.2f) { /* Extension time */
+            pl->punch_state = 2;
+        }
+
+        /* Hit detection */
+        int i;
+        struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+        float punch_range = b->r * 2.0f;
+        float punch_vec[3];
+
+        /* Punch direction: View Forward */
+        /* Use view.e[2] (Z) which points BACK. So -view.e[2] is forward. */
+        v_cpy(punch_vec, pl->view.e[2]);
+        v_scl(punch_vec, punch_vec, -1.0f);
+
+        for (i = 0; i < player_count; i++) {
+            if (i == p) continue;
+
+            struct v_ball *other = &pl->sim_state->uv[i];
+            float dist_vec[3];
+            v_sub(dist_vec, other->p, b->p);
+            float dist = v_len(dist_vec);
+
+            if (dist < (b->r + other->r + punch_range)) {
+                /* Check if in front (dot product) */
+                float d = v_dot(punch_vec, dist_vec);
+                if (d > 0) {
+                    /* HIT */
+                    float force[3];
+                    v_cpy(force, punch_vec);
+                    /* Knockback force */
+                    v_scl(force, force, 20.0f * dt); /* Impulse */
+                    v_add(other->v, other->v, force);
+
+                    audio_play(AUD_BUMPL, 1.0f);
+                }
+            }
+        }
+
+    }
+    else if (pl->punch_state == 2) {
+        pl->punch_timer -= dt;
+        if (pl->punch_timer <= 0.0f) {
+            pl->punch_state = 0;
+            game_cmd_punch(p, 0);
+        }
+    }
+}
+
 static int game_step(int p, const float g[3], float dt, int bt)
 {
     struct server_player *pl = &players[p];
@@ -927,6 +1006,12 @@ static int game_step(int p, const float g[3], float dt, int bt)
                 }
             }
         }
+
+        if (game_mode == MODE_FIGHT)
+        {
+            game_fight_step(p, dt);
+        }
+
         pl->action_prev = action;
 
         if (pl->fly_active)
@@ -1100,6 +1185,9 @@ void game_respawn(int p)
         pl->fly_active = 0;
         pl->fly_done = 0;
         pl->fly_pitch = 0.0f;
+
+        pl->punch_state = 0;
+        pl->punch_timer = 0.0f;
 
         game_view_fly(&pl->view, pl->sim_state, 0.0f);
 

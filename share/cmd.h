@@ -66,6 +66,7 @@ enum cmd_type
     CMD_MOVE_PATH,
     CMD_MOVE_TIME,
     CMD_SET_PLAYER,
+    CMD_PUNCH,
 
     CMD_MAX
 };
@@ -300,6 +301,12 @@ struct cmd_set_player
     int player_index;
 };
 
+struct cmd_punch
+{
+    CMD_HEADER;
+    int active;
+};
+
 union cmd
 {
     enum cmd_type type;
@@ -341,6 +348,7 @@ union cmd
     struct cmd_move_path          movepath;
     struct cmd_move_time          movetime;
     struct cmd_set_player         setplayer;
+    struct cmd_punch              punch;
 };
 
 #undef CMD_HEADER

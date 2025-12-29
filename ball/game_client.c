@@ -104,6 +104,12 @@ static void game_run_cmd(const union cmd *cmd)
             if (cs.curr_player >= MAX_PLAYERS) cs.curr_player = 0;
             break;
 
+        case CMD_PUNCH:
+            cg->punch_active = cmd->punch.active;
+            cl->punch_active[CURR] = cmd->punch.active;
+            cl->punch_active[PREV] = cmd->punch.active;
+            break;
+
         case CMD_END_OF_UPDATE:
             cs.got_tilt_axes = 0;
             cs.next_update = 1;

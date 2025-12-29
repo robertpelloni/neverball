@@ -56,6 +56,7 @@ enum
     MODE_STANDALONE,
     MODE_BATTLE,
     MODE_TARGET,
+    MODE_FIGHT,
 
     MODE_MAX
 };

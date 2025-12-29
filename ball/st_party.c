@@ -31,6 +31,7 @@ static int player_id;
 static const char *get_mode_label(int m) {
     if (m == MODE_TARGET) return "Mode: Monkey Target";
     if (m == MODE_BATTLE) return "Mode: Battle (Shared)";
+    if (m == MODE_FIGHT)  return "Mode: Monkey Fight";
     return "Mode: Unknown";
 }
 
@@ -50,7 +51,8 @@ static int party_action(int tok, int val) {
 
         case PARTY_MODE:
             if (party_mode == MODE_TARGET) party_mode = MODE_BATTLE;
-            else if (party_mode == MODE_BATTLE) party_mode = MODE_TARGET;
+            else if (party_mode == MODE_BATTLE) party_mode = MODE_FIGHT;
+            else if (party_mode == MODE_FIGHT)  party_mode = MODE_TARGET;
             update_labels();
             break;
 

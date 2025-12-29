@@ -375,6 +375,14 @@ DEFINE_CMD(CMD_SET_PLAYER, INDEX_BYTES, {
 
 /*---------------------------------------------------------------------------*/
 
+DEFINE_CMD(CMD_PUNCH, INDEX_BYTES, {
+    put_index(fp, cmd->punch.active);
+}, {
+    cmd->punch.active = get_index(fp);
+});
+
+/*---------------------------------------------------------------------------*/
+
 #define PUT_CASE(t) case t: cmd_put_ ## t(fp, cmd); break
 #define GET_CASE(t) case t: cmd_get_ ## t(fp, cmd); break
 
@@ -424,6 +432,7 @@ int cmd_put(fs_file fp, const union cmd *cmd)
         PUT_CASE(CMD_MOVE_PATH);
         PUT_CASE(CMD_MOVE_TIME);
         PUT_CASE(CMD_SET_PLAYER);
+        PUT_CASE(CMD_PUNCH);
 
     case CMD_NONE:
     case CMD_MAX:
@@ -492,6 +501,7 @@ int cmd_get(fs_file fp, union cmd *cmd)
             GET_CASE(CMD_MOVE_PATH);
             GET_CASE(CMD_MOVE_TIME);
             GET_CASE(CMD_SET_PLAYER);
+            GET_CASE(CMD_PUNCH);
 
         case CMD_NONE:
         case CMD_MAX:
