@@ -823,6 +823,26 @@ static int game_update_state(int p, int bt)
                     break;
             }
         }
+        else if (hp->t == ITEM_SPEED)
+        {
+            /* Speed Boost */
+            struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+            float fwd[3];
+            if (v_len(b->v) > 0.1f) {
+                v_cpy(fwd, b->v);
+                v_nrm(fwd, fwd);
+                v_mad(b->v, b->v, fwd, 15.0f);
+            }
+            audio_play(AUD_JUMP, 1.0f);
+        }
+        else if (hp->t == ITEM_MISSILE)
+        {
+            audio_play(AUD_COIN, 1.f);
+        }
+        else if (hp->t == ITEM_BANANA)
+        {
+            audio_play(AUD_FALL, 1.f);
+        }
 
         audio_play(AUD_COIN, 1.f);
 

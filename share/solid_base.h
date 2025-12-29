@@ -114,6 +114,9 @@
 #define ITEM_GROW       2
 #define ITEM_SHRINK     3
 #define ITEM_CLOCK      4
+#define ITEM_SPEED      5
+#define ITEM_MISSILE    6
+#define ITEM_BANANA     7
 
 /* Path flags. */
 
