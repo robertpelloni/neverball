@@ -38,8 +38,6 @@
 static int server_state = 0;
 static int game_mode = MODE_NORMAL;
 
-#define MAX_PLAYERS 4
-
 struct server_player
 {
     struct s_vary vary;
