@@ -1,20 +1,27 @@
-# Session Handoff Log
+# Handoff - Party Mode UI & Documentation Update
 
-**Date:** (Current Date)
-**Branch:** `jules-16650573998442292503-005e549a`
-**Version:** 1.6.1-dev
+## Summary
+In this session, we significantly improved the user experience for the new Party Game modes. We created dedicated documentation for Monkey Target, Fight, Bowling, and Billiards, and integrated these instructions directly into the game's UI. We also consolidated the project's meta-documentation (Vision, Roadmap, Agents) and standardized the versioning process.
 
-## Recent Accomplishments
-*   **Campaign Hub:** Implemented `GAME_WARP` in `game_server.c` and `st_play.c` to allow level transitions via switches.
-*   **Story Mode:** Added `st_story` for static cutscenes.
-*   **Documentation:** Created `docs/DASHBOARD.md`, `VERSION`, and updated `CHANGELOG.md`.
+## Completed Tasks
+*   **Documentation:** Created `doc/party_games.txt` with detailed rules and controls.
+*   **Manual Update:** Linked `doc/manual.txt` to the new party games doc.
+*   **UI Enhancement:** Added a `gui_multi` description box to the Party Mode menu in `ball/st_party.c` that dynamically updates based on the selected mode.
+*   **Bowling Mode:** Formally exposed `MODE_BOWLING` in the menu cycle.
+*   **Meta-Docs:** Created `docs/AGENTS_UNIVERSAL.md`, `docs/VISION.md`, and `docs/DASHBOARD.md`. Updated `ROADMAP.md` and `CHANGELOG.md`.
+*   **Versioning:** Bumped version to `1.6.2-dev`.
 
-## Current Context
-*   The project is in **Phase 2** (Deluxe Expansion).
-*   We are focusing on **Hub World** and **Party Game** features.
-*   The `GAME_WARP` logic works conceptually but lacks a specific "Hub Level" asset to verify fully.
+## Current State
+*   **Build:** Passing (verified with `make`).
+*   **Version:** `1.6.2-dev`
+*   **Active Branch:** `party-games-ui-docs` (local) -> should be merged to `main`.
 
-## Next Steps
-1.  **Character Stats (Phase 3.1):** The codebase currently treats all balls identically. We need to implement `struct character_stats` to differentiate players (e.g., Heavy/Fast vs Light/Accurate).
-2.  **Hub Geometry:** Create a basic `.sol` level for the Hub to test the warp logic.
-3.  **UI:** Update the Party Menu or Character Select to allow choosing these stats.
+## Next Steps (Immediate)
+1.  **Merge & Deploy:** Commit the current changes and merge to `main`.
+2.  **Economy System:** Begin work on persisting player progress (Coins/Bananas) to a save file to support the future "Shop" feature (Phase 3 of Roadmap).
+3.  **Campaign:** Develop the "Hub World" levels to utilize the new `GAME_WARP` logic.
+
+## Notes for Next Agent
+*   The build environment requires `libsdl2-dev`, `libjpeg-dev`, `libpng-dev`, etc. (see `docs/DASHBOARD.md`).
+*   The `VERSION` file is the source of truth for version numbers.
+*   Check `ball/progress.h` for mode definitions if adding new game modes.

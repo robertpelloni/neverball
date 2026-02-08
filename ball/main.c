@@ -48,6 +48,7 @@
 #include "strbuf/substr.h"
 #include "strbuf/joinstr.h"
 #include "lang.h"
+#include "profile.h"
 
 #include "st_conf.h"
 #include "st_title.h"
@@ -903,6 +904,7 @@ static int main_init(int argc, char *argv[])
 
     config_init();
     config_load();
+    profile_init();
 
     fetch_enable(config_get_d(CONFIG_ONLINE));
 
@@ -941,6 +943,7 @@ static int main_init(int argc, char *argv[])
 static void main_quit(void)
 {
     config_save();
+    profile_save();
 
     /* Free loaded sets, in case of link processing. */
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.2-dev] - Party Mode UI & Documentation
+
+### Added
+- **UI:** Added detailed descriptions and control hints to the Party Games menu (`st_party.c`).
+- **Documentation:** Created comprehensive instructions for all Party Games in `doc/party_games.txt`.
+- **Manual:** Updated `doc/manual.txt` to reference the new Party Games documentation.
+- **Monkey Bowling:** Formally exposed the Bowling mode in the Party Game selection cycle.
+
 ## [1.6.1-dev] - Campaign Engine & Party Update
 
 ### Added

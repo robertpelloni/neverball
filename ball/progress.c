@@ -20,6 +20,7 @@
 #include "lang.h"
 #include "score.h"
 #include "audio.h"
+#include "profile.h"
 
 #include "game_common.h"
 #include "game_client.h"
@@ -199,6 +200,7 @@ void progress_stat(int s, int p)
                 curr[p].balls++;
 
         curr[p].score += lprog[p].coins;
+        profile_add_currency(lprog[p].coins);
         curr[p].times += lprog[p].timer;
 
         dirty = level_score_update(level, lprog[p].timer, lprog[p].coins,
