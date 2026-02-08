@@ -76,6 +76,10 @@ struct server_player
     int   fly_done;
     float fly_pitch;
 
+    /* Jump Physics State */
+    int   can_jump;
+    float jump_timer;
+
     /* Fight Physics State */
     int   punch_state; /* 0=None, 1=Extending, 2=Retracting */
     float punch_timer;
@@ -1402,6 +1406,18 @@ static int game_step(int p, const float g[3], float dt, int bt)
                     pl->fly_done = 1; /* Locked */
                 }
             }
+            else if (game_mode == MODE_NORMAL || game_mode == MODE_CHALLENGE || game_mode == MODE_BATTLE || game_mode == MODE_STANDALONE)
+            {
+                /* Active Jump */
+                if (pl->can_jump)
+                {
+                    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+                    float jump_force = 12.0f * player_stats[p].jump;
+                    b->v[1] += jump_force;
+                    pl->can_jump = 0;
+                    audio_play(AUD_JUMP, 1.0f);
+                }
+            }
         }
 
         if (game_mode == MODE_FIGHT)
@@ -1447,6 +1463,22 @@ static int game_step(int p, const float g[3], float dt, int bt)
 
             pl->tilt.rx += (input_get_x(p) - pl->tilt.rx) * dt / MAX(dt, response);
             pl->tilt.rz += (input_get_z(p) - pl->tilt.rz) * dt / MAX(dt, response);
+        }
+
+        /* Ground Check for Jump */
+        if (pl->sim_owner)
+        {
+            /* HACK: Allow jump if y-velocity is near zero. */
+            /* Proper ground check would require access to collision manifold which is deep in solid_sim. */
+            struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+            if (fabsf(b->v[1]) < 0.1f)
+            {
+                pl->can_jump = 1;
+            }
+            else
+            {
+                pl->can_jump = 0;
+            }
         }
 
         /* Monkey Target Landing Logic */

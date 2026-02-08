@@ -1,0 +1,6 @@
+name Basic Ball
+speed 1.0
+accel 1.0
+jump 1.0
+control 1.0
+cost 0

@@ -11,6 +11,8 @@
 #include "st_title.h"
 #include "st_set.h"
 #include "profile.h"
+#include "config.h"
+#include "key.h"
 
 extern struct state st_char;
 
@@ -100,7 +102,7 @@ static int char_action(int tok, int val)
 
 static int char_gui(void)
 {
-    int root, id, jd;
+    int root, id;
 
     if ((root = gui_vstack(0)))
     {

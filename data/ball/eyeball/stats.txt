@@ -1,0 +1,6 @@
+name Bouncy Eyeball
+speed 1.1
+accel 1.1
+jump 1.5
+control 0.9
+cost 800
