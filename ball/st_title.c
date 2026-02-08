@@ -45,6 +45,8 @@
 #include "st_package.h"
 #include "st_party.h"
 #include "st_story.h"
+#include "profile.h"
+#include "st_char.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -117,9 +119,9 @@ static int title_action(int tok, int val)
 
     case TITLE_PLAY:
         if (strlen(config_get_s(CONFIG_PLAYER)) == 0)
-            return goto_name(&st_set, &st_title, 0);
+            return goto_name(&st_char, &st_title, 0);
         else
-            return goto_state(&st_set);
+            return goto_state(&st_char);
         break;
 
     case TITLE_STORY:
@@ -229,6 +231,18 @@ static int title_gui(void)
             gui_layout(id, 0, -1);
         }
 #endif
+
+        if (profile_get_currency() > 0)
+        {
+            char buf[64];
+            sprintf(buf, "Bananas: %d", profile_get_currency());
+            if ((id = gui_label(root_id, buf, GUI_SML, gui_yel, gui_red)))
+            {
+                gui_clr_rect(id);
+                gui_set_slide(id, GUI_S, 0.9f, 0.4f, 0);
+                gui_layout(id, -1, -1); /* Bottom left */
+            }
+        }
 
 #if ENABLE_FETCH
         if (config_get_d(CONFIG_ONLINE))

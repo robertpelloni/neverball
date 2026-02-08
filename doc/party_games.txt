@@ -1,0 +1,87 @@
+
+                            * PARTY GAMES *
+
+
+Neverball includes a suite of Party Games designed for multiplayer fun.
+These modes can be played with 1-4 players in split-screen mode.
+
+To access these games, select "Party Games" from the main menu.
+
+
+* MONKEY TARGET
+
+Fly your monkey ball through the air and land on the target to score points!
+
+Controls:
+    Tilt Control:   Steer the ball during the roll phase.
+    Action Button:  Open wings to glide (at the end of the ramp).
+                    Close wings to drop/land.
+    Up/Down (Air):  Control pitch. Pull Up to slow down/gain altitude.
+                    Push Down to speed up/lose altitude.
+
+Scoring:
+    Red Zone (Bullseye):  500 Points
+    Yellow Zone (Inner):  300 Points
+    Blue Zone (Outer):    100 Points
+    White Zone (Edge):     50 Points
+
+Tips:
+    - Build up speed on the ramp before opening your wings.
+    - Use the Wheel of Danger items to disrupt opponents!
+    - Land carefully! If you are moving too fast, you will roll off.
+    - Brake by pulling up just before landing.
+
+
+* MONKEY FIGHT
+
+Knock your opponents off the stage to be the last monkey standing!
+
+Controls:
+    Tilt Control:   Move your monkey ball.
+    Action Button:  Punch! (Extends a boxing glove).
+
+Power-ups:
+    Speed:          Temporary speed boost.
+    Big Punch:      Increases punch range and knockback.
+
+
+* MONKEY BILLIARDS
+
+A simplified billiards game. Sink all the balls to win!
+
+Controls:
+    Tilt Control:   Aim your shot.
+    Action Button:  Hold to charge power, release to shoot.
+
+Rules:
+    - Sink balls to earn points (100 pts each).
+    - Don't sink the cue ball (Scratch)!
+
+
+* MONKEY BOWLING
+
+Ten-pin bowling with a monkey ball twist.
+
+Controls:
+    Step 1: Position. Use Left/Right to position your monkey.
+            Press Action to confirm.
+    Step 2: Aim. An arrow will sweep back and forth.
+            Press Action to stop it at the desired angle.
+    Step 3: Power. A power meter will fill up.
+            Press Action to lock in the power and throw!
+
+Scoring:
+    Standard bowling scoring applies (Strikes, Spares).
+
+
+* BATTLE MODE (RACE)
+
+Race against your friends on any existing Neverball level!
+
+Controls:
+    Standard Neverball controls apply.
+
+Power-ups:
+    Speed:          Boosts your speed.
+    Missile:        Homing missile that stuns the leader.
+    Banana:         Slip hazard.
