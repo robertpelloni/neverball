@@ -56,6 +56,10 @@ static int alt_val_id;
 /* Jump HUD */
 static int jump_id;
 
+/* Spin Dash HUD */
+static int dash_id;
+static int dash_bar_id;
+
 static const char *speed_labels[SPEED_MAX] = {
     "", "8", "4", "2", "1", "2", "4", "8"
 };
@@ -192,6 +196,17 @@ void hud_init(void)
         gui_layout(jump_id, 0, 2); /* Above target hud or bottom */
         gui_set_hidden(jump_id, 1);
     }
+
+    if ((dash_id = gui_vstack(0)))
+    {
+        gui_label(dash_id, "CHARGE", GUI_TNY, gui_yel, gui_red);
+        dash_bar_id = gui_filler(dash_id);
+        /* Ideally we'd use a progress bar widget, but filler + scale will do for now */
+
+        gui_set_rect(dash_id, GUI_BOT);
+        gui_layout(dash_id, 0, 4);
+        gui_set_hidden(dash_id, 1);
+    }
 }
 
 void hud_free(void)
@@ -209,6 +224,7 @@ void hud_free(void)
     gui_delete(speed_id);
     gui_delete(target_hud_id);
     gui_delete(jump_id);
+    gui_delete(dash_id);
 
     for (i = SPEED_NONE + 1; i < SPEED_MAX; i++)
         gui_delete(speed_ids[i]);
@@ -260,6 +276,7 @@ void hud_paint(int x, int y, int w, int h)
             gui_paint(target_hud_id);
 
         gui_paint(jump_id);
+        gui_paint(dash_id);
 
         hud_cam_paint();
         hud_speed_paint();
@@ -363,6 +380,10 @@ void hud_update(int p, int pulse)
     /* Or add a CMD_JUMP_READY? */
     /* Let's keep it hidden for this step to avoid complexity without command sync. */
     gui_set_hidden(jump_id, 1);
+
+    /* Update Dash Charge Meter */
+    /* Similarly, we need server state. Placeholder logic: */
+    gui_set_hidden(dash_id, 1);
 
 
     /* coins and pulse */

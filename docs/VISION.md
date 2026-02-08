@@ -1,7 +1,9 @@
 # Neverball Project Vision
 
 ## Executive Summary
-The ultimate goal of the Neverball project is to evolve the classic open-source rolling ball game into a feature-complete spiritual successor to the Super Monkey Ball (SMB) series, while retaining its distinct physics and aesthetic. This vision encompasses both the core game modes and the extensive "Party Game" library that defined the genre.
+The ultimate goal of the Neverball project is to evolve the classic open-source rolling ball game into a feature-complete spiritual successor to both the *Super Monkey Ball* (SMB) series and the *Marble Blast* (MB) series. The goal is to create the greatest marble game ever made by synthesizing the best mechanics, modes, and physics from these genre-defining titles while maintaining Neverball's open-source legacy.
+
+This vision encompasses both the precision platforming of SMB, the power-up driven exploration of Marble Blast, and the extensive "Party Game" library that defined the genre.
 
 ## Core Design Pillars
 
@@ -10,7 +12,10 @@ The ultimate goal of the Neverball project is to evolve the classic open-source 
 *   **Input Precision:** Support modern controllers with precise analog input, rumble feedback, and customizable deadzones.
 *   **Camera Control:** Implement intelligent camera behaviors (auto-follow, snap-to-back, fixed angles) to reduce player frustration and focus on platforming skill.
 
-### 2. Comprehensive Feature Set (SMB Parity)
+### 2. Comprehensive Feature Set (SMB & MB Parity)
+*   **Mechanics:**
+    *   **SMB:** Tilt, Jump (Banana Blitz), Spin Dash.
+    *   **Marble Blast:** Super Jump, Super Speed, Gyrocopter, Gravity Modifiers, Blast.
 *   **Main Game:** Timer-based levels, bonus stages, warp gates, and moving platforms.
 *   **Party Games:** A full suite of multiplayer minigames:
     *   **Monkey Target:** Flight physics, landing zones, wind, and items.

@@ -77,9 +77,11 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
     *   Implement `struct character_stats` (Weight, Speed, Acceleration, Jump, Size).
     *   Character Selection Screen with stats visualization.
 
-2.  **New Mechanics**
-    *   **Jump:** Active ability to hop (toggleable per mode/level).
-    *   **Spin Dash:** Chargeable speed boost (Sonic-style).
+2.  **New Mechanics (SMB & MB)**
+    *   **Jump:** Active ability to hop (toggleable per mode/level). (Partially Implemented)
+    *   **Spin Dash:** Chargeable speed boost (Sonic-style). (In Progress)
+    *   **Powerups:** Super Speed, Super Jump, Gyrocopter (Marble Blast).
+    *   **Gravity:** Gravity Modifiers / Inverters.
 
 3.  **Unlock & Economy System**
     *   "Bananas" as persistent currency (Play Points).
@@ -114,11 +116,12 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
 *   **Documentation:** Comprehensive Party Mode instructions added (`doc/party_games.txt`) and UI descriptions integrated into the menu.
 
 ### In Progress / Next Steps
-*   **UI Polish:** Enhance in-game HUDs for Party Games (Scorecards for Bowling, Wind indicators for Target).
+*   **Character Mechanics:** Spin Dash is being implemented. Jump is in place.
+*   **UI Polish:** Enhance in-game HUDs for Party Games and new mechanics (Dash Charge Meter).
 *   **Campaign:** Hub World logic (Warps) is in place; need to build actual Hub levels and integrate cutscenes.
-*   **Character Stats:** Still using uniform physics; need to implement `struct character_stats`.
+*   **Marble Blast Features:** Assess feasibility of Gravity Modifiers.
 
 ## Immediate Action Plan
-The team should focus on **Phase 3, Item 3: Unlock & Economy System**.
-*   **Reasoning:** With the core Party Games implemented, we need a meta-game loop to tie them together. Earning "Bananas" to unlock costumes or balls will encourage replayability across all modes.
-*   **Prerequisite:** The `coins` variable in `server_player` structure is already tracking score; this needs to be persisted to a global save file.
+The team should focus on **Phase 3, Item 2: New Mechanics (Spin Dash)**.
+*   **Reasoning:** Completing the "Modern" movement suite (Jump + Dash) creates a solid foundation for designing levels that utilize these abilities, bridging the gap between SMB and Marble Blast gameplay styles.
+*   **Prerequisite:** `game_server.c` logic for impulse application.

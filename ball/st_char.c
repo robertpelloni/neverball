@@ -13,6 +13,7 @@
 #include "profile.h"
 #include "config.h"
 #include "key.h"
+#include "game_common.h"
 
 extern struct state st_char;
 
