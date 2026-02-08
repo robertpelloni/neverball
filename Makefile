@@ -365,6 +365,9 @@ BALL_OBJS := \
 	ball/st_party.o     \
 	ball/st_story.o     \
 	ball/profile.o      \
+	ball/stats.o        \
+	ball/char.o         \
+	ball/st_char.o      \
 	ball/st_ball.o      \
 	ball/main.o
 PUTT_OBJS := \

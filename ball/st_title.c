@@ -46,6 +46,7 @@
 #include "st_party.h"
 #include "st_story.h"
 #include "profile.h"
+#include "st_char.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -118,9 +119,9 @@ static int title_action(int tok, int val)
 
     case TITLE_PLAY:
         if (strlen(config_get_s(CONFIG_PLAYER)) == 0)
-            return goto_name(&st_set, &st_title, 0);
+            return goto_name(&st_char, &st_title, 0);
         else
-            return goto_state(&st_set);
+            return goto_state(&st_char);
         break;
 
     case TITLE_STORY:

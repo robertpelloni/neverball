@@ -32,6 +32,7 @@
 
 #include "cmd.h"
 #include "progress.h"
+#include "stats.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -75,6 +76,10 @@ struct server_player
     int   fly_done;
     float fly_pitch;
 
+    /* Jump Physics State */
+    int   can_jump;
+    float jump_timer;
+
     /* Fight Physics State */
     int   punch_state; /* 0=None, 1=Extending, 2=Retracting */
     float punch_timer;
@@ -117,10 +122,16 @@ struct input
 };
 
 static struct input input_players[MAX_PLAYERS];
+static struct character_stats player_stats[MAX_PLAYERS];
 
-static float get_angle_bound(void)
+static float get_angle_bound(int p)
 {
-    return config_get_d(CONFIG_PHYSICS) ? 60.0f : ANGLE_BOUND;
+    float base = config_get_d(CONFIG_PHYSICS) ? 60.0f : ANGLE_BOUND;
+    /* Increase tilt angle if stats.control is high */
+    /* This allows turning faster */
+    if (p >= 0 && p < MAX_PLAYERS)
+        return base * player_stats[p].control;
+    return base;
 }
 
 static void input_init(void)
@@ -145,7 +156,7 @@ static void input_set_s(int p, float s)
 
 static void input_set_x(int p, float x)
 {
-    float bound = get_angle_bound();
+    float bound = get_angle_bound(p);
     if (x < -bound) x = -bound;
     if (x >  bound) x =  bound;
 
@@ -155,7 +166,7 @@ static void input_set_x(int p, float x)
 
 static void input_set_z(int p, float z)
 {
-    float bound = get_angle_bound();
+    float bound = get_angle_bound(p);
     if (z < -bound) z = -bound;
     if (z >  bound) z =  bound;
 
@@ -561,6 +572,13 @@ static void game_player_init(int p, int t, int e, int mode)
 
     pl->warp_id = -1;
 
+    /* Load stats for the current ball */
+    stats_load(&player_stats[p], config_get_s(CONFIG_BALL_FILE));
+
+    /* Adjust jump force based on stats (default is implicitly handled by physics engine but we can tweak it?) */
+    /* The jump logic uses sol_jump_test which just checks for jump pads. */
+    /* But we can affect acceleration. */
+
     if (mode == MODE_BATTLE || mode == MODE_TARGET || mode == MODE_FIGHT)
     {
         ball_count = player_count;
@@ -704,6 +722,13 @@ static void game_player_init(int p, int t, int e, int mode)
             pl->vary.uv[0].p[0] += (float)p * 1.5f;
             pl->vary.uv[0].p[2] += (float)p * 1.5f;
         }
+    }
+
+    /* Apply Stats to Physics Body */
+    /* We iterate all balls this player owns */
+    for (i = 0; i < pl->sim_state->uc; i++) {
+        /* Mass is not directly exposed in v_ball but radius is. */
+        /* Acceleration is handled by tilt. */
     }
 
     game_tilt_init(&pl->tilt);
@@ -1381,6 +1406,18 @@ static int game_step(int p, const float g[3], float dt, int bt)
                     pl->fly_done = 1; /* Locked */
                 }
             }
+            else if (game_mode == MODE_NORMAL || game_mode == MODE_CHALLENGE || game_mode == MODE_BATTLE || game_mode == MODE_STANDALONE)
+            {
+                /* Active Jump */
+                if (pl->can_jump)
+                {
+                    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+                    float jump_force = 12.0f * player_stats[p].jump;
+                    b->v[1] += jump_force;
+                    pl->can_jump = 0;
+                    audio_play(AUD_JUMP, 1.0f);
+                }
+            }
         }
 
         if (game_mode == MODE_FIGHT)
@@ -1420,8 +1457,28 @@ static int game_step(int p, const float g[3], float dt, int bt)
         else
         {
             /* Normal Tilt */
-            pl->tilt.rx += (input_get_x(p) - pl->tilt.rx) * dt / MAX(dt, input_get_s(p));
-            pl->tilt.rz += (input_get_z(p) - pl->tilt.rz) * dt / MAX(dt, input_get_s(p));
+            /* Apply acceleration stat here: modify response time (s) or directly multiplier */
+            float accel_mult = player_stats[p].acceleration;
+            float response = input_get_s(p) / accel_mult; /* Higher accel = lower response time (faster) */
+
+            pl->tilt.rx += (input_get_x(p) - pl->tilt.rx) * dt / MAX(dt, response);
+            pl->tilt.rz += (input_get_z(p) - pl->tilt.rz) * dt / MAX(dt, response);
+        }
+
+        /* Ground Check for Jump */
+        if (pl->sim_owner)
+        {
+            /* HACK: Allow jump if y-velocity is near zero. */
+            /* Proper ground check would require access to collision manifold which is deep in solid_sim. */
+            struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+            if (fabsf(b->v[1]) < 0.1f)
+            {
+                pl->can_jump = 1;
+            }
+            else
+            {
+                pl->can_jump = 0;
+            }
         }
 
         /* Monkey Target Landing Logic */
@@ -1607,13 +1664,13 @@ void game_respawn(int p)
 
 void game_set_x(float k, int p)
 {
-    input_set_x(p, -get_angle_bound() * k);
+    input_set_x(p, -get_angle_bound(p) * k);
     input_set_s(p, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 
 void game_set_z(float k, int p)
 {
-    input_set_z(p, +get_angle_bound() * k);
+    input_set_z(p, +get_angle_bound(p) * k);
     input_set_s(p, config_get_d(CONFIG_JOYSTICK_RESPONSE) * 0.001f);
 }
 

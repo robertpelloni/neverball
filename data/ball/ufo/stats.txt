@@ -1,0 +1,6 @@
+name UFO
+speed 1.3
+accel 1.5
+jump 1.2
+control 1.2
+cost 2000
