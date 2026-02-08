@@ -101,7 +101,24 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
 3.  **Ghost Data Sharing**
     *   Global Leaderboards with replay downloads.
 
+## Progress Update (Current)
+
+### Completed Features
+*   **Physics Parity:** "Arcade Physics" toggle implemented (CONFIG_PHYSICS).
+*   **Party Games:**
+    *   **Monkey Target:** Flight physics, landing zones, and scoring implemented.
+    *   **Monkey Fight:** Punch mechanics and knockback implemented.
+    *   **Monkey Billiards:** 16-ball physics, pockets, and cue stick implemented.
+    *   **Monkey Bowling:** 10-pin setup, frame logic, and basic throwing UI implemented.
+    *   **Monkey Race:** Basic race mode with waypoints supported.
+*   **Documentation:** Comprehensive Party Mode instructions added (`doc/party_games.txt`) and UI descriptions integrated into the menu.
+
+### In Progress / Next Steps
+*   **UI Polish:** Enhance in-game HUDs for Party Games (Scorecards for Bowling, Wind indicators for Target).
+*   **Campaign:** Hub World logic (Warps) is in place; need to build actual Hub levels and integrate cutscenes.
+*   **Character Stats:** Still using uniform physics; need to implement `struct character_stats`.
+
 ## Immediate Action Plan
-To begin this journey, the team should focus on **Phase 1, Item 3: Monkey Target**.
-*   **Reasoning:** It requires "Flight Physics" which is distinct from rolling, pushing the engine's capabilities. It is also the most requested party game.
-*   **Prerequisite:** The shared-world architecture (recently implemented) is ready for this.
+The team should focus on **Phase 3, Item 3: Unlock & Economy System**.
+*   **Reasoning:** With the core Party Games implemented, we need a meta-game loop to tie them together. Earning "Bananas" to unlock costumes or balls will encourage replayability across all modes.
+*   **Prerequisite:** The `coins` variable in `server_player` structure is already tracking score; this needs to be persisted to a global save file.

@@ -43,26 +43,26 @@ static const char *get_mode_label(int m) {
 
 static const char *get_mode_desc(int m) {
     if (m == MODE_TARGET)
-        return "Fly your monkey ball to the target!\\n"
-               "Tilt to steer, Action (A) to toggle wings.\\n"
-               "Pitch Up/Down to control speed and altitude.\\n"
+        return "Fly your monkey ball to the target!\n"
+               "Tilt to steer, Action (A) to toggle wings.\n"
+               "Pitch Up/Down to control speed and altitude.\n"
                "Land in the center for max points!";
     if (m == MODE_BATTLE)
-        return "Race against friends in a shared world.\\n"
-               "Be the first to the goal!\\n"
+        return "Race against friends in a shared world.\n"
+               "Be the first to the goal!\n"
                "Collect items to zap opponents.";
     if (m == MODE_FIGHT)
-        return "Knock everyone else off the stage!\\n"
-               "Press Action (A) to Punch.\\n"
+        return "Knock everyone else off the stage!\n"
+               "Press Action (A) to Punch.\n"
                "Last monkey rolling wins.";
     if (m == MODE_BILLIARDS)
-        return "Sink all the balls to win.\\n"
-               "Hold Action (A) to charge power, release to shoot.\\n"
+        return "Sink all the balls to win.\n"
+               "Hold Action (A) to charge power, release to shoot.\n"
                "Don't scratch the cue ball!";
     if (m == MODE_BOWLING)
-        return "Ten-pin bowling!\\n"
-               "1. Position (Left/Right + A)\\n"
-               "2. Aim (A)\\n"
+        return "Ten-pin bowling!\n"
+               "1. Position (Left/Right + A)\n"
+               "2. Aim (A)\n"
                "3. Power (A)";
     return "";
 }
