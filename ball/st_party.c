@@ -30,19 +30,48 @@ static int party_physics = 0;
 static int mode_id;
 static int player_id;
 static int physics_id;
+static int desc_id;
 
 static const char *get_mode_label(int m) {
     if (m == MODE_TARGET)    return "Mode: Monkey Target";
     if (m == MODE_BATTLE)    return "Mode: Battle (Shared)";
     if (m == MODE_FIGHT)     return "Mode: Monkey Fight";
     if (m == MODE_BILLIARDS) return "Mode: Monkey Billiards";
+    if (m == MODE_BOWLING)   return "Mode: Monkey Bowling";
     return "Mode: Unknown";
+}
+
+static const char *get_mode_desc(int m) {
+    if (m == MODE_TARGET)
+        return "Fly your monkey ball to the target!\\n"
+               "Tilt to steer, Action (A) to toggle wings.\\n"
+               "Pitch Up/Down to control speed and altitude.\\n"
+               "Land in the center for max points!";
+    if (m == MODE_BATTLE)
+        return "Race against friends in a shared world.\\n"
+               "Be the first to the goal!\\n"
+               "Collect items to zap opponents.";
+    if (m == MODE_FIGHT)
+        return "Knock everyone else off the stage!\\n"
+               "Press Action (A) to Punch.\\n"
+               "Last monkey rolling wins.";
+    if (m == MODE_BILLIARDS)
+        return "Sink all the balls to win.\\n"
+               "Hold Action (A) to charge power, release to shoot.\\n"
+               "Don't scratch the cue ball!";
+    if (m == MODE_BOWLING)
+        return "Ten-pin bowling!\\n"
+               "1. Position (Left/Right + A)\\n"
+               "2. Aim (A)\\n"
+               "3. Power (A)";
+    return "";
 }
 
 static void update_labels(void) {
     char buf[32];
 
     gui_set_label(mode_id, get_mode_label(party_mode));
+    gui_set_multi(desc_id, get_mode_desc(party_mode));
 
     sprintf(buf, "Players: %d", party_players);
     gui_set_label(player_id, buf);
@@ -59,7 +88,8 @@ static int party_action(int tok, int val) {
             if (party_mode == MODE_TARGET)         party_mode = MODE_BATTLE;
             else if (party_mode == MODE_BATTLE)    party_mode = MODE_FIGHT;
             else if (party_mode == MODE_FIGHT)     party_mode = MODE_BILLIARDS;
-            else if (party_mode == MODE_BILLIARDS) party_mode = MODE_TARGET;
+            else if (party_mode == MODE_BILLIARDS) party_mode = MODE_BOWLING;
+            else if (party_mode == MODE_BOWLING)   party_mode = MODE_TARGET;
             update_labels();
             break;
 
@@ -99,6 +129,9 @@ static int party_gui(void) {
         gui_space(root);
 
         mode_id = gui_state(root, get_mode_label(party_mode), GUI_MED, PARTY_MODE, 0);
+
+        desc_id = gui_multi(root, get_mode_desc(party_mode), GUI_SML, gui_wht, gui_wht);
+
         player_id = gui_state(root, "Players: 1", GUI_MED, PARTY_PLAYERS, 0);
         physics_id = gui_state(root, "Physics: Normal", GUI_MED, PARTY_PHYSICS, 0);
 
