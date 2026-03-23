@@ -24,8 +24,11 @@
 #include "config.h"
 #include "level.h"
 #include "set.h"
+<<<<<<< HEAD
 #include "log.h"
 #include "lang.h"
+=======
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -137,7 +140,11 @@ int level_load(const char *filename, struct level *level)
 
     if (!sol_load_meta(&base, filename))
     {
+<<<<<<< HEAD
         log_printf("Failure to load level file '%s'\n", filename);
+=======
+        fprintf(stderr, L_("Failure to load level file '%s'\n"), filename);
+>>>>>>> origin/csy-extras
         return 0;
     }
 

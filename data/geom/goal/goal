@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 diffuse   1.0 1.0 0.0 1.0
 ambient   0.0 0.0 0.0 0.0
 specular  0.0 0.0 0.0 0.0
@@ -5,3 +6,12 @@ emissive  0.0 0.0 0.0 0.0
 shininess 0.0
 flags     additive lit particle
 angle     0.0
+=======
+diffuse   0.8 0.8 0.8 1.0
+ambient   0.2 0.2 0.2 1.0
+specular  0.0 0.0 0.0 1.0
+emissive  0.0 0.0 0.0 1.0
+shininess 0.0
+flags     additive transparent two-sided
+angle     45.0
+>>>>>>> origin/csy-extras

@@ -3,7 +3,11 @@
 "classname" "worldspawn"
 "message" "La course effrénée.\Let's run some laps."
 "author" "Mehdi Yousfi-Monod"
+<<<<<<< HEAD
 "version" "1.2"
+=======
+"version" "1.1"
+>>>>>>> origin/csy-extras
 "back" "map-back/city.sol"
 "grad" "back/city.png"
 "shot" "shot-mym/circuit1.jpg"
@@ -9949,21 +9953,30 @@
 "classname" "info_camp"
 "target" "t14"
 "origin" "-704 -2848 0"
+<<<<<<< HEAD
 "timer" "600"
+=======
+>>>>>>> origin/csy-extras
 }
 // entity 81
 {
 "classname" "info_camp"
 "target" "t12"
 "origin" "-832 160 0"
+<<<<<<< HEAD
 "timer" "600"
+=======
+>>>>>>> origin/csy-extras
 }
 // entity 82
 {
 "classname" "info_camp"
 "target" "t9"
 "origin" "864 -1920 -88"
+<<<<<<< HEAD
 "timer" "600"
+=======
+>>>>>>> origin/csy-extras
 }
 // entity 83
 {

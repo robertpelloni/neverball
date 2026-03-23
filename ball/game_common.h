@@ -27,6 +27,7 @@
 #define AUD_OVER  _("snd/over.ogg")
 #define AUD_GROW    "snd/grow.ogg"
 #define AUD_SHRINK  "snd/shrink.ogg"
+<<<<<<< HEAD
 #define AUD_CLOCK   "snd/clock.ogg"
 #define AUD_FAIL    "snd/fall.ogg"
 
@@ -34,6 +35,11 @@
 
 #define MAX_PLAYERS 4
 
+=======
+
+/*---------------------------------------------------------------------------*/
+
+>>>>>>> origin/csy-extras
 enum
 {
     GAME_NONE = 0,
@@ -41,7 +47,10 @@ enum
     GAME_TIME,
     GAME_GOAL,
     GAME_FALL,
+<<<<<<< HEAD
     GAME_WARP,
+=======
+>>>>>>> origin/csy-extras
 
     GAME_MAX
 };
@@ -52,6 +61,7 @@ const char *status_to_str(int);
 
 enum
 {
+<<<<<<< HEAD
     CAM_NONE = -1,
 
     CAM_1,
@@ -64,6 +74,20 @@ enum
 const char *cam_to_str(int);
 
 int cam_speed(int);
+=======
+    VIEW_NONE = -1,
+
+    VIEW_CHASE,
+    VIEW_LAZY,
+    VIEW_MANUAL,
+    VIEW_TEST1,
+    VIEW_TEST2,
+
+    VIEW_MAX
+};
+
+const char *view_to_str(int);
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 

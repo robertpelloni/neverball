@@ -2,14 +2,22 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
+<<<<<<< HEAD
 "version" "1.1"
+=======
+"version" "1"
+>>>>>>> origin/csy-extras
 "back" "map-back/clouds.sol"
 "grad" "back/land.png"
 "shot" "shot-medium/locks.jpg"
 "song" "bgm/track1.ogg"
 "time" "9000"
 "goal" "40"
+<<<<<<< HEAD
 "time_hs" "1700 3000"
+=======
+"time_hs" "1700 4500"
+>>>>>>> origin/csy-extras
 "coin_hs" "78 60"
 "goal_hs" "2500 5500"
 "message" "Hit the switches to move the barriers.\"

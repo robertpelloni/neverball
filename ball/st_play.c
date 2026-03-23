@@ -21,8 +21,11 @@
 #include "config.h"
 #include "video.h"
 #include "cmd.h"
+<<<<<<< HEAD
 #include "key.h"
 #include "set.h"
+=======
+>>>>>>> origin/csy-extras
 
 #include "game_common.h"
 #include "game_server.h"
@@ -38,6 +41,7 @@
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void set_camera(int c)
 {
     config_set_d(CONFIG_CAMERA, c);
@@ -92,14 +96,90 @@ static void buttn_camera(int b)
 {
     if (config_tst_d(CONFIG_JOYSTICK_BUTTON_X, b))
         next_camera();
+=======
+static int pause_or_exit(void)
+{
+    if (config_tst_d(CONFIG_KEY_PAUSE, SDLK_ESCAPE))
+    {
+        return goto_state(&st_pause);
+    }
+    else
+    {
+        progress_stat(GAME_NONE);
+        progress_stop();
+
+        video_clr_grab();
+
+        return goto_state(&st_exit);
+    }
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static const float time_in   = 0.5f;
 static const float time_out  = 0.6f;
 static const int   flags_in  = GUI_E | GUI_FLING | GUI_EASE_BACK;
 static const int   flags_out = GUI_W | GUI_FLING | GUI_EASE_BACK | GUI_BACKWARD;
+=======
+static void set_camera(int c)
+{
+    config_set_d(CONFIG_CAMERA, c);
+    hud_view_pulse(c);
+}
+
+static void toggle_camera(void)
+{
+    int cam = (config_tst_d(CONFIG_CAMERA, VIEW_MANUAL) ?
+               VIEW_CHASE : VIEW_MANUAL);
+
+    set_camera(cam);
+}
+
+static void keybd_camera(int c)
+{
+    if (config_tst_d(CONFIG_KEY_CAMERA_1, c))
+        set_camera(VIEW_CHASE);
+    if (config_tst_d(CONFIG_KEY_CAMERA_2, c))
+        set_camera(VIEW_LAZY);
+    if (config_tst_d(CONFIG_KEY_CAMERA_3, c))
+        set_camera(VIEW_MANUAL);
+
+    if (config_tst_d(CONFIG_KEY_CAMERA_TOGGLE, c))
+        toggle_camera();
+
+    if (config_cheat() && c == SDLK_F4)
+        set_camera(config_tst_d(CONFIG_CAMERA, VIEW_TEST1) ?
+                   VIEW_TEST2 : VIEW_TEST1);
+}
+
+static void click_camera(int b)
+{
+    if (config_tst_d(CONFIG_MOUSE_CAMERA_1, b))
+        set_camera(VIEW_CHASE);
+    if (config_tst_d(CONFIG_MOUSE_CAMERA_2, b))
+        set_camera(VIEW_LAZY);
+    if (config_tst_d(CONFIG_MOUSE_CAMERA_3, b))
+        set_camera(VIEW_MANUAL);
+
+    if (config_tst_d(CONFIG_MOUSE_CAMERA_TOGGLE, b))
+        toggle_camera();
+}
+
+static void buttn_camera(int b)
+{
+    if (config_tst_d(CONFIG_JOYSTICK_CAMERA_1, b))
+        set_camera(VIEW_CHASE);
+    if (config_tst_d(CONFIG_JOYSTICK_CAMERA_2, b))
+        set_camera(VIEW_LAZY);
+    if (config_tst_d(CONFIG_JOYSTICK_CAMERA_3, b))
+        set_camera(VIEW_MANUAL);
+
+    if (config_tst_d(CONFIG_JOYSTICK_CAMERA_TOGGLE, b))
+        toggle_camera();
+}
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -116,6 +196,7 @@ static int play_ready_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int play_ready_enter(struct state *st, struct state *prev, int intent)
 {
     int id;
@@ -135,12 +216,26 @@ static int play_ready_leave(struct state *st, struct state *next, int id, int in
     gui_slide(id, flags_out | GUI_REMOVE, 0, time_out, 0);
     transition_add(id);
     return id;
+=======
+static int play_ready_enter(struct state *st, struct state *prev)
+{
+    audio_play(AUD_READY, 1.0f);
+    video_set_grab(1);
+
+    hud_view_pulse(config_get_d(CONFIG_CAMERA));
+
+    return play_ready_gui();
+>>>>>>> origin/csy-extras
 }
 
 static void play_ready_paint(int id, float t)
 {
     game_client_draw(0, t);
+<<<<<<< HEAD
     hud_cam_paint();
+=======
+    hud_view_paint();
+>>>>>>> origin/csy-extras
     gui_paint(id);
 }
 
@@ -154,7 +249,11 @@ static void play_ready_timer(int id, float dt)
         goto_state(&st_play_set);
 
     game_step_fade(dt);
+<<<<<<< HEAD
     hud_cam_timer(dt);
+=======
+    hud_view_timer(dt);
+>>>>>>> origin/csy-extras
     gui_timer(id, dt);
 }
 
@@ -176,7 +275,11 @@ static int play_ready_keybd(int c, int d)
     {
         keybd_camera(c);
 
+<<<<<<< HEAD
         if (c == KEY_EXIT)
+=======
+        if (config_tst_d(CONFIG_KEY_PAUSE, c))
+>>>>>>> origin/csy-extras
             goto_state(&st_pause);
     }
     return 1;
@@ -211,6 +314,7 @@ static int play_set_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int play_set_enter(struct state *st, struct state *prev, int intent)
 {
     int id;
@@ -220,6 +324,20 @@ static int play_set_enter(struct state *st, struct state *prev, int intent)
     id = play_set_gui();
     gui_slide(id, flags_in, 0, time_in, 0);
     return id;
+=======
+static int play_set_enter(struct state *st, struct state *prev)
+{
+    audio_play(AUD_SET, 1.f);
+
+    return play_set_gui();
+}
+
+static void play_set_paint(int id, float t)
+{
+    game_client_draw(0, t);
+    hud_view_paint();
+    gui_paint(id);
+>>>>>>> origin/csy-extras
 }
 
 static int play_set_leave(struct state *st, struct state *next, int id, int intent)
@@ -246,7 +364,11 @@ static void play_set_timer(int id, float dt)
         goto_state(&st_play_loop);
 
     game_step_fade(dt);
+<<<<<<< HEAD
     hud_cam_timer(dt);
+=======
+    hud_view_timer(dt);
+>>>>>>> origin/csy-extras
     gui_timer(id, dt);
 }
 
@@ -268,7 +390,11 @@ static int play_set_keybd(int c, int d)
     {
         keybd_camera(c);
 
+<<<<<<< HEAD
         if (c == KEY_EXIT)
+=======
+        if (config_tst_d(CONFIG_KEY_PAUSE, c))
+>>>>>>> origin/csy-extras
             goto_state(&st_pause);
     }
     return 1;
@@ -290,6 +416,7 @@ static int play_set_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 enum
 {
     ROT_NONE = 0,
@@ -354,6 +481,32 @@ static int loop_transition;
 static float respawn_timer[MAX_PLAYERS];
 static int last_status[MAX_PLAYERS];
 static int finished_mask = 0;
+=======
+struct
+{
+    float R;
+    float L;
+
+    enum
+    {
+        DIR_R = 1,
+        DIR_L
+    } d;
+} view_rotate;
+
+#define VIEWR_SET_R(v) do {                                    \
+    view_rotate.R = (v);                                       \
+    view_rotate.d = (v) ? DIR_R : (view_rotate.L ? DIR_L : 0); \
+} while (0)
+
+#define VIEWR_SET_L(v) do {                                    \
+    view_rotate.L = (v);                                       \
+    view_rotate.d = (v) ? DIR_L : (view_rotate.R ? DIR_R : 0); \
+} while (0)
+
+static int fast_rotate;
+static int show_hud;
+>>>>>>> origin/csy-extras
 
 static int play_loop_gui(void)
 {
@@ -368,6 +521,7 @@ static int play_loop_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int play_loop_enter(struct state *st, struct state *prev, int intent)
 {
     int id;
@@ -375,6 +529,33 @@ static int play_loop_enter(struct state *st, struct state *prev, int intent)
 
     rot_init();
     fast_rotate = 0;
+=======
+static int play_loop_enter(struct state *st, struct state *prev)
+{
+    VIEWR_SET_R(0);
+    VIEWR_SET_L(0);
+    fast_rotate = 0;
+
+    if (prev == &st_pause)
+        return 0;
+
+    audio_play(AUD_GO, 1.f);
+
+    game_client_fly(0.0f);
+
+    show_hud = 1;
+    hud_update(0);
+
+    return play_loop_gui();
+}
+
+static void play_loop_paint(int id, float t)
+{
+    game_client_draw(0, t);
+
+    if (show_hud)
+        hud_paint();
+>>>>>>> origin/csy-extras
 
     for (i = 0; i < MAX_PLAYERS; i++)
     {
@@ -426,6 +607,7 @@ static void play_loop_timer(int id, float dt)
                (float) config_get_d(CONFIG_ROTATE_FAST) / 100.0f :
                (float) config_get_d(CONFIG_ROTATE_SLOW) / 100.0f);
 
+<<<<<<< HEAD
     float r = 0.0f;
     int p;
     int count = config_get_d(CONFIG_MULTIBALL);
@@ -454,6 +636,14 @@ static void play_loop_timer(int id, float dt)
         game_set_cam(config_get_d(CONFIG_CAMERA), 0);
         break;
     }
+=======
+    gui_timer(id, dt);
+    hud_timer(dt);
+    game_set_rot(view_rotate.d == DIR_R ?
+                 view_rotate.R * k :
+                 view_rotate.L * k);
+    game_set_cam(config_get_d(CONFIG_CAMERA));
+>>>>>>> origin/csy-extras
 
     game_step_fade(dt);
 
@@ -461,6 +651,7 @@ static void play_loop_timer(int id, float dt)
     game_client_sync(demo_fp);
     game_client_blend(game_server_blend());
 
+<<<<<<< HEAD
     for (p = 0; p < count; p++)
     {
         int status = curr_status(p);
@@ -561,6 +752,28 @@ static void play_loop_timer(int id, float dt)
 
         if (finished_count == count)
             goto_state(&st_goal);
+=======
+    switch (curr_status())
+    {
+    case GAME_GOAL:
+        progress_stat(GAME_GOAL);
+        goto_state(&st_goal);
+        break;
+
+    case GAME_FALL:
+        progress_stat(GAME_FALL);
+        goto_state(&st_fail);
+        break;
+
+    case GAME_TIME:
+        progress_stat(GAME_TIME);
+        goto_state(&st_fail);
+        break;
+
+    default:
+        progress_step();
+        break;
+>>>>>>> origin/csy-extras
     }
 }
 
@@ -569,6 +782,7 @@ static void play_loop_point(int id, int x, int y, int dx, int dy)
     game_set_pos(dx, dy, 0);
 }
 
+<<<<<<< HEAD
 static void play_loop_stick(int id, int a, float v, int bump, int device_id)
 {
     if (config_tst_d(CONFIG_JOYSTICK_AXIS_X0, a))
@@ -583,6 +797,21 @@ static void play_loop_stick(int id, int a, float v, int bump, int device_id)
             rot_set(DIR_L, -v, 1);
         else
             rot_clr(DIR_R | DIR_L);
+=======
+static void play_loop_stick(int id, int a, float v, int bump)
+{
+    if (config_tst_d(CONFIG_JOYSTICK_AXIS_X, a))
+        game_set_z(v);
+    if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y, a))
+        game_set_x(v);
+    if (config_tst_d(CONFIG_JOYSTICK_AXIS_U, a))
+    {
+        VIEWR_SET_R(0);
+        VIEWR_SET_L(0);
+
+        if (v > 0) VIEWR_SET_R(v);
+        if (v < 0) VIEWR_SET_L(v);
+>>>>>>> origin/csy-extras
     }
 }
 
@@ -591,18 +820,30 @@ static int play_loop_click(int b, int d)
     if (d)
     {
         if (config_tst_d(CONFIG_MOUSE_CAMERA_R, b))
+<<<<<<< HEAD
             rot_set(DIR_R, 1.0f, 0);
         if (config_tst_d(CONFIG_MOUSE_CAMERA_L, b))
             rot_set(DIR_L, 1.0f, 0);
+=======
+            VIEWR_SET_R(+1);
+        if (config_tst_d(CONFIG_MOUSE_CAMERA_L, b))
+            VIEWR_SET_L(-1);
+>>>>>>> origin/csy-extras
 
         click_camera(b);
     }
     else
     {
         if (config_tst_d(CONFIG_MOUSE_CAMERA_R, b))
+<<<<<<< HEAD
             rot_clr(DIR_R);
         if (config_tst_d(CONFIG_MOUSE_CAMERA_L, b))
             rot_clr(DIR_L);
+=======
+            VIEWR_SET_R(0);
+        if (config_tst_d(CONFIG_MOUSE_CAMERA_L, b))
+            VIEWR_SET_L(0);
+>>>>>>> origin/csy-extras
     }
 
     return 1;
@@ -613,9 +854,15 @@ static int play_loop_keybd(int c, int d)
     if (d)
     {
         if (config_tst_d(CONFIG_KEY_CAMERA_R, c))
+<<<<<<< HEAD
             rot_set(DIR_R, 1.0f, 0);
         if (config_tst_d(CONFIG_KEY_CAMERA_L, c))
             rot_set(DIR_L, 1.0f, 0);
+=======
+            VIEWR_SET_R(+1);
+        if (config_tst_d(CONFIG_KEY_CAMERA_L, c))
+            VIEWR_SET_L(-1);
+>>>>>>> origin/csy-extras
         if (config_tst_d(CONFIG_KEY_ROTATE_FAST, c))
             fast_rotate = 1;
 
@@ -627,15 +874,25 @@ static int play_loop_keybd(int c, int d)
             if (progress_same())
                 goto_state(&st_play_ready);
         }
+<<<<<<< HEAD
         if (c == KEY_EXIT)
+=======
+        if (config_tst_d(CONFIG_KEY_PAUSE, c))
+>>>>>>> origin/csy-extras
             goto_state(&st_pause);
     }
     else
     {
         if (config_tst_d(CONFIG_KEY_CAMERA_R, c))
+<<<<<<< HEAD
             rot_clr(DIR_R);
         if (config_tst_d(CONFIG_KEY_CAMERA_L, c))
             rot_clr(DIR_L);
+=======
+            VIEWR_SET_R(0);
+        if (config_tst_d(CONFIG_KEY_CAMERA_L, c))
+            VIEWR_SET_L(0);
+>>>>>>> origin/csy-extras
         if (config_tst_d(CONFIG_KEY_ROTATE_FAST, c))
             fast_rotate = 0;
     }
@@ -643,12 +900,20 @@ static int play_loop_keybd(int c, int d)
     if (d && c == KEY_LOOKAROUND && config_cheat())
         return goto_state(&st_look);
 
+<<<<<<< HEAD
     if (d && c == KEY_POSE)
+=======
+    if (d && c == SDLK_F6)
+>>>>>>> origin/csy-extras
         show_hud = !show_hud;
 
     if (d && c == SDLK_c && config_cheat())
     {
+<<<<<<< HEAD
         progress_stat(GAME_GOAL, 0);
+=======
+        progress_stat(GAME_GOAL);
+>>>>>>> origin/csy-extras
         return goto_state(&st_goal);
     }
     return 1;
@@ -664,22 +929,38 @@ static int play_loop_buttn(int b, int d, int device_id)
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_START, b))
             goto_state(&st_pause);
 
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_R1, b))
             rot_set(DIR_R, 1.0f, 0);
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L1, b))
             rot_set(DIR_L, 1.0f, 0);
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L2, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_R, b))
+            VIEWR_SET_R(+1);
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L, b))
+            VIEWR_SET_L(-1);
+        if (config_tst_d(CONFIG_JOYSTICK_ROTATE_FAST, b))
+>>>>>>> origin/csy-extras
             fast_rotate = 1;
 
         buttn_camera(b);
     }
     else
     {
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_R1, b))
             rot_clr(DIR_R);
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L1, b))
             rot_clr(DIR_L);
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L2, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_R, b))
+            VIEWR_SET_R(0);
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L, b))
+            VIEWR_SET_L(0);
+        if (config_tst_d(CONFIG_JOYSTICK_ROTATE_FAST, b))
+>>>>>>> origin/csy-extras
             fast_rotate = 0;
     }
     return 1;
@@ -794,14 +1075,22 @@ static int play_loop_touch(const SDL_TouchFingerEvent *event)
 static float phi;
 static float theta;
 
+<<<<<<< HEAD
 static int look_enter(struct state *st, struct state *prev, int intent)
+=======
+static int look_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     phi   = 0;
     theta = 0;
     return 0;
 }
 
+<<<<<<< HEAD
 static int look_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void look_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     return 0;
 }
@@ -848,7 +1137,11 @@ static int look_buttn(int b, int d, int device_id)
 
 struct state st_play_ready = {
     play_ready_enter,
+<<<<<<< HEAD
     play_ready_leave,
+=======
+    shared_leave,
+>>>>>>> origin/csy-extras
     play_ready_paint,
     play_ready_timer,
     NULL,
@@ -861,7 +1154,11 @@ struct state st_play_ready = {
 
 struct state st_play_set = {
     play_set_enter,
+<<<<<<< HEAD
     play_set_leave,
+=======
+    shared_leave,
+>>>>>>> origin/csy-extras
     play_set_paint,
     play_set_timer,
     NULL,
@@ -882,9 +1179,13 @@ struct state st_play_loop = {
     shared_angle,
     play_loop_click,
     play_loop_keybd,
+<<<<<<< HEAD
     play_loop_buttn,
 
     .touch = play_loop_touch
+=======
+    play_loop_buttn
+>>>>>>> origin/csy-extras
 };
 
 struct state st_look = {

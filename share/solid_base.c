@@ -26,6 +26,7 @@
 enum
 {
     SOL_VERSION_1_5 = 6,
+<<<<<<< HEAD
     SOL_VERSION_1_6 = 7,
     SOL_VERSION_2017_09 = 8,
     SOL_VERSION_2024_04 = 9,
@@ -34,6 +35,13 @@ enum
 
 #define SOL_VERSION_MIN  SOL_VERSION_1_5
 #define SOL_VERSION_CURR SOL_VERSION_2024_04
+=======
+    SOL_VERSION_DEV
+};
+
+#define SOL_VERSION_MIN  SOL_VERSION_1_5
+#define SOL_VERSION_CURR SOL_VERSION_DEV
+>>>>>>> origin/csy-extras
 
 #define SOL_MAGIC (0xAF | 'S' << 8 | 'O' << 16 | 'L' << 24)
 
@@ -68,6 +76,7 @@ static void sol_load_mtrl(fs_file fin, struct b_mtrl *mp)
 
     mp->fl = get_index(fin);
 
+<<<<<<< HEAD
     fs_read(mp->f, PATHMAX, fin);
 
     if (sol_version >= SOL_VERSION_1_6)
@@ -77,6 +86,16 @@ static void sol_load_mtrl(fs_file fin, struct b_mtrl *mp)
             mp->alpha_func = get_index(fin);
             mp->alpha_ref  = get_float(fin);
         }
+=======
+    fs_read(mp->f, 1, PATHMAX, fin);
+
+    if (sol_version >= SOL_VERSION_DEV)
+    {
+        if (mp->fl & M_SEMI_OPAQUE)
+            mp->semi_opaque = get_float(fin);
+        if (mp->fl & M_ALPHA_TEST)
+            mp->alpha_test = get_float(fin);
+>>>>>>> origin/csy-extras
     }
 
     /* Convert 1.5.4 material flags. */
@@ -148,7 +167,11 @@ static void sol_load_geom(fs_file fin, struct b_geom *gp, struct s_base *fp)
 {
     gp->mi = get_index(fin);
 
+<<<<<<< HEAD
     if (sol_version >= SOL_VERSION_1_6)
+=======
+    if (sol_version >= SOL_VERSION_DEV)
+>>>>>>> origin/csy-extras
     {
         gp->oi = get_index(fin);
         gp->oj = get_index(fin);
@@ -235,7 +258,11 @@ static void sol_load_path(fs_file fin, struct b_path *pp)
     pp->tm = TIME_TO_MS(pp->t);
     pp->t  = MS_TO_TIME(pp->tm);
 
+<<<<<<< HEAD
     if (sol_version >= SOL_VERSION_1_6)
+=======
+    if (sol_version >= SOL_VERSION_DEV)
+>>>>>>> origin/csy-extras
         pp->fl = get_index(fin);
 
     pp->e[0] = 1.0f;
@@ -245,6 +272,7 @@ static void sol_load_path(fs_file fin, struct b_path *pp)
 
     if (pp->fl & P_ORIENTED)
         get_array(fin, pp->e, 4);
+<<<<<<< HEAD
 
     if (pp->fl & P_PARENTED)
     {
@@ -259,10 +287,13 @@ static void sol_load_path(fs_file fin, struct b_path *pp)
         pp->p0 = -1;
         pp->p1 = -1;
     }
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_load_body(fs_file fin, struct b_body *bp)
 {
+<<<<<<< HEAD
     bp->p0 = get_index(fin);
 
     if (sol_version >= SOL_VERSION_1_6)
@@ -274,6 +305,19 @@ static void sol_load_body(fs_file fin, struct b_body *bp)
     }
     else
         bp->p1 = bp->p0;
+=======
+    bp->pi = get_index(fin);
+
+    if (sol_version >= SOL_VERSION_DEV)
+    {
+        bp->pj = get_index(fin);
+
+        if (bp->pj < 0)
+            bp->pj = bp->pi;
+    }
+    else
+        bp->pj = bp->pi;
+>>>>>>> origin/csy-extras
 
     bp->ni = get_index(fin);
     bp->l0 = get_index(fin);
@@ -288,6 +332,7 @@ static void sol_load_item(fs_file fin, struct b_item *hp)
 
     hp->t = get_index(fin);
     hp->n = get_index(fin);
+<<<<<<< HEAD
 
     if (sol_version >= SOL_VERSION_2024_04)
     {
@@ -302,6 +347,8 @@ static void sol_load_item(fs_file fin, struct b_item *hp)
         hp->p0 = -1;
         hp->p1 = -1;
     }
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_load_goal(fs_file fin, struct b_goal *zp)
@@ -309,6 +356,7 @@ static void sol_load_goal(fs_file fin, struct b_goal *zp)
     get_array(fin, zp->p, 3);
 
     zp->r = get_float(fin);
+<<<<<<< HEAD
 
     if (sol_version >= SOL_VERSION_2024_04)
     {
@@ -323,6 +371,8 @@ static void sol_load_goal(fs_file fin, struct b_goal *zp)
         zp->p0 = -1;
         zp->p1 = -1;
     }
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_load_swch(fs_file fin, struct b_swch *xp)
@@ -337,6 +387,7 @@ static void sol_load_swch(fs_file fin, struct b_swch *xp)
     (void)   get_index(fin);
     xp->i  = get_index(fin);
 
+<<<<<<< HEAD
     if (sol_version >= SOL_VERSION_2024_04)
     {
         xp->p0 = get_index(fin);
@@ -351,6 +402,8 @@ static void sol_load_swch(fs_file fin, struct b_swch *xp)
         xp->p1 = -1;
     }
 
+=======
+>>>>>>> origin/csy-extras
     xp->tm = TIME_TO_MS(xp->t);
     xp->t = MS_TO_TIME(xp->tm);
 }
@@ -368,6 +421,7 @@ static void sol_load_bill(fs_file fin, struct b_bill *rp)
     get_array(fin, rp->ry, 3);
     get_array(fin, rp->rz, 3);
     get_array(fin, rp->p,  3);
+<<<<<<< HEAD
 
     if (sol_version >= SOL_VERSION_2024_04)
     {
@@ -382,6 +436,8 @@ static void sol_load_bill(fs_file fin, struct b_bill *rp)
         rp->p0 = -1;
         rp->p1 = -1;
     }
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_load_jump(fs_file fin, struct b_jump *jp)
@@ -390,6 +446,7 @@ static void sol_load_jump(fs_file fin, struct b_jump *jp)
     get_array(fin, jp->q, 3);
 
     jp->r = get_float(fin);
+<<<<<<< HEAD
 
     if (sol_version >= SOL_VERSION_2024_04)
     {
@@ -404,6 +461,8 @@ static void sol_load_jump(fs_file fin, struct b_jump *jp)
         jp->p0 = -1;
         jp->p1 = -1;
     }
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_load_ball(fs_file fin, struct b_ball *up)
@@ -435,7 +494,11 @@ static void sol_load_indx(fs_file fin, struct s_base *fp)
     fp->sc = get_index(fin);
     fp->tc = get_index(fin);
 
+<<<<<<< HEAD
     if (sol_version >= SOL_VERSION_1_6)
+=======
+    if (sol_version >= SOL_VERSION_DEV)
+>>>>>>> origin/csy-extras
         fp->oc = get_index(fin);
 
     fp->gc = get_index(fin);
@@ -506,7 +569,11 @@ static int sol_load_file(fs_file fin, struct s_base *fp)
         fp->iv = (int *)           calloc(fp->ic, sizeof (*fp->iv));
 
     if (fp->ac)
+<<<<<<< HEAD
         fs_read(fp->av, fp->ac, fin);
+=======
+        fs_read(fp->av, 1, fp->ac, fin);
+>>>>>>> origin/csy-extras
 
     for (i = 0; i < fp->dc; i++) sol_load_dict(fin, fp->dv + i);
     for (i = 0; i < fp->mc; i++) sol_load_mtrl(fin, fp->mv + i);
@@ -537,6 +604,7 @@ static int sol_load_file(fs_file fin, struct s_base *fp)
         fp->uv = (struct b_ball *) calloc(fp->uc, sizeof (*fp->uv));
     }
 
+<<<<<<< HEAD
     /* Add lit flag to old materials. */
 
     if (sol_version <= SOL_VERSION_1_6)
@@ -548,6 +616,8 @@ static int sol_load_file(fs_file fin, struct s_base *fp)
           fp->mv[fp->rv[i].mi].fl &= ~M_LIT;
     }
 
+=======
+>>>>>>> origin/csy-extras
     return 1;
 }
 
@@ -561,7 +631,11 @@ static int sol_load_head(fs_file fin, struct s_base *fp)
     if (fp->ac)
     {
         fp->av = (char *) calloc(fp->ac, sizeof (*fp->av));
+<<<<<<< HEAD
         fs_read(fp->av, fp->ac, fin);
+=======
+        fs_read(fp->av, 1, fp->ac, fin);
+>>>>>>> origin/csy-extras
     }
 
     if (fp->dc)
@@ -584,7 +658,11 @@ int sol_load_base(struct s_base *fp, const char *filename)
 
     memset(fp, 0, sizeof (*fp));
 
+<<<<<<< HEAD
     if ((fin = fs_open_read(filename)))
+=======
+    if ((fin = fs_open(filename, "r")))
+>>>>>>> origin/csy-extras
     {
         res = sol_load_file(fin, fp);
         fs_close(fin);
@@ -599,7 +677,11 @@ int sol_load_meta(struct s_base *fp, const char *filename)
 
     memset(fp, 0, sizeof (*fp));
 
+<<<<<<< HEAD
     if ((fin = fs_open_read(filename)))
+=======
+    if ((fin = fs_open(filename, "r")))
+>>>>>>> origin/csy-extras
     {
         res = sol_load_head(fin, fp);
         fs_close(fin);
@@ -645,6 +727,7 @@ static void sol_stor_mtrl(fs_file fout, struct b_mtrl *mp)
     put_array(fout, mp->h, 1);
     put_index(fout, mp->fl);
 
+<<<<<<< HEAD
     fs_write(mp->f, PATHMAX, fout);
 
     if (mp->fl & M_ALPHA_TEST)
@@ -652,6 +735,14 @@ static void sol_stor_mtrl(fs_file fout, struct b_mtrl *mp)
         put_index(fout, mp->alpha_func);
         put_float(fout, mp->alpha_ref);
     }
+=======
+    fs_write(mp->f, 1, PATHMAX, fout);
+
+    if (mp->fl & M_SEMI_OPAQUE)
+        put_float(fout, mp->semi_opaque);
+    if (mp->fl & M_ALPHA_TEST)
+        put_float(fout, mp->alpha_test);
+>>>>>>> origin/csy-extras
 }
 
 static void sol_stor_vert(fs_file fout, struct b_vert *vp)
@@ -724,18 +815,26 @@ static void sol_stor_path(fs_file fout, struct b_path *pp)
 
     if (pp->fl & P_ORIENTED)
         put_array(fout, pp->e, 4);
+<<<<<<< HEAD
 
     if (pp->fl & P_PARENTED)
     {
         put_index(fout, pp->p0);
         put_index(fout, pp->p1);
     }
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_stor_body(fs_file fout, struct b_body *bp)
 {
+<<<<<<< HEAD
     put_index(fout, bp->p0);
     put_index(fout, bp->p1);
+=======
+    put_index(fout, bp->pi);
+    put_index(fout, bp->pj);
+>>>>>>> origin/csy-extras
     put_index(fout, bp->ni);
     put_index(fout, bp->l0);
     put_index(fout, bp->lc);
@@ -748,16 +847,22 @@ static void sol_stor_item(fs_file fout, struct b_item *hp)
     put_array(fout, hp->p, 3);
     put_index(fout, hp->t);
     put_index(fout, hp->n);
+<<<<<<< HEAD
     put_index(fout, hp->p0);
     put_index(fout, hp->p1);
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_stor_goal(fs_file fout, struct b_goal *zp)
 {
     put_array(fout, zp->p, 3);
     put_float(fout, zp->r);
+<<<<<<< HEAD
     put_index(fout, zp->p0);
     put_index(fout, zp->p1);
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_stor_swch(fs_file fout, struct b_swch *xp)
@@ -770,8 +875,11 @@ static void sol_stor_swch(fs_file fout, struct b_swch *xp)
     put_index(fout, xp->f);
     put_index(fout, xp->f);
     put_index(fout, xp->i);
+<<<<<<< HEAD
     put_index(fout, xp->p0);
     put_index(fout, xp->p1);
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_stor_bill(fs_file fout, struct b_bill *rp)
@@ -786,8 +894,11 @@ static void sol_stor_bill(fs_file fout, struct b_bill *rp)
     put_array(fout, rp->ry, 3);
     put_array(fout, rp->rz, 3);
     put_array(fout, rp->p,  3);
+<<<<<<< HEAD
     put_index(fout, rp->p0);
     put_index(fout, rp->p1);
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_stor_jump(fs_file fout, struct b_jump *jp)
@@ -795,8 +906,11 @@ static void sol_stor_jump(fs_file fout, struct b_jump *jp)
     put_array(fout, jp->p, 3);
     put_array(fout, jp->q, 3);
     put_float(fout, jp->r);
+<<<<<<< HEAD
     put_index(fout, jp->p0);
     put_index(fout, jp->p1);
+=======
+>>>>>>> origin/csy-extras
 }
 
 static void sol_stor_ball(fs_file fout, struct b_ball *bp)
@@ -848,7 +962,11 @@ static void sol_stor_file(fs_file fout, struct s_base *fp)
     put_index(fout, fp->wc);
     put_index(fout, fp->ic);
 
+<<<<<<< HEAD
     fs_write(fp->av, fp->ac, fout);
+=======
+    fs_write(fp->av, 1, fp->ac, fout);
+>>>>>>> origin/csy-extras
 
     for (i = 0; i < fp->dc; i++) sol_stor_dict(fout, fp->dv + i);
     for (i = 0; i < fp->mc; i++) sol_stor_mtrl(fout, fp->mv + i);
@@ -876,7 +994,11 @@ int sol_stor_base(struct s_base *fp, const char *filename)
 {
     fs_file fout;
 
+<<<<<<< HEAD
     if ((fout = fs_open_write(filename)))
+=======
+    if ((fout = fs_open(filename, "w")))
+>>>>>>> origin/csy-extras
     {
         sol_stor_file(fout, fp);
         fs_close(fout);
@@ -901,6 +1023,7 @@ const struct path mtrl_paths[2] = {
 };
 
 /*---------------------------------------------------------------------------*/
+<<<<<<< HEAD
 
 /*
  * This has to match up with mtrl_func_syms in mtrl.c.
@@ -1047,3 +1170,5 @@ int mtrl_read(struct b_mtrl *mp, const char *name)
 }
 
 /*---------------------------------------------------------------------------*/
+=======
+>>>>>>> origin/csy-extras

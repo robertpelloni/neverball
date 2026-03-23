@@ -27,9 +27,12 @@
  * code below to FindFirstFile et al.
  */
 
+<<<<<<< HEAD
 /*
  * Enumerate files in a system directory. Returns a List of allocated filenames.
  */
+=======
+>>>>>>> origin/csy-extras
 List dir_list_files(const char *path)
 {
     DIR *dir;
@@ -53,9 +56,12 @@ List dir_list_files(const char *path)
     return files;
 }
 
+<<<<<<< HEAD
 /*
  * Free the allocated filenames and the List cells.
  */
+=======
+>>>>>>> origin/csy-extras
 void dir_list_free(List files)
 {
     while (files)
@@ -65,9 +71,12 @@ void dir_list_free(List files)
     }
 }
 
+<<<<<<< HEAD
 /*
  * Add a struct dir_item to the given Array.
  */
+=======
+>>>>>>> origin/csy-extras
 static struct dir_item *add_item(Array items, const char *dir, const char *name)
 {
     struct dir_item *item = array_add(items);
@@ -78,9 +87,12 @@ static struct dir_item *add_item(Array items, const char *dir, const char *name)
     return item;
 }
 
+<<<<<<< HEAD
 /*
  * Remove a struct dir_item from the given array.
  */
+=======
+>>>>>>> origin/csy-extras
 static void del_item(Array items)
 {
     struct dir_item *item = array_get(items, array_len(items) - 1);
@@ -91,6 +103,7 @@ static void del_item(Array items)
     array_del(items);
 }
 
+<<<<<<< HEAD
 /*
  * Enumerate files in a directory. Returns an Array of struct dir_item.
  *
@@ -98,6 +111,8 @@ static void del_item(Array items)
  * of struct dir_item. By passing `filter`, any struct dir_item may be
  * excluded from the final Array.
  */
+=======
+>>>>>>> origin/csy-extras
 Array dir_scan(const char *path,
                int  (*filter)    (struct dir_item *),
                List (*list_files)(const char *),
@@ -131,9 +146,12 @@ Array dir_scan(const char *path,
     return items;
 }
 
+<<<<<<< HEAD
 /*
  * Free the Array of struct dir_item.
  */
+=======
+>>>>>>> origin/csy-extras
 void dir_free(Array items)
 {
     while (array_len(items))
@@ -142,9 +160,12 @@ void dir_free(Array items)
     array_free(items);
 }
 
+<<<<<<< HEAD
 /*
  * Test existence of a system directory.
  */
+=======
+>>>>>>> origin/csy-extras
 int dir_exists(const char *path)
 {
     DIR *dir;

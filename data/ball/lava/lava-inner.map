@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
 "classname" "worldspawn"
 "pendulum" "1"
@@ -7,3 +8,14 @@
 "material" "ball/lava/lava-inner"
 "model" "ball/basic-ball/basic-ball.obj"
 }
+=======
+{
+"classname" "worldspawn"
+"pendulum" "1"
+}
+{
+"classname" "misc_model"
+"material" "ball/lava/lava-inner"
+"model" "ball/basic-ball/basic-ball.obj"
+}
+>>>>>>> origin/csy-extras

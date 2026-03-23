@@ -19,7 +19,10 @@
 
 #include "base_config.h"
 #include "common.h"
+<<<<<<< HEAD
 #include "log.h"
+=======
+>>>>>>> origin/csy-extras
 #include "fs.h"
 
 #ifdef _WIN32
@@ -30,9 +33,12 @@
 
 static const char *pick_data_path(const char *arg_data_path)
 {
+<<<<<<< HEAD
 #ifdef __EMSCRIPTEN__
     return "/data";
 #else
+=======
+>>>>>>> origin/csy-extras
     static char dir[MAXSTR];
     char *env;
 
@@ -50,7 +56,10 @@ static const char *pick_data_path(const char *arg_data_path)
     SAFECAT(dir, CONFIG_DATA);
 
     return dir;
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> origin/csy-extras
 }
 
 static const char *pick_home_path(void)
@@ -59,6 +68,7 @@ static const char *pick_home_path(void)
     static char path[MAX_PATH];
 
     if (SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, 0, path) == S_OK)
+<<<<<<< HEAD
     {
         static char gamepath[MAX_PATH];
 
@@ -70,6 +80,9 @@ static const char *pick_home_path(void)
 
         return path;
     }
+=======
+        return path;
+>>>>>>> origin/csy-extras
     else
         return fs_base_dir();
 #else
@@ -100,6 +113,7 @@ void config_paths(const char *arg_data_path)
     /* User directory. */
 
     home = pick_home_path();
+<<<<<<< HEAD
 
 #ifdef __EMSCRIPTEN__
     /* Force IndexedDB-backed location created during Module['preRun']. */
@@ -107,11 +121,15 @@ void config_paths(const char *arg_data_path)
 #else
     user = concat_string(home, "/", CONFIG_USER, NULL);
 #endif
+=======
+    user = concat_string(home, "/", CONFIG_USER, NULL);
+>>>>>>> origin/csy-extras
 
     /* Set up directory for writing, create if needed. */
 
     if (!fs_set_write_dir(user))
     {
+<<<<<<< HEAD
         int success = 0;
 
         log_printf("Failure to establish write directory. First run?\n");
@@ -130,6 +148,10 @@ void config_paths(const char *arg_data_path)
             log_printf("Write directory not established at %s\n", user);
             fs_set_write_dir(NULL);
         }
+=======
+        if (fs_set_write_dir(home) && fs_mkdir(CONFIG_USER))
+            fs_set_write_dir(user);
+>>>>>>> origin/csy-extras
     }
 
     fs_add_path_with_archives(user);

@@ -6,4 +6,7 @@ holes-abc.txt
 holes-slippi.txt
 holes-kk.txt
 holes-vidski.txt
+<<<<<<< HEAD
 holes-iCourse.txt
+=======
+>>>>>>> origin/csy-extras

@@ -16,7 +16,10 @@
 #include "vec3.h"
 #include "config.h"
 #include "solid_vary.h"
+<<<<<<< HEAD
 #include "hmd.h"
+=======
+>>>>>>> origin/csy-extras
 #include "common.h"
 
 /*---------------------------------------------------------------------------*/
@@ -25,6 +28,7 @@ const char *status_to_str(int s)
 {
     switch (s)
     {
+<<<<<<< HEAD
     case GAME_NONE: return _("Aborted");
     case GAME_TIME: return _("Time-out");
     case GAME_GOAL: return _("Success");
@@ -62,6 +66,27 @@ int cam_speed(int c)
         return config_get_d(*cfgs[c]);
 
     return 250;
+=======
+    case GAME_NONE:    return _("Aborted");
+    case GAME_TIME:    return _("Time-out");
+    case GAME_GOAL:    return _("Success");
+    case GAME_FALL:    return _("Fall-out");
+    default:           return _("Unknown");
+    }
+}
+
+const char *view_to_str(int v)
+{
+    switch (v)
+    {
+    case VIEW_CHASE:   return _("Chase");
+    case VIEW_LAZY:    return _("Lazy");
+    case VIEW_MANUAL:  return _("Manual");
+    case VIEW_TEST1:   return _("Test 1");
+    case VIEW_TEST2:   return _("Test 2");
+    default:           return _("Unknown");
+    }
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -111,6 +136,7 @@ void game_tilt_grav(float h[3], const float g[3], const struct game_tilt *tilt)
 
 void game_view_init(struct game_view *view)
 {
+<<<<<<< HEAD
     /* In VR, ensure the default view is level. */
 
     if (hmd_stat())
@@ -127,6 +153,12 @@ void game_view_init(struct game_view *view)
     }
 
     view->a = 0.0f;
+=======
+    view->dp  = config_get_d(CONFIG_VIEW_DP) / 100.0f;
+    view->dc  = config_get_d(CONFIG_VIEW_DC) / 100.0f;
+    view->dz  = config_get_d(CONFIG_VIEW_DZ) / 100.0f;
+    view->a   = 0.0f;
+>>>>>>> origin/csy-extras
 
     view->c[0] = 0.0f;
     view->c[1] = view->dc;

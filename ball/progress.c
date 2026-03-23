@@ -20,7 +20,10 @@
 #include "lang.h"
 #include "score.h"
 #include "audio.h"
+<<<<<<< HEAD
 #include "profile.h"
+=======
+>>>>>>> origin/csy-extras
 
 #include "game_common.h"
 #include "game_client.h"
@@ -46,6 +49,7 @@ static struct level *next;
 
 static int done  =  0;
 
+<<<<<<< HEAD
 static struct progress curr[MAX_PLAYERS];
 static struct progress prev[MAX_PLAYERS];
 
@@ -69,16 +73,46 @@ struct level_progress {
 };
 
 static struct level_progress lprog[MAX_PLAYERS];
+=======
+static struct progress curr;
+static struct progress prev;
+
+/* Set stats. */
+
+static int score_rank = 3;
+static int times_rank = 3;
+
+/* Level stats. */
+
+static int status = GAME_NONE;
+
+static int coins = 0;
+static int timer = 0;
+
+static int goal   = 0; /* Current goal value. */
+static int goal_i = 0; /* Initial goal value. */
+
+static int goal_e      = 0; /* Goal enabled flag                */
+static int same_goal_e = 0; /* Reuse existing goal enabled flag */
+
+static int time_rank = 3;
+static int goal_rank = 3;
+static int coin_rank = 3;
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
 void progress_init(int m)
 {
+<<<<<<< HEAD
     int p;
+=======
+>>>>>>> origin/csy-extras
     mode  = m;
 
     replay = 0;
 
+<<<<<<< HEAD
     score_rank = RANK_LAST;
     times_rank = RANK_LAST;
 
@@ -101,12 +135,27 @@ void progress_init(int m)
         lprog[p].goal_rank = RANK_LAST;
         lprog[p].coin_rank = RANK_LAST;
     }
+=======
+    curr.balls = 2;
+    curr.score = 0;
+    curr.times = 0;
+
+    prev = curr;
+
+    score_rank = times_rank = 3;
+
+    done  = 0;
+>>>>>>> origin/csy-extras
 }
 
 static int init_level(void)
 {
     demo_play_init(USER_REPLAY_FILE, level, mode,
+<<<<<<< HEAD
                    curr[0].score, curr[0].balls, curr[0].times);
+=======
+                   curr.score, curr.balls, curr.times);
+>>>>>>> origin/csy-extras
 
     /*
      * Init both client and server, then process the first batch
@@ -115,25 +164,38 @@ static int init_level(void)
      */
 
     if (game_client_init(level_file(level)) &&
+<<<<<<< HEAD
         game_server_init(level_file(level), level_time(level), lprog[0].goal_e, mode))
+=======
+        game_server_init(level_file(level), level_time(level), goal_e))
+>>>>>>> origin/csy-extras
     {
         game_client_sync(demo_fp);
         audio_music_fade_to(2.0f, level_song(level));
         return 1;
     }
 
+<<<<<<< HEAD
     demo_play_stop(1);
+=======
+    demo_play_stop();
+>>>>>>> origin/csy-extras
     return 0;
 }
 
 int  progress_play(struct level *l)
 {
+<<<<<<< HEAD
     int p;
     if (l)
+=======
+    if (l && (level_opened(l) || config_cheat()))
+>>>>>>> origin/csy-extras
     {
         level = l;
 
         next   = NULL;
+<<<<<<< HEAD
 
         for (p = 0; p < MAX_PLAYERS; p++)
         {
@@ -151,6 +213,22 @@ int  progress_play(struct level *l)
             lprog[p].goal_rank = RANK_LAST;
             lprog[p].coin_rank = RANK_LAST;
         }
+=======
+        status = GAME_NONE;
+        coins  = 0;
+        timer  = 0;
+        goal   = goal_i = level_goal(level);
+
+        if (same_goal_e)
+            same_goal_e = 0;
+        else
+            goal_e = (mode != MODE_CHALLENGE && level_completed(level) &&
+                      config_get_d(CONFIG_LOCK_GOALS) == 0) || goal == 0;
+
+        prev = curr;
+
+        time_rank = goal_rank = coin_rank = 3;
+>>>>>>> origin/csy-extras
 
         return init_level();
     }
@@ -159,6 +237,7 @@ int  progress_play(struct level *l)
 
 void progress_step(void)
 {
+<<<<<<< HEAD
     int p;
     int count = config_get_d(CONFIG_MULTIBALL);
     if (count < 1) count = 1;
@@ -176,10 +255,23 @@ void progress_step(void)
 
                 lprog[p].goal = 0;
             }
+=======
+    if (goal > 0)
+    {
+        goal = goal_i - curr_coins();
+
+        if (goal <= 0)
+        {
+            if (!replay)
+                game_set_goal();
+
+            goal = 0;
+>>>>>>> origin/csy-extras
         }
     }
 }
 
+<<<<<<< HEAD
 void progress_stat(int s, int p)
 {
     int i, dirty = 0;
@@ -207,6 +299,34 @@ void progress_stat(int s, int p)
                                    &lprog[p].time_rank,
                                    lprog[p].goal == 0 ? &lprog[p].goal_rank : NULL,
                                    &lprog[p].coin_rank);
+=======
+void progress_stat(int s)
+{
+    int i, dirty = 0;
+
+    status = s;
+
+    coins = curr_coins();
+    timer = (level_time(level) == 0 ?
+             curr_clock() :
+             level_time(level) - curr_clock());
+
+    switch (status)
+    {
+    case GAME_GOAL:
+
+        for (i = curr.score + 1; i <= curr.score + coins; i++)
+            if (progress_reward_ball(i))
+                curr.balls++;
+
+        curr.score += coins;
+        curr.times += timer;
+
+        dirty = level_score_update(level, timer, coins,
+                                   &time_rank,
+                                   goal == 0 ? &goal_rank : NULL,
+                                   &coin_rank);
+>>>>>>> origin/csy-extras
 
         if (!level_completed(level))
         {
@@ -258,8 +378,13 @@ void progress_stat(int s, int p)
              next = next->next)
             /* Do nothing */;
 
+<<<<<<< HEAD
         curr[p].times += lprog[p].timer;
         curr[p].balls -= 1;
+=======
+        curr.times += timer;
+        curr.balls -= 1;
+>>>>>>> origin/csy-extras
 
         break;
     }
@@ -267,11 +392,16 @@ void progress_stat(int s, int p)
     if (dirty && mode != MODE_STANDALONE)
         set_store_hs();
 
+<<<<<<< HEAD
     demo_play_stat(lprog[p].status, lprog[p].coins, lprog[p].timer);
+=======
+    demo_play_stat(status, coins, timer);
+>>>>>>> origin/csy-extras
 }
 
 void progress_stop(void)
 {
+<<<<<<< HEAD
     int d;
 
     if (level)
@@ -280,24 +410,40 @@ void progress_stop(void)
         d = 0;
 
     demo_play_stop(d);
+=======
+    demo_play_stop();
+>>>>>>> origin/csy-extras
 }
 
 void progress_exit(void)
 {
     assert(done);
 
+<<<<<<< HEAD
     if (set_score_update(curr[0].times, curr[0].score, &score_rank, &times_rank))
+=======
+    if (set_score_update(curr.times, curr.score, &score_rank, &times_rank))
+>>>>>>> origin/csy-extras
         set_store_hs();
 }
 
 int  progress_replay(const char *filename)
 {
+<<<<<<< HEAD
     if (demo_replay_init(filename, &lprog[0].goal, &mode,
                          &curr[0].balls,
                          &curr[0].score,
                          &curr[0].times))
     {
         lprog[0].goal_i = lprog[0].goal;
+=======
+    if (demo_replay_init(filename, &goal, &mode,
+                         &curr.balls,
+                         &curr.score,
+                         &curr.times))
+    {
+        goal_i = goal;
+>>>>>>> origin/csy-extras
         replay = 1;
         return 1;
     }
@@ -310,7 +456,11 @@ int  progress_next_avail(void)
     if (next)
     {
         if (mode == MODE_CHALLENGE)
+<<<<<<< HEAD
             return lprog[0].status == GAME_GOAL;
+=======
+            return status == GAME_GOAL;
+>>>>>>> origin/csy-extras
         else
             return level_opened(next);
     }
@@ -319,7 +469,11 @@ int  progress_next_avail(void)
 
 int  progress_same_avail(void)
 {
+<<<<<<< HEAD
     switch (lprog[0].status)
+=======
+    switch (status)
+>>>>>>> origin/csy-extras
     {
     case GAME_NONE:
         return mode != MODE_CHALLENGE;
@@ -344,15 +498,26 @@ int  progress_same(void)
 
     /* Reset progress and goal enabled state. */
 
+<<<<<<< HEAD
     if (lprog[0].status == GAME_GOAL)
         curr[0] = prev[0];
+=======
+    if (status == GAME_GOAL)
+        curr = prev;
+
+    same_goal_e = 1;
+>>>>>>> origin/csy-extras
 
     return progress_play(level);
 }
 
 int  progress_dead(void)
 {
+<<<<<<< HEAD
     return mode == MODE_CHALLENGE ? curr[0].balls < 0 : 0;
+=======
+    return mode == MODE_CHALLENGE ? curr.balls < 0 : 0;
+>>>>>>> origin/csy-extras
 }
 
 int  progress_done(void)
@@ -362,14 +527,24 @@ int  progress_done(void)
 
 int  progress_last(void)
 {
+<<<<<<< HEAD
     return mode != MODE_CHALLENGE && lprog[0].status == GAME_GOAL && !next;
+=======
+    return mode != MODE_CHALLENGE && status == GAME_GOAL && !next;
+>>>>>>> origin/csy-extras
 }
 
 int  progress_lvl_high(void)
 {
+<<<<<<< HEAD
     return (lprog[0].time_rank < RANK_LAST ||
             lprog[0].goal_rank < RANK_LAST ||
             lprog[0].coin_rank < RANK_LAST);
+=======
+    return (time_rank < RANK_LAST ||
+            goal_rank < RANK_LAST ||
+            coin_rank < RANK_LAST);
+>>>>>>> origin/csy-extras
 }
 
 int  progress_set_high(void)
@@ -386,7 +561,11 @@ void progress_rename(int set_only)
     {
         /* HACK Avoid touching the set. */
 
+<<<<<<< HEAD
         level_rename_player(level, lprog[0].time_rank, lprog[0].goal_rank, lprog[0].coin_rank, player);
+=======
+        level_rename_player(level, time_rank, goal_rank, coin_rank, player);
+>>>>>>> origin/csy-extras
         demo_rename_player(USER_REPLAY_FILE, player);
 
         return;
@@ -398,7 +577,11 @@ void progress_rename(int set_only)
     }
     else
     {
+<<<<<<< HEAD
         level_rename_player(level, lprog[0].time_rank, lprog[0].goal_rank, lprog[0].coin_rank, player);
+=======
+        level_rename_player(level, time_rank, goal_rank, coin_rank, player);
+>>>>>>> origin/csy-extras
         demo_rename_player(USER_REPLAY_FILE, player);
 
         if (progress_done())
@@ -417,6 +600,7 @@ int  progress_reward_ball(int s)
 
 struct level *curr_level(void) { return level; }
 
+<<<<<<< HEAD
 int curr_balls(int p) { return (p >= 0 && p < MAX_PLAYERS) ? curr[p].balls : 0; }
 int curr_score(int p) { return (p >= 0 && p < MAX_PLAYERS) ? curr[p].score : 0; }
 int curr_mode (void) { return mode;       }
@@ -425,6 +609,16 @@ int curr_goal (void) { return lprog[0].goal;       }
 int progress_time_rank(void) { return lprog[0].time_rank; }
 int progress_goal_rank(void) { return lprog[0].goal_rank; }
 int progress_coin_rank(void) { return lprog[0].coin_rank; }
+=======
+int curr_balls(void) { return curr.balls; }
+int curr_score(void) { return curr.score; }
+int curr_mode (void) { return mode;       }
+int curr_goal (void) { return goal;       }
+
+int progress_time_rank(void) { return time_rank; }
+int progress_goal_rank(void) { return goal_rank; }
+int progress_coin_rank(void) { return coin_rank; }
+>>>>>>> origin/csy-extras
 
 int progress_times_rank(void) { return times_rank; }
 int progress_score_rank(void) { return score_rank; }

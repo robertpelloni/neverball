@@ -2,14 +2,22 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
+<<<<<<< HEAD
 "version" "1.1"
+=======
+"version" "1"
+>>>>>>> origin/csy-extras
 "back" "map-back/city.sol"
 "grad" "back/city.png"
 "shot" "shot-medium/telemaze.jpg"
 "song" "bgm/track3.ogg"
 "time" "7500"
 "goal" "50"
+<<<<<<< HEAD
 "time_hs" "1000 2500"
+=======
+"time_hs" "1000 4000"
+>>>>>>> origin/csy-extras
 "coin_hs" "84 60"
 "goal_hs" "2000 4000"
 "message" "This maze has no walls.\But that doesn't make the solution\any easier to find.\"

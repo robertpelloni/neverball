@@ -25,9 +25,12 @@
 #include "course.h"
 #include "config.h"
 #include "video.h"
+<<<<<<< HEAD
 #include "version.h"
 #include "lang.h"
 #include "key.h"
+=======
+>>>>>>> origin/csy-extras
 
 #include "st_all.h"
 #include "st_conf.h"
@@ -67,12 +70,21 @@ static int score_card(const char  *title,
         {
             if ((kd = gui_varray(jd)))
             {
+<<<<<<< HEAD
                 if (p1) gui_label(kd, _("O"),      GUI_SML, 0, 0);
                 if (p1) gui_label(kd, hole_out(0), GUI_SML, gui_wht, gui_wht);
                 if (p1) gui_label(kd, hole_out(1), GUI_SML, gui_red, gui_wht);
                 if (p2) gui_label(kd, hole_out(2), GUI_SML, gui_grn, gui_wht);
                 if (p3) gui_label(kd, hole_out(3), GUI_SML, gui_blu, gui_wht);
                 if (p4) gui_label(kd, hole_out(4), GUI_SML, gui_yel, gui_wht);
+=======
+                if (p1) gui_label(kd, _("O"),      0, 0, 0);
+                if (p1) gui_label(kd, hole_out(0), 0, gui_wht, gui_wht);
+                if (p1) gui_label(kd, hole_out(1), 0, gui_red, gui_wht);
+                if (p2) gui_label(kd, hole_out(2), 0, gui_grn, gui_wht);
+                if (p3) gui_label(kd, hole_out(3), 0, gui_blu, gui_wht);
+                if (p4) gui_label(kd, hole_out(4), 0, gui_yel, gui_wht);
+>>>>>>> origin/csy-extras
 
                 gui_set_rect(kd, GUI_RGT);
             }
@@ -82,12 +94,21 @@ static int score_card(const char  *title,
                 for (i = m; i > 0; i--)
                     if ((ld = gui_varray(kd)))
                     {
+<<<<<<< HEAD
                         if (p1) gui_label(ld, number(i), GUI_SML, 0, 0);
                         if (p1) gui_label(ld, hole_score(i, 0), GUI_SML, gui_wht, gui_wht);
                         if (p1) gui_label(ld, hole_score(i, 1), GUI_SML, gui_red, gui_wht);
                         if (p2) gui_label(ld, hole_score(i, 2), GUI_SML, gui_grn, gui_wht);
                         if (p3) gui_label(ld, hole_score(i, 3), GUI_SML, gui_blu, gui_wht);
                         if (p4) gui_label(ld, hole_score(i, 4), GUI_SML, gui_yel, gui_wht);
+=======
+                        if (p1) gui_label(ld, number(i), 0, 0, 0);
+                        if (p1) gui_label(ld, hole_score(i, 0), 0, gui_wht, gui_wht);
+                        if (p1) gui_label(ld, hole_score(i, 1), 0, gui_red, gui_wht);
+                        if (p2) gui_label(ld, hole_score(i, 2), 0, gui_grn, gui_wht);
+                        if (p3) gui_label(ld, hole_score(i, 3), 0, gui_blu, gui_wht);
+                        if (p4) gui_label(ld, hole_score(i, 4), 0, gui_yel, gui_wht);
+>>>>>>> origin/csy-extras
                     }
 
                 gui_set_rect(kd, GUI_LFT);
@@ -99,11 +120,19 @@ static int score_card(const char  *title,
 
                 if ((ld = gui_varray(kd)))
                 {
+<<<<<<< HEAD
                     if (p1) gui_label(ld, _("Par"), GUI_SML, gui_wht, gui_wht);
                     if (p1) gui_label(ld, _("P1"),  GUI_SML, gui_red, gui_wht);
                     if (p2) gui_label(ld, _("P2"),  GUI_SML, gui_grn, gui_wht);
                     if (p3) gui_label(ld, _("P3"),  GUI_SML, gui_blu, gui_wht);
                     if (p4) gui_label(ld, _("P4"),  GUI_SML, gui_yel, gui_wht);
+=======
+                    if (p1) gui_label(ld, _("Par"), 0, gui_wht, gui_wht);
+                    if (p1) gui_label(ld, _("P1"),  0, gui_red, gui_wht);
+                    if (p2) gui_label(ld, _("P2"),  0, gui_grn, gui_wht);
+                    if (p3) gui_label(ld, _("P3"),  0, gui_blu, gui_wht);
+                    if (p4) gui_label(ld, _("P4"),  0, gui_yel, gui_wht);
+>>>>>>> origin/csy-extras
 
                     gui_set_rect(ld, GUI_ALL);
                 }
@@ -116,24 +145,42 @@ static int score_card(const char  *title,
         {
             if ((kd = gui_varray(jd)))
             {
+<<<<<<< HEAD
                 if (p1) gui_label(kd, _("Tot"),    GUI_SML, 0, 0);
                 if (p1) gui_label(kd, hole_tot(0), GUI_SML, gui_wht, gui_wht);
                 if (p1) gui_label(kd, hole_tot(1), GUI_SML, gui_red, gui_wht);
                 if (p2) gui_label(kd, hole_tot(2), GUI_SML, gui_grn, gui_wht);
                 if (p3) gui_label(kd, hole_tot(3), GUI_SML, gui_blu, gui_wht);
                 if (p4) gui_label(kd, hole_tot(4), GUI_SML, gui_yel, gui_wht);
+=======
+                if (p1) gui_label(kd, _("Tot"),    0, 0, 0);
+                if (p1) gui_label(kd, hole_tot(0), 0, gui_wht, gui_wht);
+                if (p1) gui_label(kd, hole_tot(1), 0, gui_red, gui_wht);
+                if (p2) gui_label(kd, hole_tot(2), 0, gui_grn, gui_wht);
+                if (p3) gui_label(kd, hole_tot(3), 0, gui_blu, gui_wht);
+                if (p4) gui_label(kd, hole_tot(4), 0, gui_yel, gui_wht);
+>>>>>>> origin/csy-extras
 
                 gui_set_rect(kd, GUI_ALL);
             }
 
             if ((kd = gui_varray(jd)))
             {
+<<<<<<< HEAD
                 if (p1) gui_label(kd, _("I"),     GUI_SML, 0, 0);
                 if (p1) gui_label(kd, hole_in(0), GUI_SML, gui_wht, gui_wht);
                 if (p1) gui_label(kd, hole_in(1), GUI_SML, gui_red, gui_wht);
                 if (p2) gui_label(kd, hole_in(2), GUI_SML, gui_grn, gui_wht);
                 if (p3) gui_label(kd, hole_in(3), GUI_SML, gui_blu, gui_wht);
                 if (p4) gui_label(kd, hole_in(4), GUI_SML, gui_yel, gui_wht);
+=======
+                if (p1) gui_label(kd, _("I"),     0, 0, 0);
+                if (p1) gui_label(kd, hole_in(0), 0, gui_wht, gui_wht);
+                if (p1) gui_label(kd, hole_in(1), 0, gui_red, gui_wht);
+                if (p2) gui_label(kd, hole_in(2), 0, gui_grn, gui_wht);
+                if (p3) gui_label(kd, hole_in(3), 0, gui_blu, gui_wht);
+                if (p4) gui_label(kd, hole_in(4), 0, gui_yel, gui_wht);
+>>>>>>> origin/csy-extras
 
                 gui_set_rect(kd, GUI_RGT);
             }
@@ -143,12 +190,21 @@ static int score_card(const char  *title,
                 for (i = n; i > m; i--)
                     if ((ld = gui_varray(kd)))
                     {
+<<<<<<< HEAD
                         if (p1) gui_label(ld, number(i), GUI_SML, 0, 0);
                         if (p1) gui_label(ld, hole_score(i, 0), GUI_SML, gui_wht, gui_wht);
                         if (p1) gui_label(ld, hole_score(i, 1), GUI_SML, gui_red, gui_wht);
                         if (p2) gui_label(ld, hole_score(i, 2), GUI_SML, gui_grn, gui_wht);
                         if (p3) gui_label(ld, hole_score(i, 3), GUI_SML, gui_blu, gui_wht);
                         if (p4) gui_label(ld, hole_score(i, 4), GUI_SML, gui_yel, gui_wht);
+=======
+                        if (p1) gui_label(ld, number(i), 0, 0, 0);
+                        if (p1) gui_label(ld, hole_score(i, 0), 0, gui_wht, gui_wht);
+                        if (p1) gui_label(ld, hole_score(i, 1), 0, gui_red, gui_wht);
+                        if (p2) gui_label(ld, hole_score(i, 2), 0, gui_grn, gui_wht);
+                        if (p3) gui_label(ld, hole_score(i, 3), 0, gui_blu, gui_wht);
+                        if (p4) gui_label(ld, hole_score(i, 4), 0, gui_yel, gui_wht);
+>>>>>>> origin/csy-extras
                     }
 
                 gui_set_rect(kd, GUI_LFT);
@@ -160,11 +216,19 @@ static int score_card(const char  *title,
 
                 if ((ld = gui_varray(kd)))
                 {
+<<<<<<< HEAD
                     if (p1) gui_label(ld, _("Par"), GUI_SML, gui_wht, gui_wht);
                     if (p1) gui_label(ld, _("P1"),  GUI_SML, gui_red, gui_wht);
                     if (p2) gui_label(ld, _("P2"),  GUI_SML, gui_grn, gui_wht);
                     if (p3) gui_label(ld, _("P3"),  GUI_SML, gui_blu, gui_wht);
                     if (p4) gui_label(ld, _("P4"),  GUI_SML, gui_yel, gui_wht);
+=======
+                    if (p1) gui_label(ld, _("Par"), 0, gui_wht, gui_wht);
+                    if (p1) gui_label(ld, _("P1"),  0, gui_red, gui_wht);
+                    if (p2) gui_label(ld, _("P2"),  0, gui_grn, gui_wht);
+                    if (p3) gui_label(ld, _("P3"),  0, gui_blu, gui_wht);
+                    if (p4) gui_label(ld, _("P4"),  0, gui_yel, gui_wht);
+>>>>>>> origin/csy-extras
 
                     gui_set_rect(ld, GUI_ALL);
                 }
@@ -179,7 +243,11 @@ static int score_card(const char  *title,
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int shared_stick_basic(int id, int a, float v, int bump, int device_id)
+=======
+static int shared_stick_basic(int id, int a, float v, int bump)
+>>>>>>> origin/csy-extras
 {
     int jd;
 
@@ -189,9 +257,15 @@ static int shared_stick_basic(int id, int a, float v, int bump, int device_id)
     return jd;
 }
 
+<<<<<<< HEAD
 static void shared_stick(int id, int a, float v, int bump, int device_id)
 {
     shared_stick_basic(id, a, v, bump, device_id);
+=======
+static void shared_stick(int id, int a, float v, int bump)
+{
+    shared_stick_basic(id, a, v, bump);
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -213,7 +287,11 @@ static int title_action(int i)
     return 1;
 }
 
+<<<<<<< HEAD
 static int title_enter(struct state *st, struct state *prev, int intent)
+=======
+static int title_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     int id, jd, kd;
     int root_id;
@@ -222,7 +300,14 @@ static int title_enter(struct state *st, struct state *prev, int intent)
 
     if ((root_id = gui_root()))
     {
+<<<<<<< HEAD
         if ((id = gui_vstack(root_id)))
+=======
+        gui_label(id, "Neverputt", GUI_LRG, 0, 0);
+        gui_space(id);
+
+        if ((jd = gui_harray(id)))
+>>>>>>> origin/csy-extras
         {
             gui_label(id, "Neverputt", GUI_LRG, 0, 0);
             gui_space(id);
@@ -258,7 +343,11 @@ static int title_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(root_id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int title_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void title_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     if (next == &st_conf)
     {
@@ -304,7 +393,11 @@ static int title_buttn(int b, int d, int device_id)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return title_action(gui_token(gui_active()));
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+>>>>>>> origin/csy-extras
             return title_action(TITLE_EXIT);
     }
     return 1;
@@ -333,10 +426,31 @@ static int course_action(int i)
 }
 
 static int comp_size(int n, int s)
+<<<<<<< HEAD
+=======
 {
     return n <= s * s ? s : comp_size(n, s + 1);
 }
 
+static int comp_cols(int n)
+{
+    return comp_size(n, 1);
+}
+
+static int comp_rows(int n)
+{
+    int s = comp_size(n, 1);
+
+    return n <= s * (s - 1) ? s - 1 : s;
+}
+
+static int course_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
+{
+    return n <= s * s ? s : comp_size(n, s + 1);
+}
+
+<<<<<<< HEAD
 static int comp_cols(int n)
 {
     return comp_size(n, 1);
@@ -354,6 +468,8 @@ static int course_enter(struct state *st, struct state *prev, int intent)
     int w = video.device_w;
     int h = video.device_h;
 
+=======
+>>>>>>> origin/csy-extras
     int id, jd, kd, ld, md;
 
     int i, j, r, c, n;
@@ -419,7 +535,11 @@ static int course_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int course_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void course_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     return transition_slide(id, 0, intent);
 }
@@ -452,11 +572,19 @@ static void course_point(int id, int x, int y, int dx, int dy)
     }
 }
 
+<<<<<<< HEAD
 static void course_stick(int id, int a, float v, int bump, int device_id)
 {
     int jd;
 
     if ((jd = shared_stick_basic(id, a, v, bump, device_id)))
+=======
+static void course_stick(int id, int a, float v, int bump)
+{
+    int jd;
+
+    if ((jd = shared_stick_basic(id, a, v, bump)))
+>>>>>>> origin/csy-extras
     {
         int i = gui_token(jd);
 
@@ -480,7 +608,11 @@ static int course_buttn(int b, int d, int device_id)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return course_action(gui_token(gui_active()));
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+>>>>>>> origin/csy-extras
             return course_action(COURSE_BACK);
     }
     return 1;
@@ -527,7 +659,11 @@ static int party_action(int i)
     return 1;
 }
 
+<<<<<<< HEAD
 static int party_enter(struct state *st, struct state *prev, int intent)
+=======
+static int party_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     int id, jd;
 
@@ -565,7 +701,11 @@ static int party_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int party_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void party_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     return transition_slide(id, 0, intent);
 }
@@ -597,7 +737,11 @@ static int party_buttn(int b, int d, int device_id)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return party_action(gui_token(gui_active()));
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+>>>>>>> origin/csy-extras
             return party_action(PARTY_B);
     }
     return 1;
@@ -618,6 +762,12 @@ int goto_pause(struct state *s)
     if (curr_state() == &st_pause)
         return 1;
 
+<<<<<<< HEAD
+=======
+    if (e && !config_tst_d(CONFIG_KEY_PAUSE, SDLK_ESCAPE))
+        return goto_state(s);
+
+>>>>>>> origin/csy-extras
     st_continue = curr_state();
     st_quit = s;
     paused = 1;
@@ -640,7 +790,11 @@ static int pause_action(int i)
     return 1;
 }
 
+<<<<<<< HEAD
 static int pause_enter(struct state *st, struct state *prev, int intent)
+=======
+static int pause_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     int id, jd, td;
 
@@ -665,7 +819,11 @@ static int pause_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int pause_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void pause_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     hud_free();
     audio_music_fade_in(0.5f);
@@ -707,8 +865,12 @@ static int pause_buttn(int b, int d, int device_id)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return pause_action(gui_token(gui_active()));
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b) ||
             config_tst_d(CONFIG_JOYSTICK_BUTTON_START, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+>>>>>>> origin/csy-extras
             return pause_action(PAUSE_CONTINUE);
     }
     return 1;
@@ -720,8 +882,13 @@ static int shared_keybd(int c, int d)
 {
     if (d)
     {
+<<<<<<< HEAD
         if (c == KEY_EXIT)
             return goto_pause(&st_over);
+=======
+        if (config_tst_d(CONFIG_KEY_PAUSE, c))
+            return goto_pause(&st_over, 0);
+>>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -730,7 +897,11 @@ static int shared_keybd(int c, int d)
 
 static int num = 0;
 
+<<<<<<< HEAD
 static int next_enter(struct state *st, struct state *prev, int intent)
+=======
+static int next_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     int id, jd;
     char str[MAXSTR];
@@ -780,7 +951,11 @@ static int next_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int next_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void next_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     hud_free();
     return transition_slide(id, 0, intent);
@@ -789,7 +964,11 @@ static int next_leave(struct state *st, struct state *next, int id, int intent)
 static void next_paint(int id, float t)
 {
     game_draw(0, t);
+<<<<<<< HEAD
     hud_paint(0, 0, video.device_w, video.device_h);
+=======
+    hud_paint();
+>>>>>>> origin/csy-extras
     gui_paint(id);
 }
 
@@ -828,8 +1007,9 @@ static int next_buttn(int b, int d, int device_id)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
         {
-            if (num > 0)
+            if (num > 0 && hole_goto(num, -1))
             {
+<<<<<<< HEAD
                 if (hole_goto(num, -1))
                 {
                     num = 0;
@@ -840,6 +1020,10 @@ static int next_buttn(int b, int d, int device_id)
                     num = 0;
                     return 1;
                 }
+=======
+                num = 0;
+                return goto_state(&st_next);
+>>>>>>> origin/csy-extras
             }
             return goto_state(&st_flyby);
         }
@@ -851,7 +1035,11 @@ static int next_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int poser_enter(struct state *st, struct state *prev, int intent)
+=======
+static int poser_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     game_set_fly(-1.f);
     return 0;
@@ -876,7 +1064,11 @@ static int poser_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int flyby_enter(struct state *st, struct state *prev, int intent)
+=======
+static int flyby_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     video_hide_cursor();
 
@@ -888,7 +1080,11 @@ static int flyby_enter(struct state *st, struct state *prev, int intent)
     return 0;
 }
 
+<<<<<<< HEAD
 static int flyby_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void flyby_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     video_show_cursor();
     hud_free();
@@ -898,7 +1094,11 @@ static int flyby_leave(struct state *st, struct state *next, int id, int intent)
 static void flyby_paint(int id, float t)
 {
     game_draw(0, t);
+<<<<<<< HEAD
     hud_paint(0, 0, video.device_w, video.device_h);
+=======
+    hud_paint();
+>>>>>>> origin/csy-extras
 }
 
 static void flyby_timer(int id, float dt)
@@ -945,12 +1145,20 @@ static int stroke_rotate = 0;
 static int stroke_rotate_alt = 0;
 static int stroke_mag = 0;
 
+<<<<<<< HEAD
 static int stroke_enter(struct state *st, struct state *prev, int intent)
+=======
+static int stroke_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     hud_init();
     game_clr_mag();
     config_set_d(CONFIG_CAMERA, 2);
+<<<<<<< HEAD
     video_set_grab(1);
+=======
+    video_set_grab(!paused);
+>>>>>>> origin/csy-extras
 
     if (paused)
         paused = 0;
@@ -958,7 +1166,11 @@ static int stroke_enter(struct state *st, struct state *prev, int intent)
     return 0;
 }
 
+<<<<<<< HEAD
 static int stroke_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void stroke_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     hud_free();
     video_clr_grab();
@@ -971,7 +1183,11 @@ static int stroke_leave(struct state *st, struct state *next, int id, int intent
 static void stroke_paint(int id, float t)
 {
     game_draw(0, t);
+<<<<<<< HEAD
     hud_paint(0, 0, video.device_w, video.device_h);
+=======
+    hud_paint();
+>>>>>>> origin/csy-extras
 }
 
 static void stroke_timer(int id, float dt)
@@ -998,11 +1214,19 @@ static void stroke_point(int id, int x, int y, int dx, int dy)
     game_set_mag(dy);
 }
 
+<<<<<<< HEAD
 static void stroke_stick(int id, int a, float v, int bump, int device_id)
 {
     if      (config_tst_d(CONFIG_JOYSTICK_AXIS_X0, a))
         stroke_rotate = 6 * v;
     else if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y0, a))
+=======
+static void stroke_stick(int id, int a, float v, int bump)
+{
+    if (config_tst_d(CONFIG_JOYSTICK_AXIS_X, a))
+        stroke_rotate = 6 * v;
+    else if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y, a))
+>>>>>>> origin/csy-extras
         stroke_mag = -6 * v;
 }
 
@@ -1032,7 +1256,11 @@ static int stroke_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int roll_enter(struct state *st, struct state *prev, int intent)
+=======
+static int roll_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     video_hide_cursor();
     hud_init();
@@ -1045,7 +1273,11 @@ static int roll_enter(struct state *st, struct state *prev, int intent)
     return 0;
 }
 
+<<<<<<< HEAD
 static int roll_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void roll_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     video_show_cursor();
     hud_free();
@@ -1055,7 +1287,11 @@ static int roll_leave(struct state *st, struct state *next, int id, int intent)
 static void roll_paint(int id, float t)
 {
     game_draw(0, t);
+<<<<<<< HEAD
     hud_paint(0, 0, video.device_w, video.device_h);
+=======
+    hud_paint();
+>>>>>>> origin/csy-extras
 }
 
 static void roll_timer(int id, float dt)
@@ -1083,7 +1319,11 @@ static int roll_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int goal_enter(struct state *st, struct state *prev, int intent)
+=======
+static int goal_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     int id;
 
@@ -1100,7 +1340,11 @@ static int goal_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int goal_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void goal_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     hud_free();
     return transition_slide(id, 0, intent);
@@ -1157,7 +1401,11 @@ static int goal_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int stop_enter(struct state *st, struct state *prev, int intent)
+=======
+static int stop_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     if (paused)
         paused = 0;
@@ -1169,7 +1417,11 @@ static int stop_enter(struct state *st, struct state *prev, int intent)
     return 0;
 }
 
+<<<<<<< HEAD
 static int stop_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void stop_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     hud_free();
     return 0;
@@ -1178,7 +1430,11 @@ static int stop_leave(struct state *st, struct state *next, int id, int intent)
 static void stop_paint(int id, float t)
 {
     game_draw(0, t);
+<<<<<<< HEAD
     hud_paint(0, 0, video.device_w, video.device_h);
+=======
+    hud_paint();
+>>>>>>> origin/csy-extras
 }
 
 static void stop_timer(int id, float dt)
@@ -1229,7 +1485,11 @@ static int stop_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int fall_enter(struct state *st, struct state *prev, int intent)
+=======
+static int fall_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     int id;
 
@@ -1249,7 +1509,11 @@ static int fall_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int fall_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void fall_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     hud_free();
     return transition_slide(id, 0, intent);
@@ -1306,7 +1570,11 @@ static int fall_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int score_enter(struct state *st, struct state *prev, int intent)
+=======
+static int score_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     audio_music_fade_out(2.f);
 
@@ -1316,7 +1584,11 @@ static int score_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(score_card(_("Scores"), gui_yel, gui_red), 1, intent);
 }
 
+<<<<<<< HEAD
 static int score_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void score_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     return transition_slide(id, 0, intent);
 }
@@ -1363,13 +1635,21 @@ static int score_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int over_enter(struct state *st, struct state *prev, int intent)
+=======
+static int over_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     audio_music_fade_out(2.f);
     return transition_slide(score_card(_("Final Scores"), gui_yel, gui_red), 1, intent);
 }
 
+<<<<<<< HEAD
 static int over_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void over_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     return transition_slide(id, 0, intent);
 }

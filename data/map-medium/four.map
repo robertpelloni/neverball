@@ -2,14 +2,22 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
+<<<<<<< HEAD
 "version" "1.1"
+=======
+"version" "1"
+>>>>>>> origin/csy-extras
 "back" "map-back/ocean.sol"
 "grad" "back/ocean.png"
 "shot" "shot-medium/four.jpg"
 "song" "bgm/track2.ogg"
 "time" "9000"
 "goal" "13"
+<<<<<<< HEAD
 "time_hs" "600 1100"
+=======
+"time_hs" "600 2000"
+>>>>>>> origin/csy-extras
 "coin_hs" "130 20"
 "goal_hs" "750 3000"
 "message" "Balance risk versus reward.\"

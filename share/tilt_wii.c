@@ -112,7 +112,11 @@ static int tilt_func(void *data)
     if (strlen(address) > 0)
     {
         if (wiimote_connect(&wiimote, address) < 0)
+<<<<<<< HEAD
             log_printf("Wiimote error (%s)\n", wiimote_get_error());
+=======
+            fprintf(stderr, "%s\n", wiimote_get_error());
+>>>>>>> origin/csy-extras
         else
         {
             int running = 1;
@@ -120,16 +124,26 @@ static int tilt_func(void *data)
             wiimote.mode.bits = WIIMOTE_MODE_ACC;
             wiimote.led.one   = 1;
 
+<<<<<<< HEAD
             SDL_LockMutex(mutex);
             state.status = running;
             SDL_UnlockMutex(mutex);
+=======
+            SDL_mutexP(mutex);
+            state.status = running;
+            SDL_mutexV(mutex);
+>>>>>>> origin/csy-extras
 
             while (mutex && running && wiimote_is_open(&wiimote))
             {
                 if (wiimote_update(&wiimote) < 0)
                     break;
 
+<<<<<<< HEAD
                 SDL_LockMutex(mutex);
+=======
+                SDL_mutexP(mutex);
+>>>>>>> origin/csy-extras
                 {
                     running = state.status;
 
@@ -154,7 +168,11 @@ static int tilt_func(void *data)
                                    wiimote.tilt.x) / FILTER;
                     }
                 }
+<<<<<<< HEAD
                 SDL_UnlockMutex(mutex);
+=======
+                SDL_mutexV(mutex);
+>>>>>>> origin/csy-extras
             }
 
             wiimote_disconnect(&wiimote);
@@ -168,15 +186,25 @@ void tilt_init(void)
     memset(&state, 0, sizeof (struct tilt_state));
 
     mutex  = SDL_CreateMutex();
+<<<<<<< HEAD
     thread = SDL_CreateThread(tilt_func, "", NULL);
+=======
+    thread = SDL_CreateThread(tilt_func, NULL);
+>>>>>>> origin/csy-extras
 }
 
 void tilt_free(void)
 {
+<<<<<<< HEAD
+=======
+    int b = 0;
+
+>>>>>>> origin/csy-extras
     if (mutex)
     {
         /* Get/set the status of the tilt sensor thread. */
 
+<<<<<<< HEAD
         SDL_LockMutex(mutex);
         state.status = 0;
         SDL_UnlockMutex(mutex);
@@ -185,6 +213,18 @@ void tilt_free(void)
 
         SDL_WaitThread(thread, NULL);
         SDL_DestroyMutex(mutex);
+=======
+        SDL_mutexP(mutex);
+        b = state.status;
+        state.status = 0;
+        SDL_mutexV(mutex);
+
+        /* Kill the thread and destroy the mutex. */
+
+        SDL_KillThread(thread);
+        SDL_DestroyMutex(mutex);
+
+>>>>>>> origin/csy-extras
         mutex  = NULL;
         thread = NULL;
     }
@@ -196,7 +236,11 @@ int tilt_get_button(int *b, int *s)
 
     if (mutex)
     {
+<<<<<<< HEAD
         SDL_LockMutex(mutex);
+=======
+        SDL_mutexP(mutex);
+>>>>>>> origin/csy-extras
         {
             if      ((ch = get_button(&state.A)))
             {
@@ -210,17 +254,29 @@ int tilt_get_button(int *b, int *s)
             }
             else if ((ch = get_button(&state.plus)))
             {
+<<<<<<< HEAD
                 *b = config_get_d(CONFIG_JOYSTICK_BUTTON_R1);
+=======
+                *b = config_get_d(CONFIG_JOYSTICK_BUTTON_R);
+>>>>>>> origin/csy-extras
                 *s = (ch == BUTTON_DN);
             }
             else if ((ch = get_button(&state.minus)))
             {
+<<<<<<< HEAD
                 *b = config_get_d(CONFIG_JOYSTICK_BUTTON_L1);
+=======
+                *b = config_get_d(CONFIG_JOYSTICK_BUTTON_L);
+>>>>>>> origin/csy-extras
                 *s = (ch == BUTTON_DN);
             }
             else if ((ch = get_button(&state.home)))
             {
+<<<<<<< HEAD
                 *b = config_get_d(CONFIG_JOYSTICK_BUTTON_START);
+=======
+                *b = config_get_d(CONFIG_JOYSTICK_BUTTON_EXIT);
+>>>>>>> origin/csy-extras
                 *s = (ch == BUTTON_DN);
             }
             else if ((ch = get_button(&state.L)))
@@ -244,7 +300,11 @@ int tilt_get_button(int *b, int *s)
                 *s = (ch == BUTTON_DN);
             }
         }
+<<<<<<< HEAD
         SDL_UnlockMutex(mutex);
+=======
+        SDL_mutexV(mutex);
+>>>>>>> origin/csy-extras
     }
     return ch;
 }
@@ -255,9 +315,15 @@ float tilt_get_x(void)
 
     if (mutex)
     {
+<<<<<<< HEAD
         SDL_LockMutex(mutex);
         x = state.x;
         SDL_UnlockMutex(mutex);
+=======
+        SDL_mutexP(mutex);
+        x = state.x;
+        SDL_mutexV(mutex);
+>>>>>>> origin/csy-extras
     }
 
     return x;
@@ -269,9 +335,15 @@ float tilt_get_z(void)
 
     if (mutex)
     {
+<<<<<<< HEAD
         SDL_LockMutex(mutex);
         z = state.z;
         SDL_UnlockMutex(mutex);
+=======
+        SDL_mutexP(mutex);
+        z = state.z;
+        SDL_mutexV(mutex);
+>>>>>>> origin/csy-extras
     }
 
     return z;
@@ -283,9 +355,15 @@ int tilt_stat(void)
 
     if (mutex)
     {
+<<<<<<< HEAD
         SDL_LockMutex(mutex);
         b = state.status;
         SDL_UnlockMutex(mutex);
+=======
+        SDL_mutexP(mutex);
+        b = state.status;
+        SDL_mutexV(mutex);
+>>>>>>> origin/csy-extras
     }
     return b;
 }

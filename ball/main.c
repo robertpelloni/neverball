@@ -34,6 +34,7 @@
 #include "gui.h"
 #include "set.h"
 #include "tilt.h"
+<<<<<<< HEAD
 #include "hmd.h"
 #include "fs.h"
 #include "common.h"
@@ -49,6 +50,10 @@
 #include "strbuf/joinstr.h"
 #include "lang.h"
 #include "profile.h"
+=======
+#include "fs.h"
+#include "common.h"
+>>>>>>> origin/csy-extras
 
 #include "st_conf.h"
 #include "st_title.h"
@@ -59,11 +64,16 @@
 #include "st_start.h"
 #include "st_package.h"
 
+<<<<<<< HEAD
 const char TITLE[] = "Neverball";
+=======
+const char TITLE[] = "Neverball " VERSION;
+>>>>>>> origin/csy-extras
 const char ICON[] = "icon/neverball.png";
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static char *opt_data;
 static char *opt_replay;
 static char *opt_level;
@@ -85,6 +95,256 @@ static int   opt_multiball = 1;
     fprintf(stderr, "Option '%s' requires an argument.\n", option)
 
 static void opt_init(int argc, char **argv)
+=======
+static int shot_pending;
+
+static void shot_prep(void)
+{
+    shot_pending = 1;
+}
+
+static void shot_take(void)
+{
+    static char filename[MAXSTR];
+
+    if (shot_pending)
+    {
+        sprintf(filename, "Screenshots/screen%05d.png", config_screenshot());
+        image_snap(filename);
+        shot_pending = 0;
+    }
+}
+
+/*---------------------------------------------------------------------------*/
+
+static void toggle_wire(void)
+{
+#if !ENABLE_OPENGLES
+    static int wire = 0;
+
+    if (wire)
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        wire = 0;
+    }
+    else
+    {
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        wire = 1;
+    }
+#endif
+}
+
+/*---------------------------------------------------------------------------*/
+
+static int handle_key_dn(SDL_Event *e)
+{
+    int d = 1;
+    int c;
+
+    c = e->key.keysym.sym;
+
+    if (config_tst_d(CONFIG_KEY_FORWARD, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), -1.0f);
+
+    else if (config_tst_d(CONFIG_KEY_BACKWARD, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), +1.0f);
+
+    else if (config_tst_d(CONFIG_KEY_LEFT, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), -1.0f);
+
+    else if (config_tst_d(CONFIG_KEY_RIGHT, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), +1.0f);
+
+    else switch (c)
+    {
+    case SDLK_F10:   shot_prep();               break;
+    case SDLK_F9:    config_tgl_d(CONFIG_FPS);  break;
+    case SDLK_F8:    config_tgl_d(CONFIG_NICE); break;
+
+    case SDLK_F7:
+        if (config_cheat())
+            toggle_wire();
+        break;
+    case SDLK_RETURN:
+        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+        break;
+    case SDLK_ESCAPE:
+        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_EXIT), 1);
+        break;
+
+    default:
+        if (SDL_EnableUNICODE(-1))
+            d = st_keybd(e->key.keysym.unicode, 1);
+        else
+            d = st_keybd(e->key.keysym.sym, 1);
+    }
+
+    return d;
+}
+
+static int handle_key_up(SDL_Event *e)
+{
+    int d = 1;
+    int c;
+
+    c = e->key.keysym.sym;
+
+    if (config_tst_d(CONFIG_KEY_FORWARD, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), 0);
+
+    else if (config_tst_d(CONFIG_KEY_BACKWARD, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), 0);
+
+    else if (config_tst_d(CONFIG_KEY_LEFT, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), 0);
+
+    else if (config_tst_d(CONFIG_KEY_RIGHT, c))
+        st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), 0);
+
+    else switch (c)
+    {
+    case SDLK_RETURN:
+        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 0);
+        break;
+    case SDLK_ESCAPE:
+        d = st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_EXIT), 0);
+        break;
+
+    default:
+        d = st_keybd(e->key.keysym.sym, 0);
+    }
+
+    return d;
+}
+
+static int loop(void)
+{
+    SDL_Event e;
+    int d = 1;
+
+    /* Process SDL events. */
+
+    while (d && SDL_PollEvent(&e))
+    {
+        switch (e.type)
+        {
+        case SDL_QUIT:
+            return 0;
+
+        case SDL_MOUSEMOTION:
+            st_point(+e.motion.x,
+                     -e.motion.y + config_get_d(CONFIG_HEIGHT),
+                     +e.motion.xrel,
+                     config_get_d(CONFIG_MOUSE_INVERT)
+                     ? +e.motion.yrel : -e.motion.yrel);
+            break;
+
+        case SDL_MOUSEBUTTONDOWN:
+            d = st_click(e.button.button, 1);
+            break;
+
+        case SDL_MOUSEBUTTONUP:
+            d = st_click(e.button.button, 0);
+            break;
+
+        case SDL_KEYDOWN:
+            d = handle_key_dn(&e);
+            break;
+
+        case SDL_KEYUP:
+            d = handle_key_up(&e);
+            break;
+
+        case SDL_ACTIVEEVENT:
+            if (e.active.state == SDL_APPINPUTFOCUS)
+                if (e.active.gain == 0 && video_get_grab())
+                    goto_state(&st_pause);
+            break;
+
+        case SDL_JOYAXISMOTION:
+            st_stick(e.jaxis.axis, JOY_VALUE(e.jaxis.value));
+            break;
+
+        case SDL_JOYBUTTONDOWN:
+            d = st_buttn(e.jbutton.button, 1);
+            break;
+
+        case SDL_JOYBUTTONUP:
+            d = st_buttn(e.jbutton.button, 0);
+            break;
+        }
+    }
+
+    /* Process events via the tilt sensor API. */
+
+    if (tilt_stat())
+    {
+        int b;
+        int s;
+
+        st_angle(tilt_get_x(),
+                 tilt_get_z());
+
+        while (tilt_get_button(&b, &s))
+        {
+            const int X = config_get_d(CONFIG_JOYSTICK_AXIS_X);
+            const int Y = config_get_d(CONFIG_JOYSTICK_AXIS_Y);
+            const int L = config_get_d(CONFIG_JOYSTICK_DPAD_L);
+            const int R = config_get_d(CONFIG_JOYSTICK_DPAD_R);
+            const int U = config_get_d(CONFIG_JOYSTICK_DPAD_U);
+            const int D = config_get_d(CONFIG_JOYSTICK_DPAD_D);
+
+            if (b == L || b == R || b == U || b == D)
+            {
+                static int pad[4] = { 0, 0, 0, 0 };
+
+                /* Track the state of the D-pad buttons. */
+
+                if      (b == L) pad[0] = s;
+                else if (b == R) pad[1] = s;
+                else if (b == U) pad[2] = s;
+                else if (b == D) pad[3] = s;
+
+                /* Convert D-pad button events into joystick axis motion. */
+
+                if      (pad[0] && !pad[1]) st_stick(X, -1.0f);
+                else if (pad[1] && !pad[0]) st_stick(X, +1.0f);
+                else                        st_stick(X,  0.0f);
+
+                if      (pad[2] && !pad[3]) st_stick(Y, -1.0f);
+                else if (pad[3] && !pad[2]) st_stick(Y, +1.0f);
+                else                        st_stick(Y,  0.0f);
+            }
+            else d = st_buttn(b, s);
+        }
+    }
+
+    return d;
+}
+
+/*---------------------------------------------------------------------------*/
+
+static char *opt_data;
+static char *opt_replay;
+static char *opt_level;
+
+#define opt_usage \
+    L_(                                                                   \
+        "Usage: %s [options ...]\n"                                       \
+        "Options:\n"                                                      \
+        "  -h, --help                show this usage message.\n"          \
+        "  -v, --version             show version.\n"                     \
+        "  -d, --data <dir>          use 'dir' as game data directory.\n" \
+        "  -r, --replay <file>       play the replay 'file'.\n"           \
+        "  -l, --level <file>        load the level 'file'\n"             \
+    )
+
+#define opt_error(option) \
+    fprintf(stderr, L_("Option '%s' requires an argument.\n"), option)
+
+static void opt_parse(int argc, char **argv)
+>>>>>>> origin/csy-extras
 {
     int i;
 
@@ -137,6 +397,7 @@ static void opt_init(int argc, char **argv)
             continue;
         }
 
+<<<<<<< HEAD
         if (strcmp(argv[i], "--link") == 0)
         {
             if (i + 1 == argc)
@@ -160,6 +421,8 @@ static void opt_init(int argc, char **argv)
             continue;
         }
 
+=======
+>>>>>>> origin/csy-extras
         /* Perform magic on a single unrecognized argument. */
 
         if (argc == 2)
@@ -185,6 +448,7 @@ static void opt_init(int argc, char **argv)
 
             break;
         }
+<<<<<<< HEAD
     }
 }
 
@@ -197,12 +461,77 @@ static void opt_quit(void)
     opt_replay = NULL;
     opt_level = NULL;
     opt_link = NULL;
+=======
+    }
+}
+
+#undef opt_usage
+#undef opt_error
+
+/*---------------------------------------------------------------------------*/
+
+static int is_replay(struct dir_item *item)
+{
+    return str_ends_with(item->path, ".nbr");
+}
+
+static int is_score_file(struct dir_item *item)
+{
+    return str_starts_with(item->path, "neverballhs-");
+}
+
+static void make_dirs_and_migrate(void)
+{
+    Array items;
+    int i;
+
+    const char *src;
+    char *dst;
+
+    if (fs_mkdir("Replays"))
+    {
+        if ((items = fs_dir_scan("", is_replay)))
+        {
+            for (i = 0; i < array_len(items); i++)
+            {
+                src = DIR_ITEM_GET(items, i)->path;
+                dst = concat_string("Replays/", src, NULL);
+                fs_rename(src, dst);
+                free(dst);
+            }
+
+            fs_dir_free(items);
+        }
+    }
+
+    if (fs_mkdir("Scores"))
+    {
+        if ((items = fs_dir_scan("", is_score_file)))
+        {
+            for (i = 0; i < array_len(items); i++)
+            {
+                src = DIR_ITEM_GET(items, i)->path;
+                dst = concat_string("Scores/",
+                                    src + sizeof ("neverballhs-") - 1,
+                                    ".txt",
+                                    NULL);
+                fs_rename(src, dst);
+                free(dst);
+            }
+
+            fs_dir_free(items);
+        }
+    }
+
+    fs_mkdir("Screenshots");
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
 
 static void shot(void)
 {
+<<<<<<< HEAD
     static char filename[MAXSTR];
     sprintf(filename, "Screenshots/screen%05d.png", config_screenshot());
     video_snap(filename);
@@ -886,10 +1215,28 @@ static int main_init(int argc, char *argv[])
 
     config_paths(opt_data);
     log_init("Neverball " VERSION, "neverball.log");
+=======
+    SDL_Joystick *joy = NULL;
+    int t1, t0;
+
+    if (!fs_init(argv[0]))
+    {
+        fprintf(stderr, "Failure to initialize virtual file system: %s\n",
+                fs_error());
+        return 1;
+    }
+
+    lang_init("neverball");
+
+    opt_parse(argc, argv);
+
+    config_paths(opt_data);
+>>>>>>> origin/csy-extras
     make_dirs_and_migrate();
 
     /* Initialize SDL. */
 
+<<<<<<< HEAD
 #ifdef SDL_HINT_TOUCH_MOUSE_EVENTS
     SDL_SetHint(SDL_HINT_TOUCH_MOUSE_EVENTS, "0");
 #endif
@@ -898,12 +1245,19 @@ static int main_init(int argc, char *argv[])
     {
         log_printf("Failure to initialize SDL (%s)\n", SDL_GetError());
         return 0;
+=======
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) == -1)
+    {
+        fprintf(stderr, "%s\n", SDL_GetError());
+        return 1;
+>>>>>>> origin/csy-extras
     }
 
     /* Intitialize configuration. */
 
     config_init();
     config_load();
+<<<<<<< HEAD
     profile_init();
 
     fetch_enable(config_get_d(CONFIG_ONLINE));
@@ -919,6 +1273,17 @@ static int main_init(int argc, char *argv[])
     /* Initialize localization. */
 
     lang_init();
+=======
+
+    /* Initialize joystick. */
+
+    if (config_get_d(CONFIG_JOYSTICK) && SDL_NumJoysticks() > 0)
+    {
+        joy = SDL_JoystickOpen(config_get_d(CONFIG_JOYSTICK_DEVICE));
+        if (joy)
+            SDL_JoystickEventState(SDL_ENABLE);
+    }
+>>>>>>> origin/csy-extras
 
     /* Initialize audio. */
 
@@ -927,6 +1292,7 @@ static int main_init(int argc, char *argv[])
 
     /* Initialize video. */
 
+<<<<<<< HEAD
     if (!video_init())
         return 0;
 
@@ -979,18 +1345,33 @@ int main(int argc, char *argv[])
 
     /* Screen states. */
 
+=======
+    if (!video_init(TITLE, ICON))
+        return 1;
+
+>>>>>>> origin/csy-extras
     init_state(&st_null);
 
     /* Initialize demo playback or load the level. */
 
+<<<<<<< HEAD
     if (opt_replay && fs_add_path(dir_name(opt_replay)) && progress_replay(base_name(opt_replay)))
     {
         demo_play_goto(1);
         start_state = &st_demo_play;
+=======
+    if (opt_replay &&
+        fs_add_path(dir_name(opt_replay)) &&
+        progress_replay(base_name(opt_replay)))
+    {
+        demo_play_goto(1);
+        goto_state(&st_demo_play);
+>>>>>>> origin/csy-extras
     }
     else if (opt_level)
     {
         const char *path = fs_resolve(opt_level);
+<<<<<<< HEAD
 
         if (goto_level(path))
             start_state = &st_level;
@@ -1023,6 +1404,66 @@ int main(int argc, char *argv[])
 
     main_quit();
 #endif
+=======
+        int loaded = 0;
+
+        if (path)
+        {
+            /* HACK: must be around for the duration of the game. */
+            static struct level level;
+
+            if (level_load(path, &level))
+            {
+                progress_init(MODE_STANDALONE);
+
+                if (progress_play(&level))
+                {
+                    goto_state(&st_level);
+                    loaded = 1;
+                }
+            }
+        }
+        else fprintf(stderr, "%s: file is not in game path\n", opt_level);
+
+        if (!loaded)
+            goto_state(&st_title);
+    }
+    else
+        goto_state(&st_title);
+
+    /* Run the main game loop. */
+
+    t0 = SDL_GetTicks();
+
+    while (loop())
+    {
+        if ((t1 = SDL_GetTicks()) > t0)
+        {
+            /* Step the game state. */
+
+            st_timer(0.001f * (t1 - t0));
+
+            t0 = t1;
+
+            /* Render. */
+
+            st_paint(0.001f * t0);
+            shot_take();
+            video_swap();
+
+            if (config_get_d(CONFIG_NICE))
+                SDL_Delay(1);
+        }
+    }
+
+    config_save();
+
+    if (joy)
+        SDL_JoystickClose(joy);
+
+    tilt_free();
+    SDL_Quit();
+>>>>>>> origin/csy-extras
 
     return 0;
 }

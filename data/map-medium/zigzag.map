@@ -3,14 +3,22 @@
 "classname" "worldspawn"
 "message" "There are plenty of coins here if you're\willing to take the time to grab them.\"
 "author" "Robert Kooima"
+<<<<<<< HEAD
 "version" "1.1"
+=======
+"version" "1"
+>>>>>>> origin/csy-extras
 "back" "map-back/clouds.sol"
 "grad" "back/land.png"
 "shot" "shot-medium/zigzag.jpg"
 "song" "bgm/track1.ogg"
 "time" "6000"
 "goal" "50"
+<<<<<<< HEAD
 "time_hs" "700 1300"
+=======
+"time_hs" "700 3000"
+>>>>>>> origin/csy-extras
 "coin_hs" "178 58"
 "goal_hs" "1250 4000"
 // brush 0

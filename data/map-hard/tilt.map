@@ -2,14 +2,22 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
+<<<<<<< HEAD
 "version" "1.1"
+=======
+"version" "1"
+>>>>>>> origin/csy-extras
 "back" "map-back/ocean.sol"
 "grad" "back/ocean.png"
 "shot" "shot-hard/tilt.jpg"
 "song" "bgm/track2.ogg"
 "time" "7500"
 "goal" "50"
+<<<<<<< HEAD
 "time_hs" "1200 2400"
+=======
+"time_hs" "1200 4500"
+>>>>>>> origin/csy-extras
 "goal_hs" "3000 6000"
 "coin_hs" "92 71"
 "message" "The floor is as flat as you make it.\"
@@ -348,12 +356,21 @@
 }
 // brush 37
 {
+<<<<<<< HEAD
 ( 120 128 0 ) ( -8 128 0 ) ( -8 128 -16 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( 120 -8 0 ) ( 120 120 0 ) ( 120 120 -16 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( -8 0 0 ) ( 120 0 0 ) ( 120 0 -16 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( 0 120 0 ) ( 0 -8 0 ) ( 0 -8 -16 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( -8 120 0 ) ( 120 120 0 ) ( 120 -8 0 ) mtrl/arrow-light 0 0 -90 0.5 0.5 134217728 0 0
 ( 120 -8 -16 ) ( 120 120 -16 ) ( -8 120 -16 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
+=======
+( 120 128 0 ) ( -8 128 0 ) ( -8 128 -16 ) mtrl/invisible 15 0 0 0.5 0.5 134217728 0 0
+( 120 -8 0 ) ( 120 120 0 ) ( 120 120 -16 ) mtrl/invisible 112 0 -180 0.5 -0.5 134217728 0 0
+( -8 0 0 ) ( 120 0 0 ) ( 120 0 -16 ) mtrl/invisible 16 0 0 0.4999960065 0.5 134217728 0 0
+( 0 120 0 ) ( 0 -8 0 ) ( 0 -8 -16 ) mtrl/invisible 112 0 -180 0.5 -0.5 134217728 0 0
+( -8 120 0 ) ( 120 120 0 ) ( 120 -8 0 ) mtrl/arrow-light 0 248 -90 0.5 0.5 134217728 0 0
+( 120 -8 -16 ) ( 120 120 -16 ) ( -8 120 -16 ) mtrl/invisible 112 -15 -90 0.5 0.5000039935 134217728 0 0
+>>>>>>> origin/csy-extras
 }
 // brush 38
 {

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
 "classname" "worldspawn"
 "drawback" "1"
@@ -8,3 +9,15 @@
 "material" "ball/eyeball/eyeball"
 "model" "ball/eyeball/eyeball.obj"
 }
+=======
+{
+"classname" "worldspawn"
+"drawback" "1"
+"depthmask" "1"
+}
+{
+"classname" "misc_model"
+"material" "ball/eyeball/eyeball"
+"model" "ball/basic-ball/basic-ball.obj"
+}
+>>>>>>> origin/csy-extras

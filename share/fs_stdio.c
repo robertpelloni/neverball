@@ -23,8 +23,11 @@
 #include "array.h"
 #include "list.h"
 #include "common.h"
+<<<<<<< HEAD
 #include "log.h"
 #include "zip.h"
+=======
+>>>>>>> origin/csy-extras
 
 /*
  * This file implements the low-level virtual file system routines
@@ -33,6 +36,7 @@
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 enum fs_path_type
 {
     FS_PATH_DIRECTORY,
@@ -102,15 +106,34 @@ int fs_init(const char *argv0)
     fs_dir_write = NULL;
     fs_path      = NULL;
     fs_logging   = 1;
+=======
+struct fs_file
+{
+    FILE *handle;
+};
+
+static char *fs_dir_base;
+static char *fs_dir_write;
+static List  fs_path;
+
+int fs_init(const char *argv0)
+{
+    fs_dir_base  = strdup(dir_name(argv0));
+    fs_dir_write = NULL;
+    fs_path      = NULL;
+>>>>>>> origin/csy-extras
 
     return 1;
 }
 
+<<<<<<< HEAD
 void fs_set_logging(int logging)
 {
     fs_logging = logging;
 }
 
+=======
+>>>>>>> origin/csy-extras
 int fs_quit(void)
 {
     if (fs_dir_base)
@@ -127,6 +150,7 @@ int fs_quit(void)
 
     while (fs_path)
     {
+<<<<<<< HEAD
         struct fs_path_item *path_item = fs_path->data;
 
         if (path_item)
@@ -140,6 +164,12 @@ int fs_quit(void)
 
     fs_cache_quit();
 
+=======
+        free(fs_path->data);
+        fs_path = list_rest(fs_path);
+    }
+
+>>>>>>> origin/csy-extras
     return 1;
 }
 
@@ -157,6 +187,7 @@ const char *fs_base_dir(void)
 
 int fs_add_path(const char *path)
 {
+<<<<<<< HEAD
     struct fs_path_item *path_item;
 
     List l;
@@ -261,6 +292,18 @@ void fs_remove_path(const char *path)
     }
 }
 
+=======
+    /* TODO: ZIP archive support. */
+
+    if (dir_exists(path))
+    {
+        fs_path = list_cons(strdup(path), fs_path);
+        return 1;
+    }
+    return 0;
+}
+
+>>>>>>> origin/csy-extras
 int fs_set_write_dir(const char *path)
 {
     if (dir_exists(path))
@@ -271,9 +314,12 @@ int fs_set_write_dir(const char *path)
             fs_dir_write = NULL;
         }
 
+<<<<<<< HEAD
         if (fs_logging)
             log_printf("FS: writing to \"%s\"\n", path);
 
+=======
+>>>>>>> origin/csy-extras
         fs_dir_write = strdup(path);
         return 1;
     }
@@ -287,6 +333,7 @@ const char *fs_get_write_dir(void)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 /*
  * Like dir_list_files, but for ZIP archives.
  */
@@ -319,11 +366,65 @@ static List zip_list_files(mz_zip_archive *zip, const char *path)
                     files = list_cons(copy, files);
                 }
             }
+=======
+static void add_files(List *items, const char *real)
+{
+    List files, file;
+
+    if ((files = dir_list_files(real)))
+    {
+        for (file = files; file; file = file->next)
+        {
+            int skip = 0;
+            List p, l;
+
+            /* "Inspired" by PhysicsFS file enumeration code. */
+
+            for (p = NULL, l = *items; l; p = l, l = l->next)
+            {
+                int cmp;
+
+                if ((cmp = strcmp(l->data, file->data)) >= 0)
+                {
+                    skip = (cmp == 0);
+                    break;
+                }
+            }
+
+            if (!skip)
+            {
+                if (p)
+                    p->next = list_cons(file->data, p->next);
+                else
+                    *items = list_cons(file->data, *items);
+
+                /* Take over memory management duties. */
+
+                file->data = NULL;
+            }
+        }
+
+        dir_list_free(files);
+    }
+}
+
+static List list_files(const char *path)
+{
+    List files = NULL;
+    List p;
+
+    for (p = fs_path; p; p = p->next)
+    {
+        char *real = path_join(p->data, path);
+        add_files(&files, real);
+        free(real);
+>>>>>>> origin/csy-extras
     }
 
     return files;
 }
 
+<<<<<<< HEAD
 static void zip_list_free(List files)
 {
     while (files)
@@ -422,6 +523,8 @@ static List list_files(const char *path)
 /*
  * Free the List of allocated filenames.
  */
+=======
+>>>>>>> origin/csy-extras
 static void free_files(List files)
 {
     while (files)
@@ -431,17 +534,23 @@ static void free_files(List files)
     }
 }
 
+<<<<<<< HEAD
 /*
  * Enumerate files in the given FS directory. Returns an Array of struct dir_item.
  */
+=======
+>>>>>>> origin/csy-extras
 Array fs_dir_scan(const char *path, int (*filter)(struct dir_item *))
 {
     return dir_scan(path, filter, list_files, free_files);
 }
 
+<<<<<<< HEAD
 /*
  * Free the Array of struct dir_item.
  */
+=======
+>>>>>>> origin/csy-extras
 void fs_dir_free(Array items)
 {
     dir_free(items);
@@ -449,6 +558,7 @@ void fs_dir_free(Array items)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 fs_file fs_open_read(const char *path)
 {
     fs_file fh;
@@ -490,11 +600,74 @@ fs_file fs_open_read(const char *path)
         }
 
         if (!opened)
+=======
+static char *real_path(const char *path)
+{
+    char *real = NULL;
+    List p;
+
+    for (p = fs_path; p; p = p->next)
+    {
+        real = path_join(p->data, path);
+
+        if (file_exists(real))
+            break;
+
+        free(real);
+        real = NULL;
+    }
+
+    return real;
+}
+
+/*---------------------------------------------------------------------------*/
+
+fs_file fs_open(const char *path, const char *mode)
+{
+    fs_file fh;
+
+    assert((mode[0] == 'r' && !mode[1]) ||
+           (mode[0] == 'w' && (!mode[1] || mode[1] == '+')));
+
+    if ((fh = malloc(sizeof (*fh))))
+    {
+        char *real;
+
+        fh->handle = NULL;
+
+        switch (mode[0])
+        {
+        case 'r':
+            if ((real = real_path(path)))
+            {
+                fh->handle = fopen(real, "rb");
+                free(real);
+            }
+
+            break;
+
+        case 'w':
+            if (fs_dir_write)
+            {
+                real = path_join(fs_dir_write, path);
+
+                fh->handle = (mode[1] == '+' ?
+                              fopen(real, "wb") :
+                              fopen(real, "wb+"));
+
+                free(real);
+            }
+            break;
+        }
+
+        if (!fh->handle)
+>>>>>>> origin/csy-extras
         {
             free(fh);
             fh = NULL;
         }
     }
+<<<<<<< HEAD
     return fh;
 }
 
@@ -562,10 +735,25 @@ int fs_close(fs_file fh)
     }
 
     return closed;
+=======
+
+    return fh;
+}
+
+int fs_close(fs_file fh)
+{
+    if (fclose(fh->handle))
+    {
+        free(fh);
+        return 1;
+    }
+    return 0;
+>>>>>>> origin/csy-extras
 }
 
 /*----------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 /*
  * Create a directory in the FS write location.
  */
@@ -581,15 +769,35 @@ int fs_mkdir(const char *path)
     }
 
     return success;
+=======
+int fs_mkdir(const char *path)
+{
+    char *real;
+    int rc;
+
+    real = path_join(fs_dir_write, path);
+    rc = dir_make(real);
+    free((void *) real);
+
+    return rc == 0;
+>>>>>>> origin/csy-extras
 }
 
 int fs_exists(const char *path)
 {
+<<<<<<< HEAD
     fs_file fh;
 
     if ((fh = fs_open_read(path)))
     {
         fs_close(fh);
+=======
+    char *real;
+
+    if ((real = real_path(path)))
+    {
+        free(real);
+>>>>>>> origin/csy-extras
         return 1;
     }
     return 0;
@@ -597,6 +805,7 @@ int fs_exists(const char *path)
 
 int fs_remove(const char *path)
 {
+<<<<<<< HEAD
     int success = 0;
 
     if (fs_dir_write)
@@ -607,10 +816,21 @@ int fs_remove(const char *path)
     }
 
     return success;
+=======
+    char *real;
+    int rc;
+
+    real = path_join(fs_dir_write, path);
+    rc = (remove(real) == 0);
+    free(real);
+
+    return rc;
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 int fs_read(void *data, int bytes, fs_file fh)
 {
     if (fh->handle)
@@ -639,20 +859,35 @@ int fs_write(const void *data, int bytes, fs_file fh)
     /* ZIP writing is not available. */
 
     return 0;
+=======
+int fs_read(void *data, int size, int count, fs_file fh)
+{
+    return fread(data, size, count, fh->handle);
+}
+
+int fs_write(const void *data, int size, int count, fs_file fh)
+{
+    return fwrite(data, size, count, fh->handle);
+>>>>>>> origin/csy-extras
 }
 
 int fs_flush(fs_file fh)
 {
+<<<<<<< HEAD
     if (fh->handle)
         return fflush(fh->handle);
 
     /* ZIP writing is not available. */
 
     return 0;
+=======
+    return fflush(fh->handle);
+>>>>>>> origin/csy-extras
 }
 
 long fs_tell(fs_file fh)
 {
+<<<<<<< HEAD
     if (fh->handle)
         return ftell(fh->handle);
 
@@ -660,10 +895,14 @@ long fs_tell(fs_file fh)
         return fh->zip_file_pos;
 
     return -1;
+=======
+    return ftell(fh->handle);
+>>>>>>> origin/csy-extras
 }
 
 int fs_seek(fs_file fh, long offset, int whence)
 {
+<<<<<<< HEAD
     if (fh->handle)
         return fseek(fh->handle, offset, whence);
 
@@ -687,6 +926,9 @@ int fs_seek(fs_file fh, long offset, int whence)
     }
 
     return -1;
+=======
+    return fseek(fh->handle, offset, whence);
+>>>>>>> origin/csy-extras
 }
 
 int fs_eof(fs_file fh)
@@ -697,6 +939,7 @@ int fs_eof(fs_file fh)
      * is done to mitigate this: instead, code that relies on
      * PhysicsFS behavior should be fixed not to.
      */
+<<<<<<< HEAD
     if (fh->handle)
         return feof(fh->handle);
 
@@ -749,6 +992,20 @@ int fs_size(const char *path)
     }
 
     return 0;
+=======
+    return feof(fh->handle);
+}
+
+int fs_length(fs_file fh)
+{
+    long len, cur = ftell(fh->handle);
+
+    fseek(fh->handle, 0, SEEK_END);
+    len = ftell(fh->handle);
+    fseek(fh->handle, cur, SEEK_SET);
+
+    return len;
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/

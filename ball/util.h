@@ -5,11 +5,35 @@
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 #define GUI_SCORE_COIN  0x1
 #define GUI_SCORE_TIME  0x2
 #define GUI_SCORE_GOAL  0x4
 #define GUI_SCORE_ALL  (GUI_SCORE_COIN | GUI_SCORE_TIME | GUI_SCORE_GOAL)
 
+=======
+enum
+{
+    GUI_NONE = 0,
+
+    GUI_BACK,
+    GUI_PREV,
+    GUI_NEXT,
+    GUI_BS,
+    GUI_CL,
+    GUI_CHAR,
+    GUI_NAME,
+    GUI_SCORE,
+
+    GUI_LAST
+};
+
+#define GUI_SCORE_COIN  0x1
+#define GUI_SCORE_TIME  0x2
+#define GUI_SCORE_GOAL  0x4
+#define GUI_SCORE_ALL  (GUI_SCORE_COIN | GUI_SCORE_TIME | GUI_SCORE_GOAL)
+
+>>>>>>> origin/csy-extras
 #define GUI_SCORE_NEXT(s) \
     ((((s) << 1) & GUI_SCORE_ALL) ? (s) << 1 : GUI_SCORE_COIN)
 
@@ -28,7 +52,12 @@ void gui_keyboard(int);
 void gui_keyboard_lock(void);
 char gui_keyboard_char(char);
 
+<<<<<<< HEAD
 int gui_back_button(int pd);
+=======
+int  gui_navig(int, int, int);
+int  gui_maybe(int, const char *, int, int, int);
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 

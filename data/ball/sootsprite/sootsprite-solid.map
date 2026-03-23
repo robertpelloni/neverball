@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
 "classname" "worldspawn"
 }
@@ -35,3 +36,42 @@
 "time" "1.0"
 "image" "ball/sootsprite/sootsprite-body-solid"
 }
+=======
+{
+"classname" "worldspawn"
+}
+{
+"classname" "info_null"
+"origin" "0 0 0"
+"height" "3.0 0.0 0.0"
+"width" "3.0 0.0 0.0"
+"time" "1.0"
+"image" "ball/sootsprite/sootsprite-body"
+}
+{
+"classname" "info_null"
+"origin" "0 16 0"
+"height" "3.0 0.0 0.0"
+"width" "3.0 0.0 0.0"
+"time" "1.0"
+"image" "ball/sootsprite/sootsprite-body"
+}
+{
+"classname" "info_null"
+"origin" "16 0 0"
+"height" "3.0 0.0 0.0"
+"width" "3.0 0.0 0.0"
+"zrot" "90.0 0.0 0.0"
+"time" "1.0"
+"image" "ball/sootsprite/sootsprite-body"
+}
+{
+"classname" "info_null"
+"origin" "0 0 16"
+"height" "-3.0 0.0 0.0"
+"width" "-3.0 0.0 0.0"
+"zrot" "110.0 0.0 0.0"
+"time" "1.0"
+"image" "ball/sootsprite/sootsprite-body"
+}
+>>>>>>> origin/csy-extras

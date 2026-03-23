@@ -3,5 +3,9 @@ ambient   0.0 0.0 0.0 1.0
 specular  0.0 0.0 0.0 1.0
 emissive  1.0 1.0 1.0 1.0
 shininess 0.0
+<<<<<<< HEAD
 flags     additive clamp-s clamp-t transparent
+=======
+flags     additive clamp-s clamp-t transparent 
+>>>>>>> origin/csy-extras
 angle     45.0

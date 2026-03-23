@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
 "classname" "misc_model"
 "model" "geom/goal/goal.obj"
 "target" "a0"
@@ -55,4 +56,8 @@
 "angle" "-240"
 "targetname" "b2"
 "target" "b0"
+=======
+"classname" "worldspawn"
+"model" "geom/goal/goal.obj"
+>>>>>>> origin/csy-extras
 }

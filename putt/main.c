@@ -28,11 +28,15 @@
 #include "state.h"
 #include "config.h"
 #include "video.h"
+<<<<<<< HEAD
 #include "mtrl.h"
+=======
+>>>>>>> origin/csy-extras
 #include "course.h"
 #include "hole.h"
 #include "game.h"
 #include "gui.h"
+<<<<<<< HEAD
 #include "hmd.h"
 #include "fs.h"
 #include "joy.h"
@@ -40,20 +44,47 @@
 #include "common.h"
 #include "lang.h"
 #include "key.h"
+=======
+#include "fs.h"
+>>>>>>> origin/csy-extras
 
 #include "st_conf.h"
 #include "st_all.h"
 
+<<<<<<< HEAD
 const char TITLE[] = "Neverputt";
+=======
+const char TITLE[] = "Neverputt " VERSION;
+>>>>>>> origin/csy-extras
 const char ICON[] = "icon/neverputt.png";
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void shot(void)
 {
     static char filename[MAXSTR];
     sprintf(filename, "Screenshots/screen%05d.png", config_screenshot());
     video_snap(filename);
+=======
+static int shot_pending;
+
+static void shot_prep(void)
+{
+    shot_pending = 1;
+}
+
+static void shot_take(void)
+{
+    static char filename[MAXSTR];
+
+    if (shot_pending)
+    {
+        sprintf(filename, "Screenshots/screen%05d.png", config_screenshot());
+        image_snap(filename);
+        shot_pending = 0;
+    }
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -126,6 +157,7 @@ static int loop(void)
 
             c = e.key.keysym.sym;
 
+<<<<<<< HEAD
 #ifdef __APPLE__
             if (c == SDLK_q && e.key.keysym.mod & KMOD_GUI)
             {
@@ -140,6 +172,26 @@ static int loop(void)
                 break;
             }
 #endif
+=======
+            if (config_tst_d(CONFIG_KEY_FORWARD, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), -1.0f);
+
+            else if (config_tst_d(CONFIG_KEY_BACKWARD, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), +1.0f);
+
+            else if (config_tst_d(CONFIG_KEY_LEFT, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), -1.0f);
+
+            else if (config_tst_d(CONFIG_KEY_RIGHT, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), +1.0f);
+
+            else switch (c)
+            {
+            case SDLK_F10: shot_prep();               break;
+            case SDLK_F9:  config_tgl_d(CONFIG_FPS);  break;
+            case SDLK_F8:  config_tgl_d(CONFIG_NICE); break;
+            case SDLK_F7:  toggle_wire();             break;
+>>>>>>> origin/csy-extras
 
             switch (c)
             {
@@ -184,7 +236,23 @@ static int loop(void)
 
             c = e.key.keysym.sym;
 
+<<<<<<< HEAD
             switch (c)
+=======
+            if (config_tst_d(CONFIG_KEY_FORWARD, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), 0.0f);
+
+            else if (config_tst_d(CONFIG_KEY_BACKWARD, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_Y), 0.0f);
+
+            else if (config_tst_d(CONFIG_KEY_LEFT, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), 0.0f);
+
+            else if (config_tst_d(CONFIG_KEY_RIGHT, c))
+                st_stick(config_get_d(CONFIG_JOYSTICK_AXIS_X), 0.0f);
+
+            else switch (c)
+>>>>>>> origin/csy-extras
             {
             case SDLK_RETURN:
             case SDLK_KP_ENTER:
@@ -211,6 +279,7 @@ static int loop(void)
             }
             break;
 
+<<<<<<< HEAD
         case SDL_WINDOWEVENT:
             switch (e.window.event)
             {
@@ -233,6 +302,16 @@ static int loop(void)
 
         case SDL_JOYAXISMOTION:
             joy_axis(e.jaxis.which, e.jaxis.axis, JOY_VALUE(e.jaxis.value));
+=======
+        case SDL_ACTIVEEVENT:
+            if (e.active.state == SDL_APPINPUTFOCUS)
+                if (e.active.gain == 0 && video_get_grab())
+                    goto_pause(&st_over, 0);
+            break;
+
+        case SDL_JOYAXISMOTION:
+            st_stick(e.jaxis.axis, JOY_VALUE(e.jaxis.value));
+>>>>>>> origin/csy-extras
             break;
 
         case SDL_JOYBUTTONDOWN:
@@ -300,6 +379,7 @@ static void opt_parse(int argc, char **argv)
 int main(int argc, char *argv[])
 {
     int camera = 0;
+<<<<<<< HEAD
 
     if (!fs_init(argc > 0 ? argv[0] : NULL))
     {
@@ -307,9 +387,20 @@ int main(int argc, char *argv[])
                 fs_error());
         return 1;
     }
+=======
+    SDL_Joystick *joy = NULL;
+>>>>>>> origin/csy-extras
+
+    if (!fs_init(argv[0]))
+    {
+        fprintf(stderr, "Failure to initialize virtual file system: %s\n",
+                fs_error());
+        return 1;
+    }
 
     srand((int) time(NULL));
 
+<<<<<<< HEAD
     opt_parse(argc, argv);
 
     config_paths(opt_data);
@@ -327,10 +418,25 @@ int main(int argc, char *argv[])
 
         lang_init();
 
+=======
+    lang_init("neverball");
+
+    opt_parse(argc, argv);
+
+    config_paths(opt_data);
+    fs_mkdir("Screenshots");
+
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_JOYSTICK) == 0)
+    {
+        config_init();
+        config_load();
+
+>>>>>>> origin/csy-extras
         /* Cache Neverball's camera setting. */
 
         camera = config_get_d(CONFIG_CAMERA);
 
+<<<<<<< HEAD
         /* Initialize the audio. */
 
         audio_init();
@@ -354,6 +460,39 @@ int main(int argc, char *argv[])
                 const char *path = fs_resolve(opt_hole);
                 int loaded = 0;
 
+=======
+        /* Initialize the joystick. */
+
+        if (config_get_d(CONFIG_JOYSTICK) && SDL_NumJoysticks() > 0)
+        {
+            joy = SDL_JoystickOpen(config_get_d(CONFIG_JOYSTICK_DEVICE));
+            if (joy)
+            {
+                SDL_JoystickEventState(SDL_ENABLE);
+                set_joystick(joy);
+            }
+        }
+
+        /* Initialize the audio. */
+
+        audio_init();
+
+        /* Initialize the video. */
+
+        if (video_init(TITLE, ICON))
+        {
+            int t1, t0 = SDL_GetTicks();
+
+            /* Run the main game loop. */
+
+            init_state(&st_null);
+
+            if (opt_hole)
+            {
+                const char *path = fs_resolve(opt_hole);
+                int loaded = 0;
+
+>>>>>>> origin/csy-extras
                 if (path)
                 {
                     hole_init(NULL);
@@ -377,17 +516,26 @@ int main(int argc, char *argv[])
                 if ((t1 = SDL_GetTicks()) > t0)
                 {
                     st_timer((t1 - t0) / 1000.f);
+<<<<<<< HEAD
                     hmd_step();
                     st_paint(0.001f * t1);
                     video_swap();
+=======
+                    st_paint(0.001f * t1);
+                    shot_take();
+                    SDL_GL_SwapBuffers();
+>>>>>>> origin/csy-extras
 
                     t0 = t1;
 
                     if (config_get_d(CONFIG_NICE))
                         SDL_Delay(1);
                 }
+<<<<<<< HEAD
 
             mtrl_quit();
+=======
+>>>>>>> origin/csy-extras
         }
 
         /* Restore Neverball's camera setting. */
@@ -395,11 +543,17 @@ int main(int argc, char *argv[])
         config_set_d(CONFIG_CAMERA, camera);
         config_save();
 
+<<<<<<< HEAD
         joy_quit();
 
         SDL_Quit();
     }
     else log_printf("Failure to initialize SDL (%s)\n", SDL_GetError());
+=======
+        SDL_Quit();
+    }
+    else fprintf(stderr, "%s: %s\n", argv[0], SDL_GetError());
+>>>>>>> origin/csy-extras
 
     return 0;
 }

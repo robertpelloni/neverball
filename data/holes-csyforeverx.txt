@@ -1,0 +1,14 @@
+shot-putt/csyforeverx.jpg
+Neverputt Forever Extreme\The most insane "Forever" course.\\Difficulty: Hard to Extreme\Author: Challenge Space Yard\
+map-csyforeverpx/NarrowObstacle.sol	back/blu_wht.png	3	bgm/track1.ogg
+map-csyforeverpx/NarrowObstacle.sol	back/blu_wht.png	3	bgm/track1.ogg
+map-csyforeverpx/NarrowDrop.sol	back/blu_grn.png	5	bgm/track1.ogg
+map-csyforeverpx/NarrowBends.sol	back/sea_land.png	5	bgm/track1.ogg
+map-csyforeverpx/TrapMaster.sol	back/blk_grn.png	5	bgm/track2.ogg
+map-csyforeverpx/QuarterpipeAcrobat.sol	back/blu_cyn.png	4	bgm/track2.ogg
+map-csyforeverpx/BentObstacle.sol	back/blues.png	4	bgm/track2.ogg
+map-csyforeverpx/UpsideDown.sol	back/greys.png	3	bgm/track3.ogg
+map-csyforeverpx/Twister.sol	back/blu_wht.png	5	bgm/track3.ogg
+map-csyforeverpx/ExtremeBullyBoxes.sol	back/purples.png	7	bgm/track3.ogg
+map-csyforeverpx/LoopAcrobatic.sol	back/grn_yel.png	3	bgm/track4.ogg
+map-csyforeverpx/LongEndurance.sol	back/blu_wht.png	135	bgm/track6.ogg

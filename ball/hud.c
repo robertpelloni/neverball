@@ -26,9 +26,12 @@
 
 #include "game_common.h"
 #include "game_client.h"
+<<<<<<< HEAD
 #include "game_server.h"
 
 #include "st_pause.h"
+=======
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -48,6 +51,7 @@ static int msg_id;
 static int speed_id;
 static int speed_ids[SPEED_MAX];
 
+<<<<<<< HEAD
 /* Target Mode HUD */
 static int target_hud_id;
 static int spd_val_id;
@@ -60,13 +64,20 @@ static int jump_id;
 static int dash_id;
 static int dash_bar_id;
 
+=======
+>>>>>>> origin/csy-extras
 static const char *speed_labels[SPEED_MAX] = {
     "", "8", "4", "2", "1", "2", "4", "8"
 };
 
+<<<<<<< HEAD
 static float cam_timer;
 static float speed_timer;
 static float touch_timer;
+=======
+static float view_timer;
+static float speed_timer;
+>>>>>>> origin/csy-extras
 
 static void hud_fps(void)
 {
@@ -76,7 +87,11 @@ static void hud_fps(void)
 void hud_init(void)
 {
     int id;
+<<<<<<< HEAD
     const char *str_cam;
+=======
+    const char *str_view;
+>>>>>>> origin/csy-extras
     int v;
 
     if ((Rhud_id = gui_hstack(0)))
@@ -111,6 +126,7 @@ void hud_init(void)
         gui_layout(Lhud_id, -1, -1);
     }
 
+<<<<<<< HEAD
     if ((Touch_id = gui_vstack(0)))
     {
         gui_space(Touch_id);
@@ -133,12 +149,15 @@ void hud_init(void)
         gui_layout(Touch_id, -1, +1);
     }
 
+=======
+>>>>>>> origin/csy-extras
     if ((time_id = gui_clock(0, 59999, GUI_MED)))
     {
         gui_set_rect(time_id, GUI_TOP);
         gui_layout(time_id, 0, -1);
     }
 
+<<<<<<< HEAD
     if ((msg_id = gui_label(0, " ", GUI_LRG, gui_yel, gui_red)))
     {
         gui_layout(msg_id, 0, 0);
@@ -156,6 +175,20 @@ void hud_init(void)
         gui_layout(cam_id, 1, 1);
     }
 
+=======
+    /* Find the longest view name. */
+
+    for (str_view = "", v = VIEW_NONE + 1; v < VIEW_MAX; v++)
+        if (strlen(view_to_str(v)) > strlen(str_view))
+            str_view = view_to_str(v);
+
+    if ((view_id = gui_label(0, str_view, GUI_SML, gui_wht, gui_wht)))
+    {
+        gui_set_rect(view_id, GUI_SW);
+        gui_layout(view_id, 1, 1);
+    }
+
+>>>>>>> origin/csy-extras
     if ((fps_id = gui_count(0, 1000, GUI_SML)))
     {
         gui_set_rect(fps_id, GUI_SE);
@@ -172,6 +205,7 @@ void hud_init(void)
         gui_set_rect(speed_id, GUI_LFT);
         gui_layout(speed_id, +1, 0);
     }
+<<<<<<< HEAD
 
     /* Target Mode HUD */
     if ((target_hud_id = gui_hstack(0)))
@@ -207,6 +241,8 @@ void hud_init(void)
         gui_layout(dash_id, 0, 4);
         gui_set_hidden(dash_id, 1);
     }
+=======
+>>>>>>> origin/csy-extras
 }
 
 void hud_free(void)
@@ -232,6 +268,7 @@ void hud_free(void)
 
 void hud_paint(int x, int y, int w, int h)
 {
+<<<<<<< HEAD
     int p;
     int count = config_get_d(CONFIG_MULTIBALL);
     if (count < 1) count = 1;
@@ -271,10 +308,18 @@ void hud_paint(int x, int y, int w, int h)
 
         if (config_get_d(CONFIG_FPS))
             gui_paint(fps_id);
+=======
+    if (curr_mode() == MODE_CHALLENGE)
+        gui_paint(Lhud_id);
+
+    gui_paint(Rhud_id);
+    gui_paint(time_id);
+>>>>>>> origin/csy-extras
 
         if (curr_mode() == MODE_TARGET)
             gui_paint(target_hud_id);
 
+<<<<<<< HEAD
         gui_paint(jump_id);
         gui_paint(dash_id);
 
@@ -284,16 +329,28 @@ void hud_paint(int x, int y, int w, int h)
     }
 
     glViewport(x, y, w, h);
+=======
+    hud_view_paint();
+    hud_speed_paint();
+>>>>>>> origin/csy-extras
 }
 
 void hud_update(int p, int pulse)
 {
+<<<<<<< HEAD
     int clock = curr_clock(p);
     int coins = curr_coins(p);
     int goal  = curr_goal();
     int balls = curr_balls(p);
     int score = curr_score(p);
     int status = curr_status(p);
+=======
+    int clock = curr_clock();
+    int coins = curr_coins();
+    int goal  = curr_goal();
+    int balls = curr_balls();
+    int score = curr_score();
+>>>>>>> origin/csy-extras
 
     int c_id;
     int last;
@@ -305,7 +362,10 @@ void hud_update(int p, int pulse)
         gui_pulse(ball_id, 0.f);
         gui_pulse(time_id, 0.f);
         gui_pulse(coin_id, 0.f);
+<<<<<<< HEAD
         gui_pulse(msg_id, 0.f);
+=======
+>>>>>>> origin/csy-extras
 
         speed_timer = 0.0f;
     }
@@ -324,7 +384,11 @@ void hud_update(int p, int pulse)
     {
         gui_set_clock(time_id, clock);
 
+<<<<<<< HEAD
         if (pulse)
+=======
+        if (last > clock && pulse)
+>>>>>>> origin/csy-extras
         {
             if (last > clock)
             {
@@ -425,12 +489,17 @@ void hud_update(int p, int pulse)
 
 void hud_timer(float dt)
 {
+<<<<<<< HEAD
     hud_update(0, 1);
+=======
+    hud_update(1);
+>>>>>>> origin/csy-extras
 
     gui_timer(Rhud_id, dt);
     gui_timer(Lhud_id, dt);
     gui_timer(Touch_id, dt);
     gui_timer(time_id, dt);
+<<<<<<< HEAD
     gui_timer(msg_id, dt);
 
     if (curr_mode() == MODE_TARGET)
@@ -576,6 +645,73 @@ void hud_touch_timer(float dt)
 void hud_touch_paint(void)
 {
     gui_paint(Touch_id);
+=======
+
+    hud_view_timer(dt);
+    hud_speed_timer(dt);
+}
+
+/*---------------------------------------------------------------------------*/
+
+void hud_view_pulse(int c)
+{
+    gui_set_label(view_id, view_to_str(c));
+    gui_pulse(view_id, 1.2f);
+    view_timer = 2.0f;
+>>>>>>> origin/csy-extras
+}
+
+void hud_view_timer(float dt)
+{
+    view_timer -= dt;
+    gui_timer(view_id, dt);
+}
+
+void hud_view_paint(void)
+{
+    if (view_timer > 0.0f)
+        gui_paint(view_id);
+}
+
+/*---------------------------------------------------------------------------*/
+
+void hud_speed_pulse(int speed)
+{
+    int i;
+
+    for (i = SPEED_NONE + 1; i < SPEED_MAX; i++)
+    {
+        const GLubyte *c = gui_gry;
+
+        if (speed != SPEED_NONE)
+        {
+            if      (i > SPEED_NORMAL && i <= speed)
+                c = gui_grn;
+            else if (i < SPEED_NORMAL && i >= speed)
+                c = gui_red;
+            else if (i == SPEED_NORMAL)
+                c = gui_wht;
+        }
+
+        gui_set_color(speed_ids[i], c, c);
+
+        if (i == speed)
+            gui_pulse(speed_ids[i], 1.2f);
+    }
+
+    speed_timer = 2.0f;
+}
+
+void hud_speed_timer(float dt)
+{
+    speed_timer -= dt;
+    gui_timer(speed_id, dt);
+}
+
+void hud_speed_paint(void)
+{
+    if (speed_timer > 0.0f)
+        gui_paint(speed_id);
 }
 
 /*---------------------------------------------------------------------------*/

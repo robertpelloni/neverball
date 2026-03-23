@@ -20,7 +20,10 @@
 #include "audio.h"
 #include "config.h"
 #include "common.h"
+<<<<<<< HEAD
 #include "key.h"
+=======
+>>>>>>> origin/csy-extras
 
 #include "game_common.h"
 
@@ -34,7 +37,12 @@
 
 enum
 {
+<<<<<<< HEAD
     START_CHALLENGE = GUI_LAST,
+=======
+    START_BACK = GUI_LAST,
+    START_CHALLENGE,
+>>>>>>> origin/csy-extras
     START_LOCK_GOALS,
     START_LEVEL
 };
@@ -42,8 +50,11 @@ enum
 static int shot_id;
 static int file_id;
 static int challenge_id;
+<<<<<<< HEAD
 
 static struct state *start_back;
+=======
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -73,12 +84,16 @@ static void gui_level(int id, int i)
     jd = gui_label(id, level_name(l), GUI_SML, back, fore);
 
     if (level_opened(l) || config_cheat())
+<<<<<<< HEAD
     {
         gui_set_state(jd, START_LEVEL, i);
 
         if (i == 0)
             gui_focus(jd);
     }
+=======
+        gui_set_state(jd, START_LEVEL, i);
+>>>>>>> origin/csy-extras
 }
 
 static void start_over_level(int i)
@@ -95,6 +110,7 @@ static void start_over_level(int i)
 
         if (file_id)
             gui_set_label(file_id, level_file(l));
+<<<<<<< HEAD
     }
 }
 
@@ -118,6 +134,34 @@ static void start_over(int id, int pulse)
                             NULL, -1);
         }
     }
+=======
+    }
+}
+
+static void start_over(int id, int pulse)
+{
+    int tok;
+
+    if (id == 0)
+        return;
+
+    if (pulse)
+        gui_pulse(id, 1.2f);
+
+    tok = gui_token(id);
+
+    if (tok == START_CHALLENGE || tok == START_BACK)
+    {
+        gui_set_image(shot_id, set_shot(curr_set()));
+
+        set_score_board(set_score(curr_set(), SCORE_COIN), -1,
+                        set_score(curr_set(), SCORE_TIME), -1,
+                        NULL, -1);
+    }
+
+    if (tok == START_LEVEL)
+        start_over_level(gui_value(id));
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -128,8 +172,13 @@ static int start_action(int tok, int val)
 
     switch (tok)
     {
+<<<<<<< HEAD
     case GUI_BACK:
         return exit_state(start_back ? start_back : &st_set);
+=======
+    case START_BACK:
+        return goto_state(&st_set);
+>>>>>>> origin/csy-extras
 
     case START_CHALLENGE:
         if (config_cheat())
@@ -147,9 +196,15 @@ static int start_action(int tok, int val)
         break;
 
     case GUI_SCORE:
+<<<<<<< HEAD
         gui_score_set(val);
         start_over(gui_active(), 0);
         return 1;
+=======
+        /* FIXME, there's no need to rebuild the entire screen. */
+        gui_score_set(val);
+        return goto_state(&st_start);
+>>>>>>> origin/csy-extras
 
     case START_LOCK_GOALS:
         config_set_d(CONFIG_LOCK_GOALS, val);
@@ -167,8 +222,13 @@ static int start_action(int tok, int val)
 
 static int start_gui(void)
 {
+<<<<<<< HEAD
     int w = video.device_w;
     int h = video.device_h;
+=======
+    int w = config_get_d(CONFIG_WIDTH);
+    int h = config_get_d(CONFIG_HEIGHT);
+>>>>>>> origin/csy-extras
     int i, j;
 
     int id, jd, kd, ld;
@@ -191,21 +251,31 @@ static int start_gui(void)
             {
                 if ((kd = gui_vstack(jd)))
                 {
+<<<<<<< HEAD
                     const int ww = MIN(w, h) / 2;
                     const int hh = ww / 4 * 3;
 
                     shot_id = gui_image(kd, set_shot(curr_set()),
                                         ww, hh);
+=======
+                    shot_id = gui_image(kd, set_shot(curr_set()),
+                                        6 * w / 16, 6 * h / 16);
+>>>>>>> origin/csy-extras
                     file_id = gui_label(kd, " ", GUI_SML, gui_yel, gui_red);
                 }
             }
             else
             {
+<<<<<<< HEAD
                 const int ww = MIN(w, h) * 7 / 12;
                 const int hh = ww / 4 * 3;
 
                 shot_id = gui_image(jd, set_shot(curr_set()),
                                     ww, hh);
+=======
+                shot_id = gui_image(jd, set_shot(curr_set()),
+                                    7 * w / 16, 7 * h / 16);
+>>>>>>> origin/csy-extras
             }
 
             if ((kd = gui_varray(jd)))
@@ -229,12 +299,27 @@ static int start_gui(void)
 
         if ((jd = gui_hstack(id)))
         {
+<<<<<<< HEAD
+=======
+            gui_filler(jd);
+
+>>>>>>> origin/csy-extras
             if ((kd = gui_harray(jd)))
             {
                 int btn0, btn1;
 
+<<<<<<< HEAD
                 btn0 = gui_state(kd, _("Unlocked"), GUI_SML, START_LOCK_GOALS, 0);
                 btn1 = gui_state(kd, _("Locked"),   GUI_SML, START_LOCK_GOALS, 1);
+=======
+                btn0 = gui_state(kd,
+                                 /* Translators: adjust the amount of
+                                  * whitespace here as necessary for
+                                  * the buttons to look good. */
+                                 _("   No   "), GUI_SML, START_LOCK_GOALS, 0);
+
+                btn1 = gui_state(kd, _("Yes"), GUI_SML, START_LOCK_GOALS, 1);
+>>>>>>> origin/csy-extras
 
                 if (config_get_d(CONFIG_LOCK_GOALS))
                     gui_set_hilite(btn1, 1);
@@ -244,10 +329,16 @@ static int start_gui(void)
 
             gui_space(jd);
 
+<<<<<<< HEAD
             kd = gui_label(jd, _("Goal State in Completed Levels"), GUI_SML, 0, 0);
 
             gui_set_trunc(kd, TRUNC_TAIL);
             gui_set_fill(kd);
+=======
+            gui_label(jd, _("Lock Goals of Completed Levels?"), GUI_SML, 0, 0);
+
+            gui_filler(jd);
+>>>>>>> origin/csy-extras
         }
 
         gui_layout(id, 0, 0);
@@ -261,13 +352,21 @@ static int start_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int start_enter(struct state *st, struct state *prev, int intent)
+=======
+static int start_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     progress_init(MODE_NORMAL);
 
     audio_music_fade_to(0.5f, "bgm/inter.ogg");
 
+<<<<<<< HEAD
     return transition_slide(start_gui(), 1, intent);
+=======
+    return start_gui();
+>>>>>>> origin/csy-extras
 }
 
 static void start_point(int id, int x, int y, int dx, int dy)
@@ -275,7 +374,11 @@ static void start_point(int id, int x, int y, int dx, int dy)
     start_over(gui_point(id, x, y), 1);
 }
 
+<<<<<<< HEAD
 static void start_stick(int id, int a, float v, int bump, int device_id)
+=======
+static void start_stick(int id, int a, float v, int bump)
+>>>>>>> origin/csy-extras
 {
     start_over(gui_stick(id, a, v, bump), 1);
 }
@@ -286,6 +389,7 @@ static int start_score(int d)
              GUI_SCORE_PREV(gui_score_get()) :
              GUI_SCORE_NEXT(gui_score_get()));
 
+<<<<<<< HEAD
     return start_action(GUI_SCORE, s);
 }
 
@@ -293,12 +397,18 @@ static void start_wheel(int x, int y)
 {
     if (y > 0) start_score(-1);
     if (y < 0) start_score(+1);
+=======
+    gui_score_set(s);
+    start_over(gui_active(), 0.0f);
+    return 1;
+>>>>>>> origin/csy-extras
 }
 
 static int start_keybd(int c, int d)
 {
     if (d)
     {
+<<<<<<< HEAD
         if (c == KEY_EXIT)
             return start_action(GUI_BACK, 0);
 
@@ -317,6 +427,23 @@ static int start_keybd(int c, int d)
 
             /* Iterate over all levels, taking a screenshot of each. */
 
+=======
+        if (c == SDLK_c && config_cheat())
+        {
+            set_cheat();
+            return goto_state(&st_start);
+        }
+        else if (c == SDLK_F12 && config_cheat())
+        {
+            char *dir = concat_string("Screenshots/shot-",
+                                      set_id(curr_set()), NULL);
+            int i;
+
+            fs_mkdir(dir);
+
+            /* Iterate over all levels, taking a screenshot of each. */
+
+>>>>>>> origin/csy-extras
             for (i = 0; i < MAXLVL; i++)
                 if (level_exists(i))
                     level_snap(i, dir);
@@ -338,8 +465,13 @@ static int start_buttn(int b, int d, int device_id)
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return start_action(gui_token(active), gui_value(active));
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
             return start_action(GUI_BACK, 0);
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+            return start_action(START_BACK, 0);
+>>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -348,6 +480,7 @@ static int start_click(int b, int d)
 {
     if (gui_click(b, d))
     {
+<<<<<<< HEAD
         return start_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
     }
     return 1;
@@ -361,6 +494,20 @@ int goto_start(int index, struct state *back_state)
     return goto_state(&st_start);
 }
 
+=======
+        return start_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
+    }
+
+    if (d)
+    {
+        if (b == SDL_BUTTON_WHEELUP)   start_score(-1);
+        if (b == SDL_BUTTON_WHEELDOWN) start_score(+1);
+    }
+
+    return 1;
+}
+
+>>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 struct state st_start = {
@@ -373,6 +520,10 @@ struct state st_start = {
     shared_angle,
     start_click,
     start_keybd,
+<<<<<<< HEAD
     start_buttn,
     start_wheel
+=======
+    start_buttn
+>>>>>>> origin/csy-extras
 };

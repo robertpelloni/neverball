@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 diffuse   0.8 0.8 0.8 1.0
+=======
+diffuse   1.0 1.0 1.0 1.0
+>>>>>>> origin/csy-extras
 ambient   0.2 0.2 0.2 1.0
 specular  0.0 0.0 0.0 1.0
 emissive  0.0 0.0 0.0 1.0
 shininess 0.0
+<<<<<<< HEAD
 flags     decal lit shadowed transparent two-sided
+=======
+flags     decal shadowed transparent 
+>>>>>>> origin/csy-extras
 angle     45.0

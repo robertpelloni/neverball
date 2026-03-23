@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 diffuse   0.8 0.8 0.8 0.0
+=======
+diffuse   1.0 1.0 1.0 0.0
+>>>>>>> origin/csy-extras
 ambient   0.2 0.2 0.2 1.0
 specular  0.0 0.0 0.0 1.0
 emissive  0.0 0.0 0.0 1.0

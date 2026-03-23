@@ -20,8 +20,15 @@
  * apply to command addition, removal, and modification:
  *
  * - New commands are added at the bottom of the list.
+<<<<<<< HEAD
  * - Existing commands are never modified nor removed.
  * - The list is never reordered.  (It's tempting.)
+=======
+ *
+ * - Existing commands are never modified nor removed.
+ *
+ * - The list is never reordered.  (It's tempting...)
+>>>>>>> origin/csy-extras
  *
  * However, commands can be renamed (e.g., to add a "deprecated" tag,
  * because it's superseded by another command).
@@ -42,8 +49,13 @@ enum cmd_type
     CMD_COINS,
     CMD_JUMP_ENTER,
     CMD_JUMP_EXIT,
+<<<<<<< HEAD
     CMD_BODY_PATH, /* Use CMD_MOVE_PATH instead. */
     CMD_BODY_TIME, /* Use CMD_MOVE_TIME instead. */
+=======
+    CMD_BODY_PATH,
+    CMD_BODY_TIME,
+>>>>>>> origin/csy-extras
     CMD_GOAL_OPEN,
     CMD_SWCH_ENTER,
     CMD_SWCH_TOGGLE,
@@ -65,8 +77,11 @@ enum cmd_type
     CMD_TILT_AXES,
     CMD_MOVE_PATH,
     CMD_MOVE_TIME,
+<<<<<<< HEAD
     CMD_SET_PLAYER,
     CMD_PUNCH,
+=======
+>>>>>>> origin/csy-extras
 
     CMD_MAX
 };
@@ -115,7 +130,10 @@ struct cmd_tilt_angles
 struct cmd_sound
 {
     CMD_HEADER;
+<<<<<<< HEAD
     /* FIXME: this should have been an integer. */
+=======
+>>>>>>> origin/csy-extras
     char  *n;
     float  a;
 };
@@ -148,7 +166,10 @@ struct cmd_jump_exit
     CMD_HEADER;
 };
 
+<<<<<<< HEAD
 /* Use CMD_MOVE_PATH instead. */
+=======
+>>>>>>> origin/csy-extras
 struct cmd_body_path
 {
     CMD_HEADER;
@@ -156,7 +177,10 @@ struct cmd_body_path
     int pi;
 };
 
+<<<<<<< HEAD
 /* Use CMD_MOVE_TIME instead. */
+=======
+>>>>>>> origin/csy-extras
 struct cmd_body_time
 {
     CMD_HEADER;
@@ -179,7 +203,10 @@ struct cmd_swch_toggle
 {
     CMD_HEADER;
     int xi;
+<<<<<<< HEAD
     /* FIXME: this should have had a flag to indicate state. */
+=======
+>>>>>>> origin/csy-extras
 };
 
 struct cmd_swch_exit
@@ -295,6 +322,7 @@ struct cmd_move_time
     float t;
 };
 
+<<<<<<< HEAD
 struct cmd_set_player
 {
     CMD_HEADER;
@@ -313,6 +341,11 @@ union cmd
 
     struct { CMD_HEADER; } header;
 
+=======
+union cmd
+{
+    CMD_HEADER;
+>>>>>>> origin/csy-extras
     struct cmd_end_of_update      eou;
     struct cmd_make_ball          mkball;
     struct cmd_make_item          mkitem;
@@ -347,8 +380,11 @@ union cmd
     struct cmd_tilt_axes          tiltaxes;
     struct cmd_move_path          movepath;
     struct cmd_move_time          movetime;
+<<<<<<< HEAD
     struct cmd_set_player         setplayer;
     struct cmd_punch              punch;
+=======
+>>>>>>> origin/csy-extras
 };
 
 #undef CMD_HEADER
@@ -369,7 +405,10 @@ struct cmd_state
     int next_update;                    /* Previous command was EOU          */
     int curr_ball;                      /* Current ball index                */
     int got_tilt_axes;                  /* Received tilt axes in this update */
+<<<<<<< HEAD
     int curr_player;                    /* Current player index              */
+=======
+>>>>>>> origin/csy-extras
 };
 
 #define cmd_state_init(cs) do { \
@@ -378,7 +417,10 @@ struct cmd_state
     (cs)->next_update = 0;      \
     (cs)->curr_ball = 0;        \
     (cs)->got_tilt_axes = 0;    \
+<<<<<<< HEAD
     (cs)->curr_player = 0;      \
+=======
+>>>>>>> origin/csy-extras
 } while (0)
 
 /*---------------------------------------------------------------------------*/

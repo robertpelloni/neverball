@@ -21,15 +21,21 @@
 
 #include "lang.h"
 #include "common.h"
+<<<<<<< HEAD
 #include "config.h"
 #include "base_config.h"
 #include "fs.h"
 #include "log.h"
+=======
+#include "base_config.h"
+#include "fs.h"
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
 #define GT_CODESET "UTF-8"
 
+<<<<<<< HEAD
 void gt_init(const char *domain, const char *pref)
 {
 #if ENABLE_NLS
@@ -50,18 +56,41 @@ void gt_init(const char *domain, const char *pref)
 
     /* Set up locale. */
 
+=======
+/*---------------------------------------------------------------------------*/
+
+void lang_init(const char *domain)
+{
+#if ENABLE_NLS
+    char *dir = strdup(getenv("NEVERBALL_LOCALE"));
+
+    if (!dir)
+    {
+        if (path_is_abs(CONFIG_LOCALE))
+            dir = strdup(CONFIG_LOCALE);
+        else
+            dir = concat_string(fs_base_dir(), "/", CONFIG_LOCALE, NULL);
+    }
+
+>>>>>>> origin/csy-extras
     errno = 0;
 
     if (!setlocale(LC_ALL, ""))
     {
+<<<<<<< HEAD
         log_printf("Failure to set LC_ALL to native locale (%s)\n",
                    errno ? strerror(errno) : "Unknown error");
+=======
+        fprintf(stderr, "Failed to set LC_ALL to native locale: %s\n",
+                errno ? strerror(errno) : "Unknown error");
+>>>>>>> origin/csy-extras
     }
 
     /* The C locale is guaranteed (sort of) to be available. */
 
     setlocale(LC_NUMERIC, "C");
 
+<<<<<<< HEAD
     /* Tell gettext of our language preference. */
 
     if (!default_lang_init)
@@ -83,6 +112,10 @@ void gt_init(const char *domain, const char *pref)
 
     bindtextdomain(domain, dir);
     bind_textdomain_codeset(domain, GT_CODESET);
+=======
+    bindtextdomain(domain, dir);
+    bind_textdomain_codeset(domain, DEFAULT_CODESET);
+>>>>>>> origin/csy-extras
     textdomain(domain);
 
     free(dir);

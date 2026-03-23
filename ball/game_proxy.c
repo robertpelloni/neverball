@@ -21,6 +21,7 @@
 static Queue cmd_queue;
 
 /*
+<<<<<<< HEAD
  * Command filtering.
  */
 
@@ -34,15 +35,20 @@ void game_proxy_filter(int (*fn)(const union cmd *))
 }
 
 /*
+=======
+>>>>>>> origin/csy-extras
  * Enqueue SRC in the game's command queue.
  */
 void game_proxy_enq(const union cmd *src)
 {
     union cmd *dst;
 
+<<<<<<< HEAD
     if (!FILTER(src))
         return;
 
+=======
+>>>>>>> origin/csy-extras
     /*
      * Create the queue.  This is done only once during the life time
      * of the program.  For simplicity's sake, the queue is never

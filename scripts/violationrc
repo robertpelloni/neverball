@@ -1,0 +1,11 @@
+80
+50
+
+
+../ball/*.c
+../ball/*.h
+../putt/*.c
+../putt/*.h
+../share/*.c
+../share/*.h
+../contrib/*.c

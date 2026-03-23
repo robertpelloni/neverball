@@ -2,13 +2,21 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
+<<<<<<< HEAD
 "version" "2.1"
+=======
+"version" "2"
+>>>>>>> origin/csy-extras
 "shot" "shot-medium/title.jpg"
 "song" "bgm/title.ogg"
 "back" "map-back/jupiter.sol"
 "grad" "back/space.png"
 "coin_hs" "40 28"
+<<<<<<< HEAD
 "time_hs" "1200 2000"
+=======
+"time_hs" "1200 3000"
+>>>>>>> origin/csy-extras
 "goal_hs" "1750 4000"
 "goal" "25"
 "time" "6000"

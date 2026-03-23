@@ -18,10 +18,13 @@
 
 #include "fs.h"
 
+#include "fs.h"
+
 /*---------------------------------------------------------------------------*/
 
 void put_float(fs_file fout, float f)
 {
+<<<<<<< HEAD
     unsigned int val = 0;
 
     memcpy(&val, &f, sizeof (val));
@@ -44,6 +47,51 @@ void put_short(fs_file fout, short val)
 {
     fs_putc((val)      & 0xff, fout);
     fs_putc((val >> 8) & 0xff, fout);
+=======
+    unsigned char *p = (unsigned char *) &f;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    fs_putc((int) p[3], fout);
+    fs_putc((int) p[2], fout);
+    fs_putc((int) p[1], fout);
+    fs_putc((int) p[0], fout);
+#else
+    fs_putc((int) p[0], fout);
+    fs_putc((int) p[1], fout);
+    fs_putc((int) p[2], fout);
+    fs_putc((int) p[3], fout);
+#endif
+}
+
+void put_index(fs_file fout, int i)
+{
+    unsigned char *p = (unsigned char *) &i;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    fs_putc((int) p[3], fout);
+    fs_putc((int) p[2], fout);
+    fs_putc((int) p[1], fout);
+    fs_putc((int) p[0], fout);
+#else
+    fs_putc((int) p[0], fout);
+    fs_putc((int) p[1], fout);
+    fs_putc((int) p[2], fout);
+    fs_putc((int) p[3], fout);
+#endif
+}
+
+void put_short(fs_file fout, short s)
+{
+    unsigned char *p = (unsigned char *) &s;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    fs_putc((int) p[1], fout);
+    fs_putc((int) p[0], fout);
+#else
+    fs_putc((int) p[0], fout);
+    fs_putc((int) p[1], fout);
+#endif
+>>>>>>> origin/csy-extras
 }
 
 void put_array(fs_file fout, const float *v, size_t n)
@@ -58,6 +106,7 @@ void put_array(fs_file fout, const float *v, size_t n)
 
 float get_float(fs_file fin)
 {
+<<<<<<< HEAD
     unsigned int val =
         (fs_getc(fin) & 0xff)       |
         (fs_getc(fin) & 0xff) << 8  |
@@ -68,11 +117,29 @@ float get_float(fs_file fin)
 
     memcpy(&f, &val, sizeof (f));
 
+=======
+    float f;
+
+    unsigned char *p = (unsigned char *) &f;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    p[3] = (unsigned char) fs_getc(fin);
+    p[2] = (unsigned char) fs_getc(fin);
+    p[1] = (unsigned char) fs_getc(fin);
+    p[0] = (unsigned char) fs_getc(fin);
+#else
+    p[0] = (unsigned char) fs_getc(fin);
+    p[1] = (unsigned char) fs_getc(fin);
+    p[2] = (unsigned char) fs_getc(fin);
+    p[3] = (unsigned char) fs_getc(fin);
+#endif
+>>>>>>> origin/csy-extras
     return f;
 }
 
 int get_index(fs_file fin)
 {
+<<<<<<< HEAD
     int val =
         (fs_getc(fin) & 0xff)       |
         (fs_getc(fin) & 0xff) << 8  |
@@ -80,13 +147,46 @@ int get_index(fs_file fin)
         (fs_getc(fin) & 0xff) << 24;
 
     return val;
+=======
+    int i;
+
+    unsigned char *p = (unsigned char *) &i;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    p[3] = (unsigned char) fs_getc(fin);
+    p[2] = (unsigned char) fs_getc(fin);
+    p[1] = (unsigned char) fs_getc(fin);
+    p[0] = (unsigned char) fs_getc(fin);
+#else
+    p[0] = (unsigned char) fs_getc(fin);
+    p[1] = (unsigned char) fs_getc(fin);
+    p[2] = (unsigned char) fs_getc(fin);
+    p[3] = (unsigned char) fs_getc(fin);
+#endif
+    return i;
+>>>>>>> origin/csy-extras
 }
 
 short get_short(fs_file fin)
 {
+<<<<<<< HEAD
     short val = (fs_getc(fin) & 0xff) | (fs_getc(fin) & 0xff) << 8;
 
     return val;
+=======
+    short s;
+
+    unsigned char *p = (unsigned char *) &s;
+
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    p[1] = (unsigned char) fs_getc(fin);
+    p[0] = (unsigned char) fs_getc(fin);
+#else
+    p[0] = (unsigned char) fs_getc(fin);
+    p[1] = (unsigned char) fs_getc(fin);
+#endif
+    return s;
+>>>>>>> origin/csy-extras
 }
 
 void get_array(fs_file fin, float *v, size_t n)

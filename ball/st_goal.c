@@ -15,7 +15,10 @@
 #include <stdio.h>
 
 #include "gui.h"
+<<<<<<< HEAD
 #include "transition.h"
+=======
+>>>>>>> origin/csy-extras
 #include "util.h"
 #include "progress.h"
 #include "audio.h"
@@ -24,6 +27,10 @@
 #include "demo.h"
 #include "hud.h"
 #include "key.h"
+
+#include "game_common.h"
+#include "game_server.h"
+#include "game_client.h"
 
 #include "game_common.h"
 #include "game_server.h"
@@ -42,7 +49,13 @@ enum
     GOAL_NEXT = GUI_LAST,
     GOAL_SAME,
     GOAL_SAVE,
+<<<<<<< HEAD
     GOAL_DONE,
+=======
+    GOAL_BACK,
+    GOAL_DONE,
+    GOAL_OVER,
+>>>>>>> origin/csy-extras
     GOAL_LAST
 };
 
@@ -58,10 +71,17 @@ static int goal_action(int tok, int val)
 
     switch (tok)
     {
+<<<<<<< HEAD
     case GUI_BACK:
     case GOAL_LAST:
         progress_stop();
         return goto_exit();
+=======
+    case GOAL_BACK:
+    case GOAL_OVER:
+        progress_stop();
+        return goto_state(&st_exit);
+>>>>>>> origin/csy-extras
 
     case GOAL_SAVE:
         progress_stop();
@@ -74,7 +94,15 @@ static int goal_action(int tok, int val)
     case GOAL_DONE:
         progress_stop();
         progress_exit();
+<<<<<<< HEAD
         return goto_exit();
+=======
+        return goto_state(&st_exit);
+
+    case GOAL_LAST:
+        progress_stop();
+        return goto_state(&st_exit);
+>>>>>>> origin/csy-extras
 
     case GUI_SCORE:
         gui_score_set(val);
@@ -100,6 +128,7 @@ static int goal_gui(void)
     const char *s2 = _("GOAL");
 
     int id, jd, kd, ld, md;
+<<<<<<< HEAD
     int root_id;
 
     int high = progress_lvl_high();
@@ -245,12 +274,144 @@ static int goal_gui(void)
 
             gui_layout(id, -1, +1);
         }
+=======
+
+    int high = progress_lvl_high();
+
+    if ((id = gui_vstack(0)))
+    {
+        int gid;
+
+        if (high)
+            gid = gui_label(id, s1, GUI_MED, gui_grn, gui_grn);
+        else
+            gid = gui_label(id, s2, GUI_LRG, gui_blu, gui_grn);
+
+        gui_space(id);
+
+        if (curr_mode() == MODE_CHALLENGE)
+        {
+            int coins, score, balls;
+            int i;
+
+            /* Reverse-engineer initial score and balls. */
+
+            if (resume)
+            {
+                coins = 0;
+                score = curr_score();
+                balls = curr_balls();
+            }
+            else
+            {
+                coins = curr_coins();
+                score = curr_score() - coins;
+                balls = curr_balls();
+
+                for (i = curr_score(); i > score; i--)
+                    if (progress_reward_ball(i))
+                        balls--;
+            }
+
+            if ((jd = gui_hstack(id)))
+            {
+                gui_filler(jd);
+
+                if ((kd = gui_vstack(jd)))
+                {
+                    if ((ld = gui_hstack(kd)))
+                    {
+                        if ((md = gui_harray(ld)))
+                        {
+                            balls_id = gui_count(md, 100, GUI_MED);
+                            gui_label(md, _("Balls"), GUI_SML,
+                                      gui_wht, gui_wht);
+                        }
+                        if ((md = gui_harray(ld)))
+                        {
+                            score_id = gui_count(md, 1000, GUI_MED);
+                            gui_label(md, _("Score"), GUI_SML,
+                                      gui_wht, gui_wht);
+                        }
+                        if ((md = gui_harray(ld)))
+                        {
+                            coins_id = gui_count(md, 100, GUI_MED);
+                            gui_label(md, _("Coins"), GUI_SML,
+                                      gui_wht, gui_wht);
+                        }
+
+                        gui_set_count(balls_id, balls);
+                        gui_set_count(score_id, score);
+                        gui_set_count(coins_id, coins);
+                    }
+
+                    if ((ld = gui_harray(kd)))
+                    {
+                        const struct level *l;
+
+                        gui_label(ld, "", GUI_SML, 0, 0);
+
+                        for (i = MAXLVL - 1; i >= 0; i--)
+                            if ((l = get_level(i)) && level_bonus(l))
+                            {
+                                const GLubyte *c = (level_opened(l) ?
+                                                    gui_grn : gui_gry);
+
+                                gui_label(ld, level_name(l), GUI_SML, c, c);
+                            }
+
+                        gui_label(ld, "", GUI_SML, 0, 0);
+                    }
+
+                    gui_set_rect(kd, GUI_ALL);
+                }
+
+                gui_filler(jd);
+            }
+
+            gui_space(id);
+        }
+        else
+        {
+            balls_id = score_id = coins_id = 0;
+        }
+
+        gui_score_board(id, (GUI_SCORE_COIN |
+                             GUI_SCORE_TIME |
+                             GUI_SCORE_GOAL), 1, high);
+
+        gui_space(id);
+
+        if ((jd = gui_harray(id)))
+        {
+            if      (progress_done())
+                gui_start(jd, _("Finish"), GUI_SML, GOAL_DONE, 0);
+            else if (progress_last())
+                gui_start(jd, _("Finish"), GUI_SML, GOAL_LAST, 0);
+
+            if (progress_next_avail())
+                gui_start(jd, _("Next Level"),  GUI_SML, GOAL_NEXT, 0);
+
+            if (progress_same_avail())
+                gui_start(jd, _("Retry Level"), GUI_SML, GOAL_SAME, 0);
+
+            if (demo_saved())
+                gui_state(jd, _("Save Replay"), GUI_SML, GOAL_SAVE, 0);
+        }
+
+        if (!resume)
+            gui_pulse(gid, 1.2f);
+
+        gui_layout(id, 0, 0);
+
+>>>>>>> origin/csy-extras
     }
 
     set_score_board(level_score(curr_level(), SCORE_COIN), progress_coin_rank(),
                     level_score(curr_level(), SCORE_TIME), progress_time_rank(),
                     level_score(curr_level(), SCORE_GOAL), progress_goal_rank());
 
+<<<<<<< HEAD
     return root_id;
 }
 
@@ -270,6 +431,20 @@ static void goal_paint(int id, float t)
     game_client_draw(0, t);
     hud_paint(0, 0, video.device_w, video.device_h);
     gui_paint(id);
+=======
+    return id;
+>>>>>>> origin/csy-extras
+}
+
+static int goal_enter(struct state *st, struct state *prev)
+{
+    if (prev == &st_name)
+        progress_rename(0);
+
+    audio_music_fade_out(2.0f);
+    video_clr_grab();
+    resume = (prev == &st_goal || prev == &st_name || prev == &st_save);
+    return goal_gui();
 }
 
 static void goal_timer(int id, float dt)
@@ -317,6 +492,7 @@ static void goal_timer(int id, float dt)
 }
 
 static int goal_keybd(int c, int d)
+<<<<<<< HEAD
 {
     if (d)
     {
@@ -326,11 +502,36 @@ static int goal_keybd(int c, int d)
             return goal_action(GUI_SCORE, GUI_SCORE_NEXT(gui_score_get()));
         if (config_tst_d(CONFIG_KEY_RESTART, c) && progress_same_avail())
             return goal_action(GOAL_SAME, 0);
+=======
+{
+    if (d)
+    {
+        if (config_tst_d(CONFIG_KEY_SCORE_NEXT, c))
+            return goal_action(GUI_SCORE, GUI_SCORE_NEXT(gui_score_get()));
+        if (config_tst_d(CONFIG_KEY_RESTART, c) && progress_same_avail())
+            return goal_action(GOAL_SAME, 0);
     }
 
     return 1;
 }
 
+static int goal_buttn(int b, int d)
+{
+    if (d)
+    {
+        int active = gui_active();
+
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
+            return goal_action(gui_token(active), gui_value(active));
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+            return goal_action(GOAL_BACK, 0);
+>>>>>>> origin/csy-extras
+    }
+
+    return 1;
+}
+
+<<<<<<< HEAD
 static int goal_buttn(int b, int d, int device_id)
 {
     if (d)
@@ -345,12 +546,18 @@ static int goal_buttn(int b, int d, int device_id)
     return 1;
 }
 
+=======
+>>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 struct state st_goal = {
     goal_enter,
     shared_leave,
+<<<<<<< HEAD
     goal_paint,
+=======
+    shared_paint,
+>>>>>>> origin/csy-extras
     goal_timer,
     shared_point,
     shared_stick,

@@ -29,8 +29,11 @@
 #include "util.h"
 #include "common.h"
 #include "demo_dir.h"
+<<<<<<< HEAD
 #include "video.h"
 #include "key.h"
+=======
+>>>>>>> origin/csy-extras
 
 #include "game_common.h"
 #include "game_server.h"
@@ -39,7 +42,10 @@
 #include "st_demo.h"
 #include "st_title.h"
 #include "st_shared.h"
+<<<<<<< HEAD
 #include "st_common.h"
+=======
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -52,19 +58,28 @@ static int first = 0;
 static int total = 0;
 static int last  = 0;
 
+<<<<<<< HEAD
 static int selected = 0;
+=======
+>>>>>>> origin/csy-extras
 static int last_viewed = 0;
 
 /*---------------------------------------------------------------------------*/
 
 enum
 {
+<<<<<<< HEAD
     DEMO_PLAY = GUI_LAST,
     DEMO_SELECT
 };
 
 static void demo_select(int i);
 
+=======
+    DEMO_SELECT = GUI_LAST
+};
+
+>>>>>>> origin/csy-extras
 static int demo_action(int tok, int val)
 {
     audio_play(AUD_MENU, 1.0f);
@@ -85,6 +100,7 @@ static int demo_action(int tok, int val)
         break;
 
     case DEMO_SELECT:
+<<<<<<< HEAD
         demo_select(val);
         break;
 
@@ -92,6 +108,11 @@ static int demo_action(int tok, int val)
         if (progress_replay(DIR_ITEM_GET(items, selected)->path))
         {
             last_viewed = selected;
+=======
+        if (progress_replay(DIR_ITEM_GET(items, val)->path))
+        {
+            last_viewed = val;
+>>>>>>> origin/csy-extras
             demo_play_goto(0);
             return goto_state(&st_demo_play);
         }
@@ -103,6 +124,7 @@ static int demo_action(int tok, int val)
 /*---------------------------------------------------------------------------*/
 
 static struct thumb
+<<<<<<< HEAD
 {
     int item;
     int shot_id;
@@ -118,6 +140,22 @@ static int gui_demo_thumbs(int id)
     int jd, kd, ld;
     int i, j;
 
+=======
+{
+    int item;
+    int shot;
+    int name;
+} thumbs[DEMO_STEP];
+
+static int gui_demo_thumbs(int id)
+{
+    int w = config_get_d(CONFIG_WIDTH);
+    int h = config_get_d(CONFIG_HEIGHT);
+
+    int jd, kd, ld;
+    int i, j;
+
+>>>>>>> origin/csy-extras
     struct thumb *thumb;
 
     if ((jd = gui_varray(id)))
@@ -134,6 +172,7 @@ static int gui_demo_thumbs(int id)
                     {
                         if ((ld = gui_vstack(kd)))
                         {
+<<<<<<< HEAD
                             const int ww = MIN(w, h) * 2 / 9;
                             const int hh = ww / 4 * 3;
 
@@ -147,15 +186,30 @@ static int gui_demo_thumbs(int id)
                             gui_set_state(ld, DEMO_SELECT, j);
 
                             thumb->thumb_id = ld;
+=======
+                            gui_space(ld);
+
+                            thumb->shot = gui_image(ld, " ", w / 6, h / 6);
+                            thumb->name = gui_label(ld, " ", GUI_SML,
+                                                    gui_wht, gui_wht);
+
+                            gui_set_trunc(thumb->name, TRUNC_TAIL);
+                            gui_set_state(ld, DEMO_SELECT, j);
+>>>>>>> origin/csy-extras
                         }
                     }
                     else
                     {
                         gui_space(kd);
 
+<<<<<<< HEAD
                         thumb->shot_id = 0;
                         thumb->name_id = 0;
                         thumb->thumb_id = 0;
+=======
+                        thumb->shot = 0;
+                        thumb->name = 0;
+>>>>>>> origin/csy-extras
                     }
                 }
             }
@@ -169,13 +223,22 @@ static void gui_demo_update_thumbs(void)
     struct demo *demo;
     int i;
 
+<<<<<<< HEAD
     for (i = 0; i < ARRAYSIZE(thumbs) && thumbs[i].shot_id && thumbs[i].name_id; i++)
+=======
+    for (i = 0; i < ARRAYSIZE(thumbs) && thumbs[i].shot && thumbs[i].name; i++)
+>>>>>>> origin/csy-extras
     {
         item = DIR_ITEM_GET(items, thumbs[i].item);
         demo = item->data;
 
+<<<<<<< HEAD
         gui_set_image(thumbs[i].shot_id, demo ? demo->shot : "");
         gui_set_label(thumbs[i].name_id, demo ? demo->name : base_name(item->path));
+=======
+        gui_set_image(thumbs[i].shot, demo ? demo->shot : "");
+        gui_set_label(thumbs[i].name, demo ? demo->name : base_name(item->path));
+>>>>>>> origin/csy-extras
     }
 }
 
@@ -311,6 +374,11 @@ static int demo_gui(void)
 {
     int id, jd;
 
+<<<<<<< HEAD
+=======
+    id = gui_vstack(0);
+
+>>>>>>> origin/csy-extras
     if (total)
     {
         if ((id = gui_vstack(0)))
@@ -322,6 +390,7 @@ static int demo_gui(void)
                 gui_navig(jd, total, first, DEMO_STEP);
             }
 
+<<<<<<< HEAD
             if ((jd = gui_vstack(id)))
             {
                 gui_demo_thumbs(jd);
@@ -351,8 +420,66 @@ static int demo_gui(void)
             gui_layout(id, 0, 0);
         }
     }
+=======
+            gui_label(jd, _("Select Replay"), GUI_SML, 0,0);
+            gui_filler(jd);
+            gui_navig(jd, first > 0, first + DEMO_STEP < total);
+        }
+
+        gui_demo_thumbs(id);
+        gui_space(id);
+        gui_demo_status(id);
+
+        gui_layout(id, 0, 0);
+
+        gui_demo_update_thumbs();
+        gui_demo_update_status(last_viewed);
+    }
+    else
+    {
+        gui_label(id, _("No Replays"), GUI_MED, 0, 0);
+        gui_layout(id, 0, 0);
+    }
 
     return id;
+}
+
+static int demo_enter(struct state *st, struct state *prev)
+{
+    if (!items || (prev == &st_demo_del))
+    {
+        if (items)
+        {
+            demo_dir_free(items);
+            items = NULL;
+        }
+
+        items = demo_dir_scan();
+        total = array_len(items);
+    }
+
+    first       = first < total ? first : 0;
+    last        = MIN(first + DEMO_STEP - 1, total - 1);
+    last_viewed = MIN(MAX(first, last_viewed), last);
+
+    if (total)
+        demo_dir_load(items, first, last);
+
+    audio_music_fade_to(0.5f, "bgm/inter.ogg");
+>>>>>>> origin/csy-extras
+
+    return demo_gui();
+}
+
+static void demo_leave(struct state *st, struct state *next, int id)
+{
+    if (next == &st_title)
+    {
+        demo_dir_free(items);
+        items = NULL;
+    }
+
+    gui_delete(id);
 }
 
 static int demo_enter(struct state *st, struct state *prev, int intent)
@@ -403,6 +530,7 @@ static void demo_timer(int id, float dt)
     gui_timer(id, dt);
 }
 
+<<<<<<< HEAD
 static int demo_keybd(int c, int d)
 {
     if (d)
@@ -417,11 +545,34 @@ static int demo_buttn(int b, int d, int device_id)
 {
     if (d)
     {
+=======
+static void demo_point(int id, int x, int y, int dx, int dy)
+{
+    int jd = shared_point_basic(id, x, y);
+
+    if (jd && gui_token(jd) == DEMO_SELECT)
+        gui_demo_update_status(gui_value(jd));
+}
+
+static void demo_stick(int id, int a, float v, int bump)
+{
+    int jd = shared_stick_basic(id, a, v, bump);
+
+    if (jd && gui_token(jd) == DEMO_SELECT)
+        gui_demo_update_status(gui_value(jd));
+}
+
+static int demo_buttn(int b, int d)
+{
+    if (d)
+    {
+>>>>>>> origin/csy-extras
         int active = gui_active();
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
         {
             if (total)
+<<<<<<< HEAD
             {
                 int token = gui_token(active);
                 int value = gui_value(active);
@@ -431,16 +582,24 @@ static int demo_buttn(int b, int d, int device_id)
                 else
                     return demo_action(token, value);
             }
+=======
+                return demo_action(gui_token(active), gui_value(active));
+>>>>>>> origin/csy-extras
             else
                 return demo_action(GUI_BACK, 0);
         }
 
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
             return demo_action(GUI_BACK, 0);
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L1, b) && first > 0)
             return demo_action(GUI_PREV, 0);
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_R1, b) && first + DEMO_STEP < total)
             return demo_action(GUI_NEXT, 0);
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+            return demo_action(GUI_BACK, 0);
+>>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -452,7 +611,10 @@ static int demo_paused;
 static int show_hud;
 static int check_compat;
 static int speed;
+<<<<<<< HEAD
 static int transition;
+=======
+>>>>>>> origin/csy-extras
 
 static float prelude;
 
@@ -476,6 +638,7 @@ static int demo_play_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int demo_play_enter(struct state *st, struct state *prev, int intent)
 {
     int id;
@@ -491,6 +654,18 @@ static int demo_play_enter(struct state *st, struct state *prev, int intent)
         return 0;
     }
 
+=======
+static int demo_play_enter(struct state *st, struct state *prev)
+{
+    if (demo_paused)
+    {
+        demo_paused = 0;
+        prelude = 0;
+        audio_music_fade_in(0.5f);
+        return 0;
+    }
+
+>>>>>>> origin/csy-extras
     /*
      * Post-1.5.1 replays include view data in the first update, this
      * line is currently left in for compatibility with older replays.
@@ -506,6 +681,7 @@ static int demo_play_enter(struct state *st, struct state *prev, int intent)
     prelude = 1.0f;
 
     speed = SPEED_NORMAL;
+<<<<<<< HEAD
     demo_replay_speed(speed);
     show_hud = 1;
     hud_update(0, 0);
@@ -522,6 +698,14 @@ static int demo_play_leave(struct state *st, struct state *next, int id, int int
     video_show_cursor();
     gui_delete(id);
     return 0;
+=======
+    demo_speed_set(speed);
+
+    show_hud = 1;
+    hud_update(0);
+
+    return demo_play_gui();
+>>>>>>> origin/csy-extras
 }
 
 static void demo_play_paint(int id, float t)
@@ -529,9 +713,16 @@ static void demo_play_paint(int id, float t)
     game_client_draw(0, t);
 
     if (show_hud)
+<<<<<<< HEAD
         hud_paint(0, 0, video.device_w, video.device_h);
 
     gui_paint(id);
+=======
+        hud_paint();
+
+    if (time_state() < prelude)
+        gui_paint(id);
+>>>>>>> origin/csy-extras
 }
 
 static void demo_play_timer(int id, float dt)
@@ -540,12 +731,15 @@ static void demo_play_timer(int id, float dt)
     gui_timer(id, dt);
     hud_timer(dt);
 
+<<<<<<< HEAD
     if (time_state() >= 1.0f && !transition)
     {
         gui_slide(id, GUI_W | GUI_FLING | GUI_EASE_BACK | GUI_BACKWARD, 0, 0.6f, 0);
         transition = 1;
     }
 
+=======
+>>>>>>> origin/csy-extras
     /* Pause briefly before starting playback. */
 
     if (time_state() < prelude)
@@ -568,26 +762,50 @@ static void set_speed(int d)
     if (d > 0) speed = SPEED_UP(speed);
     if (d < 0) speed = SPEED_DN(speed);
 
+<<<<<<< HEAD
     demo_replay_speed(speed);
     hud_speed_pulse(speed);
 }
 
 static void demo_play_stick(int id, int a, float v, int bump, int device_id)
+=======
+    demo_speed_set(speed);
+    hud_speed_pulse(speed);
+}
+
+static void demo_play_stick(int id, int a, float v, int bump)
+>>>>>>> origin/csy-extras
 {
     if (!bump)
         return;
 
+<<<<<<< HEAD
     if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y0, a))
+=======
+    if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y, a))
+>>>>>>> origin/csy-extras
     {
         if (v < 0) set_speed(+1);
         if (v > 0) set_speed(-1);
     }
 }
 
+<<<<<<< HEAD
 static void demo_play_wheel(int x, int y)
 {
     if (y > 0) set_speed(+1);
     if (y < 0) set_speed(-1);
+=======
+static int demo_play_click(int b, int d)
+{
+    if (d)
+    {
+        if (b == SDL_BUTTON_WHEELUP)   set_speed(+1);
+        if (b == SDL_BUTTON_WHEELDOWN) set_speed(-1);
+    }
+
+    return 1;
+>>>>>>> origin/csy-extras
 }
 
 static int demo_play_keybd(int c, int d)
@@ -617,10 +835,31 @@ static int demo_play_buttn(int b, int d, int device_id)
             demo_paused = 1;
             return goto_state(&st_demo_end);
         }
+
+        if (c == SDLK_F6)
+            show_hud = !show_hud;
     }
     return 1;
 }
 
+<<<<<<< HEAD
+=======
+static int demo_play_buttn(int b, int d)
+{
+    if (d)
+    {
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+        {
+            if (config_tst_d(CONFIG_KEY_PAUSE, SDLK_ESCAPE))
+                demo_paused = 1;
+
+            return goto_state(&st_demo_end);
+        }
+    }
+    return 1;
+}
+
+>>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 enum
@@ -668,14 +907,21 @@ static int demo_end_gui(void)
             kd = gui_label(id, _("Replay Paused"), GUI_LRG, gui_gry, gui_red);
         else
             kd = gui_label(id, _("Replay Ends"),   GUI_LRG, gui_gry, gui_red);
+<<<<<<< HEAD
 
         gui_space(id);
+=======
+>>>>>>> origin/csy-extras
 
         if ((jd = gui_harray(id)))
         {
             if (standalone)
             {
+<<<<<<< HEAD
                 gui_start(jd, _("Exit"), GUI_SML, DEMO_QUIT, 0);
+=======
+                gui_start(jd, _("Quit"), GUI_SML, DEMO_QUIT, 0);
+>>>>>>> origin/csy-extras
             }
             else
             {
@@ -696,9 +942,23 @@ static int demo_end_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int demo_end_enter(struct state *st, struct state *prev, int intent)
 {
     audio_music_fade_out(demo_paused ? 0.2f : 2.0f);
+=======
+static int demo_end_enter(struct state *st, struct state *prev)
+{
+    audio_music_fade_out(demo_paused ? 0.2f : 2.0f);
+
+    return demo_end_gui();
+}
+
+static void demo_end_paint(int id, float t)
+{
+    game_client_draw(0, t);
+    gui_paint(id);
+>>>>>>> origin/csy-extras
 
     hud_hide();
 
@@ -723,6 +983,7 @@ static int demo_end_keybd(int c, int d)
 {
     if (d)
     {
+<<<<<<< HEAD
         if (c == KEY_EXIT)
         {
             if (demo_paused)
@@ -730,6 +991,10 @@ static int demo_end_keybd(int c, int d)
             else
                 return demo_end_action(standalone ? DEMO_QUIT : DEMO_KEEP, 0);
         }
+=======
+        if (demo_paused && config_tst_d(CONFIG_KEY_PAUSE, c))
+            return demo_end_action(DEMO_CONTINUE, 0);
+>>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -743,6 +1008,7 @@ static int demo_end_buttn(int b, int d, int device_id)
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return demo_end_action(gui_token(active), gui_value(active));
 
+<<<<<<< HEAD
         if (demo_paused)
         {
             if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b) ||
@@ -752,6 +1018,13 @@ static int demo_end_buttn(int b, int d, int device_id)
         else
         {
             if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+        {
+            if (demo_paused)
+                return demo_end_action(DEMO_CONTINUE, 0);
+            else
+>>>>>>> origin/csy-extras
                 return demo_end_action(standalone ? DEMO_QUIT : DEMO_KEEP, 0);
         }
     }
@@ -764,7 +1037,11 @@ static int demo_del_action(int tok, int val)
 {
     audio_play(AUD_MENU, 1.0f);
     demo_replay_stop(tok == DEMO_DEL);
+<<<<<<< HEAD
     return tok == GUI_BACK ? exit_state(&st_demo) : goto_state(&st_demo);
+=======
+    return goto_state(&st_demo);
+>>>>>>> origin/csy-extras
 }
 
 static int demo_del_gui(void)
@@ -777,8 +1054,13 @@ static int demo_del_gui(void)
 
         if ((jd = gui_harray(id)))
         {
+<<<<<<< HEAD
             gui_start(jd, _("Keep"),   GUI_SML, DEMO_KEEP, 0);
             gui_state(jd, _("Delete"), GUI_SML, DEMO_DEL,  0);
+=======
+            gui_start(jd, _("No"),  GUI_SML, DEMO_KEEP, 0);
+            gui_state(jd, _("Yes"), GUI_SML, DEMO_DEL,  0);
+>>>>>>> origin/csy-extras
         }
 
         gui_pulse(kd, 1.2f);
@@ -788,6 +1070,7 @@ static int demo_del_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int demo_del_enter(struct state *st, struct state *prev, int intent)
 {
     audio_music_fade_out(2.0f);
@@ -809,11 +1092,28 @@ static int demo_del_buttn(int b, int d, int device_id)
 {
     if (d)
     {
+=======
+static int demo_del_enter(struct state *st, struct state *prev)
+{
+    audio_music_fade_out(2.0f);
+
+    return demo_del_gui();
+}
+
+static int demo_del_buttn(int b, int d)
+{
+    if (d)
+    {
+>>>>>>> origin/csy-extras
         int active = gui_active();
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return demo_del_action(gui_token(active), gui_value(active));
+<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
+=======
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+>>>>>>> origin/csy-extras
             return demo_del_action(DEMO_KEEP, 0);
     }
     return 1;
@@ -829,9 +1129,15 @@ static int demo_compat_gui(void)
     {
         gui_label(id, _("Warning!"), GUI_MED, 0, 0);
         gui_space(id);
+<<<<<<< HEAD
         gui_multi(id, _("The current replay was recorded with a\n"
                         "different (or unknown) version of this level.\n"
                         "Be prepared to encounter visual errors.\n"),
+=======
+        gui_multi(id, _("The current replay was recorded with a\\"
+                        "different (or unknown) version of this level.\\"
+                        "Be prepared to encounter visual errors.\\"),
+>>>>>>> origin/csy-extras
                   GUI_SML, gui_wht, gui_wht);
 
         gui_layout(id, 0, 0);
@@ -840,6 +1146,7 @@ static int demo_compat_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int demo_compat_action(int tok, int val)
 {
     audio_play(AUD_MENU, 1.0f);
@@ -858,6 +1165,13 @@ static int demo_compat_enter(struct state *st, struct state *prev, int intent)
 
     conf_common_init(demo_compat_action);
     return transition_slide(demo_compat_gui(), 1, intent);
+=======
+static int demo_compat_enter(struct state *st, struct state *prev)
+{
+    check_compat = 0;
+
+    return demo_compat_gui();
+>>>>>>> origin/csy-extras
 }
 
 static void demo_compat_timer(int id, float dt)
@@ -866,6 +1180,7 @@ static void demo_compat_timer(int id, float dt)
     gui_timer(id, dt);
 }
 
+<<<<<<< HEAD
 static int demo_compat_keybd(int c, int d)
 {
     if (d)
@@ -886,6 +1201,16 @@ static int demo_compat_buttn(int b, int d, int device_id)
         {
             return demo_compat_action(GUI_BACK, 0);
         }
+=======
+static int demo_compat_buttn(int b, int d)
+{
+    if (d)
+    {
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
+            return goto_state(&st_demo_play);
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+            return goto_state(&st_demo_end);
+>>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -897,11 +1222,19 @@ struct state st_demo = {
     demo_leave,
     shared_paint,
     demo_timer,
+<<<<<<< HEAD
     shared_point,
     shared_stick,
     shared_angle,
     shared_click,
     demo_keybd,
+=======
+    demo_point,
+    demo_stick,
+    shared_angle,
+    shared_click,
+    NULL,
+>>>>>>> origin/csy-extras
     demo_buttn
 };
 
@@ -913,10 +1246,16 @@ struct state st_demo_play = {
     NULL,
     demo_play_stick,
     NULL,
+<<<<<<< HEAD
     shared_click_basic,
     demo_play_keybd,
     demo_play_buttn,
     demo_play_wheel
+=======
+    demo_play_click,
+    demo_play_keybd,
+    demo_play_buttn
+>>>>>>> origin/csy-extras
 };
 
 struct state st_demo_end = {
@@ -941,7 +1280,11 @@ struct state st_demo_del = {
     shared_stick,
     shared_angle,
     shared_click,
+<<<<<<< HEAD
     demo_del_keybd,
+=======
+    NULL,
+>>>>>>> origin/csy-extras
     demo_del_buttn
 };
 
@@ -954,6 +1297,10 @@ struct state st_demo_compat = {
     shared_stick,
     shared_angle,
     shared_click_basic,
+<<<<<<< HEAD
     demo_compat_keybd,
+=======
+    NULL,
+>>>>>>> origin/csy-extras
     demo_compat_buttn
 };

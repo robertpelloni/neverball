@@ -11,8 +11,13 @@
 
 struct demo
 {
+<<<<<<< HEAD
     char   path[MAXSTR];                /* Demo path                         */
     char   name[PATHMAX];               /* Demo basename                     */
+=======
+    char   name[PATHMAX];               /* Demo basename                     */
+    char   filename[MAXSTR];            /* Demo path                         */
+>>>>>>> origin/csy-extras
 
     char   player[MAXSTR];
     time_t date;
@@ -35,8 +40,13 @@ struct demo
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 int  demo_load(struct demo *, const char *);
 void demo_free(struct demo *);
+=======
+struct demo *demo_load(const char *);
+void         demo_free(struct demo *);
+>>>>>>> origin/csy-extras
 
 int demo_exists(const char *);
 
@@ -49,7 +59,11 @@ const char *demo_format_name(const char *fmt,
 int  demo_play_init(const char *, const struct level *, int, int, int, int);
 void demo_play_step(void);
 void demo_play_stat(int, int, int);
+<<<<<<< HEAD
 void demo_play_stop(int);
+=======
+void demo_play_stop(void);
+>>>>>>> origin/csy-extras
 
 int  demo_saved (void);
 void demo_rename(const char *);
@@ -65,7 +79,11 @@ float demo_replay_blend(void);
 
 const char *curr_demo(void);
 
+<<<<<<< HEAD
 void demo_replay_speed(int);
+=======
+void demo_speed_set(int);
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 

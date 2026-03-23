@@ -15,14 +15,20 @@
 #include <string.h>
 
 #include "gui.h"
+<<<<<<< HEAD
 #include "transition.h"
+=======
+>>>>>>> origin/csy-extras
 #include "set.h"
 #include "progress.h"
 #include "audio.h"
 #include "config.h"
 #include "demo.h"
+<<<<<<< HEAD
 #include "lang.h"
 #include "key.h"
+=======
+>>>>>>> origin/csy-extras
 
 #include "game_server.h"
 #include "game_client.h"
@@ -38,6 +44,7 @@
 
 static int check_nodemo = 1;
 
+<<<<<<< HEAD
 enum
 {
     LEVEL_START = GUI_LAST,
@@ -62,6 +69,11 @@ static int level_gui(void)
 {
     int id, jd, kd;
     const char *message = level_msg(curr_level());
+=======
+static int level_gui(void)
+{
+    int id, jd, kd;
+>>>>>>> origin/csy-extras
 
     if ((id = gui_vstack(0)))
     {
@@ -90,9 +102,15 @@ static int level_gui(void)
                     sprintf(setattr, "%s", set_name(curr_set()));
 
                 gui_label(kd, lvlattr,
+<<<<<<< HEAD
                         b ? GUI_MED : GUI_LRG,
                         b ? gui_wht : 0,
                         b ? gui_grn : 0);
+=======
+                          b ? GUI_MED : GUI_LRG,
+                          b ? gui_wht : 0,
+                          b ? gui_grn : 0);
+>>>>>>> origin/csy-extras
 
                 gui_label(kd, setattr, GUI_SML, gui_wht, gui_wht);
 
@@ -102,6 +120,7 @@ static int level_gui(void)
         }
         gui_space(id);
 
+<<<<<<< HEAD
         if (message && *message)
         {
             gui_multi(id, message, GUI_SML, gui_wht, gui_wht);
@@ -124,6 +143,9 @@ static int level_gui(void)
 
             gui_back_button(jd);
         }
+=======
+        gui_multi(id, level_msg(curr_level()), GUI_SML, gui_wht, gui_wht);
+>>>>>>> origin/csy-extras
 
         gui_layout(id, 0, 0);
     }
@@ -131,7 +153,11 @@ static int level_gui(void)
     return id;
 }
 
+<<<<<<< HEAD
 static int level_enter(struct state *st, struct state *prev, int intent)
+=======
+static int level_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     game_client_fly(1.0f);
 
@@ -142,7 +168,11 @@ static int level_enter(struct state *st, struct state *prev, int intent)
     }
     else check_nodemo = 1;
 
+<<<<<<< HEAD
     return transition_slide(level_gui(), 1, intent);
+=======
+    return level_gui();
+>>>>>>> origin/csy-extras
 }
 
 static void level_timer(int id, float dt)
@@ -151,6 +181,14 @@ static void level_timer(int id, float dt)
     game_step_fade(dt);
 }
 
+<<<<<<< HEAD
+=======
+static int level_click(int b, int d)
+{
+    return (b == SDL_BUTTON_LEFT && d == 1) ? goto_state(&st_play_ready) : 1;
+}
+
+>>>>>>> origin/csy-extras
 static int level_keybd(int c, int d)
 {
     if (d)
@@ -172,12 +210,21 @@ static int level_buttn(int b, int d, int device_id)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
         {
+<<<<<<< HEAD
             int active = gui_active();
 
             if (active)
                 return level_action(gui_token(active), gui_value(active));
             else
                 return level_action(LEVEL_START, 0);
+=======
+            return goto_state(&st_play_ready);
+        }
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+        {
+            progress_stop();
+            return goto_state(&st_exit);
+>>>>>>> origin/csy-extras
         }
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_START, b))
             return level_action(LEVEL_START, 0);
@@ -222,6 +269,7 @@ static int poser_buttn(int c, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int nodemo_gui(void)
 {
     int id;
@@ -238,6 +286,11 @@ static int nodemo_gui(void)
     }
 
     return id;
+=======
+static void poser_paint(int id, float t)
+{
+    game_client_draw(POSE_LEVEL, t);
+>>>>>>> origin/csy-extras
 }
 
 static int nodemo_enter(struct state *st, struct state *prev, int intent)
@@ -314,6 +367,84 @@ int goto_exit(void)
 
 /*---------------------------------------------------------------------------*/
 
+static int nodemo_gui(void)
+{
+    int id;
+
+    if ((id = gui_vstack(0)))
+    {
+        gui_label(id, _("Warning!"), GUI_MED, 0, 0);
+        gui_space(id);
+        gui_multi(id, _("A replay file could not be opened for writing.\\"
+                        "This game will not be recorded.\\"),
+                  GUI_SML, gui_wht, gui_wht);
+
+        gui_layout(id, 0, 0);
+    }
+
+    return id;
+}
+
+static int nodemo_enter(struct state *st, struct state *prev)
+{
+    check_nodemo = 0;
+
+    return nodemo_gui();
+}
+
+static void nodemo_timer(int id, float dt)
+{
+    game_step_fade(dt);
+    gui_timer(id, dt);
+}
+
+static int nodemo_buttn(int b, int d)
+{
+    if (d)
+    {
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
+            return goto_state(&st_level);
+        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
+            return goto_state(&st_level);
+    }
+    return 1;
+}
+
+
+/*---------------------------------------------------------------------------*/
+
+static int exit_enter(struct state *st, struct state *prev)
+{
+    struct state *dst;
+
+    if (progress_done())
+        dst = &st_done;
+    else if (curr_mode() == MODE_CHALLENGE)
+        dst = &st_over;
+    else if (curr_mode() == MODE_STANDALONE)
+        dst = NULL;
+    else
+        dst = &st_start;
+
+    if (dst)
+    {
+        /* Visit the auxilliary screen or exit to level selection. */
+
+        goto_state(dst != prev ? dst : &st_start);
+    }
+    else
+    {
+        /* Quit the game. */
+
+        SDL_Event e = { SDL_QUIT };
+        SDL_PushEvent(&e);
+    }
+
+    return 0;
+}
+
+/*---------------------------------------------------------------------------*/
+
 struct state st_level = {
     level_enter,
     shared_leave,
@@ -321,6 +452,7 @@ struct state st_level = {
     level_timer,
     shared_point,
     shared_stick,
+    NULL,
     NULL,
     level_click,
     level_keybd,
@@ -336,8 +468,39 @@ struct state st_poser = {
     NULL,
     NULL,
     NULL,
+<<<<<<< HEAD
     poser_keybd,
     poser_buttn
+=======
+    NULL,
+    poser_buttn
+};
+
+struct state st_nodemo = {
+    nodemo_enter,
+    shared_leave,
+    shared_paint,
+    nodemo_timer,
+    shared_point,
+    shared_stick,
+    shared_angle,
+    shared_click_basic,
+    NULL,
+    nodemo_buttn
+};
+
+struct state st_exit = {
+    exit_enter,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    NULL
+>>>>>>> origin/csy-extras
 };
 
 struct state st_nodemo = {

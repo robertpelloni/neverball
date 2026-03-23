@@ -25,12 +25,15 @@
 #include <stdarg.h>
 #include <assert.h>
 
+<<<<<<< HEAD
 /*
  * No platform checking, relying on MinGW to provide.
  */
 #include <sys/stat.h> /* stat() */
 #include <unistd.h>   /* access() */
 
+=======
+>>>>>>> origin/csy-extras
 #include "common.h"
 #include "fs.h"
 
@@ -81,6 +84,7 @@ int read_line(char **dst, fs_file fin)
 
 char *strip_newline(char *str)
 {
+<<<<<<< HEAD
     if (str && *str)
     {
         char *p = str + strlen(str) - 1;
@@ -101,6 +105,12 @@ char *strip_spaces(char *str)
         while (p >= str && isspace(*p))
             *p-- = 0;
     }
+=======
+    char *c = str + strlen(str) - 1;
+
+    while (c >= str && (*c == '\n' || *c =='\r'))
+        *c-- = '\0';
+>>>>>>> origin/csy-extras
 
     return str;
 }
@@ -176,9 +186,22 @@ const char *date_to_str(time_t i)
     return str;
 }
 
+<<<<<<< HEAD
 int file_exists(const char *path)
 {
     return (access(path, F_OK) == 0);
+=======
+int file_exists(const char *name)
+{
+    FILE *fp;
+
+    if ((fp = fopen(name, "r")))
+    {
+        fclose(fp);
+        return 1;
+    }
+    return 0;
+>>>>>>> origin/csy-extras
 }
 
 int file_rename(const char *src, const char *dst)
@@ -190,6 +213,7 @@ int file_rename(const char *src, const char *dst)
     return rename(src, dst);
 }
 
+<<<<<<< HEAD
 int file_size(const char *path)
 {
     struct stat buf;
@@ -198,6 +222,8 @@ int file_size(const char *path)
     return 0;
 }
 
+=======
+>>>>>>> origin/csy-extras
 void file_copy(FILE *fin, FILE *fout)
 {
     char   buff[MAXSTR];
@@ -272,6 +298,7 @@ const char *path_next_sep(const char *path)
     return *(path + skip) ? path + skip : NULL;
 }
 
+<<<<<<< HEAD
 char *path_normalize(char *path)
 {
     char *sep = path;
@@ -282,6 +309,8 @@ char *path_normalize(char *path)
     return path;
 }
 
+=======
+>>>>>>> origin/csy-extras
 const char *base_name_sans(const char *name, const char *suffix)
 {
     static char base[MAXSTR];
@@ -309,6 +338,7 @@ const char *base_name_sans(const char *name, const char *suffix)
 
 const char *base_name(const char *name)
 {
+<<<<<<< HEAD
     static char buff[MAXSTR];
 
     char *sep;
@@ -325,10 +355,15 @@ const char *base_name(const char *name)
     }
 
     return (sep = (char *) path_last_sep(buff)) ? sep + 1 : buff;
+=======
+    const char *sep;
+    return (name && (sep = path_last_sep(name))) ? sep + 1 : name;
+>>>>>>> origin/csy-extras
 }
 
 const char *dir_name(const char *name)
 {
+<<<<<<< HEAD
     if (name && *name)
     {
         static char buff[MAXSTR];
@@ -351,6 +386,22 @@ const char *dir_name(const char *name)
 
             return buff;
         }
+=======
+    static char buff[MAXSTR];
+
+    char *sep;
+
+    SAFECPY(buff, name);
+
+    if ((sep = (char *) path_last_sep(buff)))
+    {
+        if (sep == buff)
+            return "/";
+
+        *sep = '\0';
+
+        return buff;
+>>>>>>> origin/csy-extras
     }
 
     return ".";
@@ -364,6 +415,7 @@ int rand_between(int low, int high)
 }
 
 /*---------------------------------------------------------------------------*/
+<<<<<<< HEAD
 
 #ifdef _WIN32
 
@@ -406,3 +458,5 @@ int set_env_var(const char *name, const char *value)
 #endif
 
 /*---------------------------------------------------------------------------*/
+=======
+>>>>>>> origin/csy-extras

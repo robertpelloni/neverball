@@ -130,6 +130,10 @@ static void game_draw_vect(struct s_rend *rend, const struct s_vary *fp)
 {
     if (view_m > 0.f)
     {
+<<<<<<< HEAD
+=======
+        glDisable(GL_LIGHTING);
+>>>>>>> origin/csy-extras
         glPushMatrix();
         {
             glTranslatef(fp->uv[ball].p[0],
@@ -142,6 +146,10 @@ static void game_draw_vect(struct s_rend *rend, const struct s_vary *fp)
             vect_draw(rend);
         }
         glPopMatrix();
+<<<<<<< HEAD
+=======
+        glEnable(GL_LIGHTING);
+>>>>>>> origin/csy-extras
     }
 }
 
@@ -159,7 +167,11 @@ static void game_draw_balls(struct s_rend *rend,
 
     int ui;
 
+<<<<<<< HEAD
     r_color_mtrl(rend, 1);
+=======
+    sol_color_mtrl(rend, 1);
+>>>>>>> origin/csy-extras
 
     for (ui = curr_party(); ui > 0; ui--)
     {
@@ -210,14 +222,22 @@ static void game_draw_balls(struct s_rend *rend,
     }
 
     glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+<<<<<<< HEAD
     r_color_mtrl(rend, 0);
 }
 
 static void game_draw_flags(struct s_rend *rend, const struct s_base *fp)
+=======
+    sol_color_mtrl(rend, 0);
+}
+
+static void game_draw_goals(struct s_rend *rend, const struct s_base *fp)
+>>>>>>> origin/csy-extras
 {
     int zi;
 
     for (zi = 0; zi < fp->zc; zi++)
+<<<<<<< HEAD
         flag_draw(rend, fp->zv[zi].p);
 }
 
@@ -230,6 +250,24 @@ static void game_draw_beams(struct s_rend *rend, const struct s_base *bp,
                                              { 1.0f, 0.0f, 0.0f, 0.8f }},
                                             {{ 0.0f, 1.0f, 0.0f, 0.5f },
                                              { 0.0f, 1.0f, 0.0f, 0.8f }}};
+=======
+    {
+        glPushMatrix();
+        {
+            glTranslatef(fp->zv[zi].p[0],
+                         fp->zv[zi].p[1],
+                         fp->zv[zi].p[2]);
+            flag_draw(rend);
+        }
+        glPopMatrix();
+    }
+}
+
+static void game_draw_jumps(struct s_rend *rend, const struct s_base *fp)
+{
+    float t = 0.001f * SDL_GetTicks();
+    int ji;
+>>>>>>> origin/csy-extras
 
     int i;
 
@@ -245,9 +283,40 @@ static void game_draw_beams(struct s_rend *rend, const struct s_base *bp,
     {
         struct v_swch *xp = vp->xv + i;
 
+<<<<<<< HEAD
         if (!xp->base->i)
             beam_draw(rend, xp->base->p, swch_c[xp->f][xp->e],
                             xp->base->r, 2.0f);
+=======
+            glScalef(fp->jv[ji].r, 1.f, fp->jv[ji].r);
+            jump_draw(rend, t, !jump_e);
+        }
+        glPopMatrix();
+    }
+}
+
+static void game_draw_swchs(struct s_rend *rend, const struct s_vary *fp)
+{
+    int xi;
+
+    for (xi = 0; xi < fp->xc; xi++)
+    {
+        struct v_swch *xp = fp->xv + xi;
+
+        if (xp->base->i)
+            continue;
+
+        glPushMatrix();
+        {
+            glTranslatef(xp->base->p[0],
+                         xp->base->p[1],
+                         xp->base->p[2]);
+
+            glScalef(xp->base->r, 1.f, xp->base->r);
+            swch_draw(rend, xp->f, xp->e);
+        }
+        glPopMatrix();
+>>>>>>> origin/csy-extras
     }
 }
 
@@ -283,17 +352,29 @@ void game_draw(int pose, float t)
     fp->shadow_ui = ball;
 
     game_shadow_conf(1);
+<<<<<<< HEAD
     r_draw_enable(&rend);
+=======
+    sol_draw_enable(&rend);
+>>>>>>> origin/csy-extras
 
     if (jump_b) fov *= 2.0f * fabsf(jump_dt - 0.5f);
 
     video_push_persp(fov, 0.1f, FAR_DIST);
     glPushMatrix();
     {
+<<<<<<< HEAD
         float T[16], M[16], v[3], c[3];
+=======
+        float T[16], M[16], v[3];
+
+        m_view(T, view_c, view_p, view_e[1]);
+        m_xps(M, T);
+>>>>>>> origin/csy-extras
 
         /* In VR, move the view center up to keep the viewer level. */
 
+<<<<<<< HEAD
         v_cpy(c, view_c);
 
         if (hmd_stat())
@@ -307,6 +388,11 @@ void game_draw(int pose, float t)
         glTranslatef(0.f, 0.f, -v_len(v));
         glMultMatrixf(M);
         glTranslatef(-c[0], -c[1], -c[2]);
+=======
+        glTranslatef(0.f, 0.f, -v_len(v));
+        glMultMatrixf(M);
+        glTranslatef(-view_c[0], -view_c[1], -view_c[2]);
+>>>>>>> origin/csy-extras
 
         /* Center the skybox about the position of the camera. */
 
@@ -335,6 +421,7 @@ void game_draw(int pose, float t)
             game_draw_vect(&rend, fp->vary);
         }
 
+<<<<<<< HEAD
         glDepthMask(GL_FALSE);
         {
             game_draw_flags(&rend, fp->base);
@@ -343,11 +430,26 @@ void game_draw(int pose, float t)
         glDepthMask(GL_TRUE);
 
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+=======
+        glDisable(GL_LIGHTING);
+        glDepthMask(GL_FALSE);
+        {
+            game_draw_goals(&rend, fp->base);
+            game_draw_jumps(&rend, fp->base);
+            game_draw_swchs(&rend, fp->vary);
+        }
+        glDepthMask(GL_TRUE);
+        glEnable(GL_LIGHTING);
+>>>>>>> origin/csy-extras
     }
     glPopMatrix();
     video_pop_matrix();
 
+<<<<<<< HEAD
     r_draw_disable(&rend);
+=======
+    sol_draw_disable(&rend);
+>>>>>>> origin/csy-extras
     game_shadow_conf(0);
 }
 
@@ -437,7 +539,11 @@ static int game_update_state(float dt)
 
     /* Test for a switch. */
 
+<<<<<<< HEAD
     if (sol_swch_test(fp, NULL, ball) == SWCH_INSIDE)
+=======
+    if (sol_swch_test(fp, ball) == SWCH_INSIDE)
+>>>>>>> origin/csy-extras
         audio_play(AUD_SWITCH, 1.f);
 
     /* Test for a jump. */

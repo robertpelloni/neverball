@@ -29,8 +29,11 @@ static void free_item(struct dir_item *item)
     if (item->data)
     {
         demo_free(item->data);
+<<<<<<< HEAD
 
         free(item->data);
+=======
+>>>>>>> origin/csy-extras
         item->data = NULL;
     }
 }
@@ -38,6 +41,7 @@ static void free_item(struct dir_item *item)
 static void load_item(struct dir_item *item)
 {
     if (!item->data)
+<<<<<<< HEAD
     {
         struct demo *d;
 
@@ -49,6 +53,9 @@ static void load_item(struct dir_item *item)
                 free(d);
         }
     }
+=======
+        item->data = demo_load(item->path);
+>>>>>>> origin/csy-extras
 }
 
 static int scan_item(struct dir_item *item)

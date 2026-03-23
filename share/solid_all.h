@@ -3,6 +3,7 @@
 
 #include "solid_vary.h"
 
+<<<<<<< HEAD
 typedef void (*cmd_fn)(const union cmd *);
 
 void sol_body_p(float p[3],
@@ -35,6 +36,22 @@ void sol_entity_local(float w[3],
                       const struct s_vary *vary,
                       int mi,int mj,
                       const float v[3]);
+=======
+void sol_body_p(float p[3],
+                const struct s_vary *,
+                const struct v_body *,
+                float);
+void sol_body_v(float v[3],
+                const struct s_vary *,
+                const struct v_body *,
+                float);
+void sol_body_e(float e[3],
+                const struct s_vary *,
+                const struct v_body *,
+                float);
+int  sol_body_w(const struct s_vary *,
+                const struct v_body *);
+>>>>>>> origin/csy-extras
 
 void sol_rotate(float e[3][3], const float w[3], float dt);
 
@@ -42,9 +59,15 @@ void sol_pendulum(struct v_ball *up,
                   const float a[3],
                   const float g[3], float dt);
 
+<<<<<<< HEAD
 void sol_swch_step(struct s_vary *, cmd_fn, float dt, int ms);
 void sol_move_step(struct s_vary *, cmd_fn, float dt, int ms);
 void sol_ball_step(struct s_vary *, cmd_fn, float dt);
+=======
+void sol_swch_step(struct s_vary *, float dt, int ms);
+void sol_move_step(struct s_vary *, float dt, int ms);
+void sol_ball_step(struct s_vary *, float dt);
+>>>>>>> origin/csy-extras
 
 enum
 {
@@ -63,6 +86,10 @@ enum
 int            sol_item_test(struct s_vary *, float *p, float item_r);
 struct b_goal *sol_goal_test(struct s_vary *, float *p, int ui);
 int            sol_jump_test(struct s_vary *, float *p, int ui);
+<<<<<<< HEAD
 int            sol_swch_test(struct s_vary *, cmd_fn, int ui);
+=======
+int            sol_swch_test(struct s_vary *, int ui);
+>>>>>>> origin/csy-extras
 
 #endif

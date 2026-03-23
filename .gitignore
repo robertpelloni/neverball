@@ -1,5 +1,8 @@
 *.[od]
+<<<<<<< HEAD
 *.bc
+=======
+>>>>>>> origin/csy-extras
 *.sol
 *.desktop
 /locale
@@ -8,6 +11,7 @@
 /mapc
 /contrib/curve
 
+<<<<<<< HEAD
 /.version
 /share/version.h
 
@@ -31,3 +35,7 @@ autosave
 /js/packages
 /base-neverball.zip
 /packages
+=======
+.version
+share/version.h
+>>>>>>> origin/csy-extras

@@ -15,11 +15,16 @@
 #include "vec3.h"
 #include "glext.h"
 #include "ball.h"
+<<<<<<< HEAD
+=======
+#include "item.h"
+>>>>>>> origin/csy-extras
 #include "part.h"
 #include "geom.h"
 #include "config.h"
 #include "video.h"
 
+<<<<<<< HEAD
 #include "solid_all.h"
 #include "solid_draw.h"
 
@@ -286,6 +291,39 @@ static void game_draw_balls(struct s_rend *rend,
             glPopMatrix();
         }
     }
+=======
+#include "solid_draw.h"
+
+#include "game_draw.h"
+
+/*---------------------------------------------------------------------------*/
+
+static void game_draw_balls(struct s_rend *rend,
+                            const struct s_vary *vary,
+                            const float *bill_M, float t)
+{
+    float c[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+    float ball_M[16];
+    float pend_M[16];
+
+    m_basis(ball_M, vary->uv[0].e[0], vary->uv[0].e[1], vary->uv[0].e[2]);
+    m_basis(pend_M, vary->uv[0].E[0], vary->uv[0].E[1], vary->uv[0].E[2]);
+
+    glPushMatrix();
+    {
+        glTranslatef(vary->uv[0].p[0],
+                     vary->uv[0].p[1] + BALL_FUDGE,
+                     vary->uv[0].p[2]);
+        glScalef(vary->uv[0].r,
+                 vary->uv[0].r,
+                 vary->uv[0].r);
+
+        glColor4f(c[0], c[1], c[2], c[3]);
+        ball_draw(rend, ball_M, pend_M, bill_M, t);
+    }
+    glPopMatrix();
+>>>>>>> origin/csy-extras
 }
 
 static void game_draw_items(struct s_rend *rend,
@@ -294,6 +332,7 @@ static void game_draw_items(struct s_rend *rend,
 {
     int hi;
 
+<<<<<<< HEAD
     for (hi = 0; hi < vary->hc; hi++)
     {
         struct v_item *hp = &vary->hv[hi];
@@ -434,6 +473,129 @@ static void game_draw_jumps(struct s_rend *rend,
             glTranslatef(jump_p[0], jump_p[1], jump_p[2]);
             glRotatef(V_DEG(a), u[0], u[1], u[2]);
             jump_draw(rend, base->jv[i].p, base->jv[i].r, 1.0f);
+=======
+    int type = ITEM_NONE;
+    int value = 0;
+
+    sol_color_mtrl(rend, 1);
+    {
+        for (hi = 0; hi < vary->hc; hi++)
+        {
+            struct v_item *hp = &vary->hv[hi];
+
+            /* Skip picked up items. */
+
+            if (hp->t == ITEM_NONE)
+                continue;
+
+            /* Lazily update color. */
+
+            if (hp->t != type || hp->n != value)
+            {
+                float c[4];
+
+                item_color(hp, c);
+
+                glColor4f(c[0], c[1], c[2], c[3]);
+
+                type = hp->t;
+                value = hp->n;
+            }
+
+            /* Draw model. */
+
+            glPushMatrix();
+            {
+                glTranslatef(hp->p[0],
+                             hp->p[1],
+                             hp->p[2]);
+                item_draw(rend, hp, bill_M, t);
+            }
+            glPopMatrix();
+        }
+    }
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    sol_color_mtrl(rend, 0);
+}
+
+static void game_draw_goals(struct s_rend *rend,
+                            const struct game_draw *gd,
+                            const float *M, float t)
+{
+    const struct s_base *base = gd->vary.base;
+
+    if (gd->goal_e)
+    {
+        int zi;
+
+        /* Draw the goal column. */
+
+        for (zi = 0; zi < base->zc; zi++)
+        {
+            glPushMatrix();
+            {
+                glTranslatef(base->zv[zi].p[0],
+                             base->zv[zi].p[1],
+                             base->zv[zi].p[2]);
+
+                glScalef(base->zv[zi].r,
+                         gd->goal_k,
+                         base->zv[zi].r);
+
+                goal_draw(rend, t);
+            }
+            glPopMatrix();
+        }
+    }
+}
+
+static void game_draw_jumps(struct s_rend *rend,
+                            const struct game_draw *gd,
+                            const float *M, float t)
+{
+    const struct s_base *base = gd->vary.base;
+
+    int ji;
+
+    for (ji = 0; ji < base->jc; ji++)
+    {
+        glPushMatrix();
+        {
+            glTranslatef(base->jv[ji].p[0],
+                         base->jv[ji].p[1],
+                         base->jv[ji].p[2]);
+            glScalef(base->jv[ji].r,
+                     1.0f,
+                     base->jv[ji].r);
+
+            jump_draw(rend, t, !gd->jump_e);
+        }
+        glPopMatrix();
+    }
+}
+
+static void game_draw_swchs(struct s_rend *rend, const struct s_vary *vary)
+{
+    int xi;
+
+    for (xi = 0; xi < vary->xc; xi++)
+    {
+        struct v_swch *xp = vary->xv + xi;
+
+        if (xp->base->i)
+            continue;
+
+        glPushMatrix();
+        {
+            glTranslatef(xp->base->p[0],
+                         xp->base->p[1],
+                         xp->base->p[2]);
+            glScalef(xp->base->r,
+                     1.0f,
+                     xp->base->r);
+
+            swch_draw(rend, xp->f, xp->e);
+>>>>>>> origin/csy-extras
         }
         glPopMatrix();
     }
@@ -446,6 +608,11 @@ static void game_draw_tilt(const struct game_draw *gd, int d)
     const struct game_tilt *tilt = &gd->tilt;
     const float *ball_p = gd->vary.uv[0].p;
 
+<<<<<<< HEAD
+=======
+    /* Rotate the environment about the position of the ball. */
+
+>>>>>>> origin/csy-extras
     glTranslatef(+ball_p[0], +ball_p[1] * d, +ball_p[2]);
     glRotatef(-tilt->rz * d, tilt->z[0], tilt->z[1], tilt->z[2]);
     glRotatef(-tilt->rx * d, tilt->x[0], tilt->x[1], tilt->x[2]);
@@ -457,6 +624,12 @@ static void game_refl_all(struct s_rend *rend, const struct game_draw *gd)
     glPushMatrix();
     {
         game_draw_tilt(gd, 1);
+<<<<<<< HEAD
+=======
+
+        /* Draw the floor. */
+
+>>>>>>> origin/csy-extras
         sol_refl(&gd->draw, rend);
     }
     glPopMatrix();
@@ -464,6 +637,7 @@ static void game_refl_all(struct s_rend *rend, const struct game_draw *gd)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static void game_draw_light(const struct game_draw *gd, int d, float t)
 {
     GLfloat p[4];
@@ -479,6 +653,37 @@ static void game_draw_light(const struct game_draw *gd, int d, float t)
 
     glEnable(GL_LIGHT0);
     glEnable(GL_LIGHT1);
+=======
+static void game_draw_light(const struct game_draw *gd, int d)
+{
+    const float light_p[2][4] = {
+        { -8.0f, +32.0f, -8.0f, 1.0f },
+        { +8.0f, +32.0f, +8.0f, 1.0f },
+    };
+    const float light_c[2][4] = {
+        { 1.0f, 0.8f, 0.8f, 1.0f },
+        { 0.8f, 1.0f, 0.8f, 1.0f },
+    };
+
+    const struct game_view *view = &gd->view;
+
+    /* Configure the lighting. */
+
+    glPushMatrix();
+    glTranslatef(+view->p[0], +view->p[1] * d, +view->p[2]);
+
+    glEnable(GL_LIGHT0);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_p[0]);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE,  light_c[0]);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_c[0]);
+
+    glEnable(GL_LIGHT1);
+    glLightfv(GL_LIGHT1, GL_POSITION, light_p[1]);
+    glLightfv(GL_LIGHT1, GL_DIFFUSE,  light_c[1]);
+    glLightfv(GL_LIGHT1, GL_SPECULAR, light_c[1]);
+
+    glPopMatrix();
+>>>>>>> origin/csy-extras
 }
 
 static void game_draw_back(struct s_rend *rend,
@@ -514,6 +719,11 @@ static void game_draw_back(struct s_rend *rend,
 
 static void game_clip_refl(int d)
 {
+<<<<<<< HEAD
+=======
+    /* Fudge to eliminate the floor from reflection. */
+
+>>>>>>> origin/csy-extras
     glClipPlane4f_(GL_CLIP_PLANE0, 0, 1, 0, -0.00001);
 }
 
@@ -521,6 +731,11 @@ static void game_clip_ball(const struct game_draw *gd, int d, const float *p)
 {
     GLfloat r, c[3], pz[4], nz[4];
 
+<<<<<<< HEAD
+=======
+    /* Compute the plane giving the front of the ball, as seen from view.p. */
+
+>>>>>>> origin/csy-extras
     c[0] = p[0];
     c[1] = p[1] * d;
     c[2] = p[2];
@@ -538,11 +753,21 @@ static void game_clip_ball(const struct game_draw *gd, int d, const float *p)
               pz[1] * c[1] +
               pz[2] * c[2]);
 
+<<<<<<< HEAD
+=======
+    /* Find the plane giving the back of the ball, as seen from view.p. */
+
+>>>>>>> origin/csy-extras
     nz[0] = -pz[0];
     nz[1] = -pz[1];
     nz[2] = -pz[2];
     nz[3] = -pz[3];
 
+<<<<<<< HEAD
+=======
+    /* Reflect these planes as necessary, and store them in the GL state. */
+
+>>>>>>> origin/csy-extras
     pz[1] *= d;
     nz[1] *= d;
 
@@ -551,19 +776,35 @@ static void game_clip_ball(const struct game_draw *gd, int d, const float *p)
 }
 
 static void game_draw_fore(struct s_rend *rend,
+<<<<<<< HEAD
                            struct game_draw *gds,
                            int p_idx, int p_count,
                            int pose, const float *M,
                            int d, float t)
 {
     struct game_draw *gd = &gds[p_idx];
+=======
+                           struct game_draw *gd,
+                           int pose, const float *M,
+                           int d, float t)
+{
+>>>>>>> origin/csy-extras
     const float *ball_p = gd->vary.uv[0].p;
 
     struct s_draw *draw = &gd->draw;
 
     glPushMatrix();
     {
+<<<<<<< HEAD
         game_draw_tilt(gd, d);
+=======
+        /* Rotate the environment about the position of the ball. */
+
+        game_draw_tilt(gd, d);
+
+        /* Compute clipping planes for reflection and ball facing. */
+
+>>>>>>> origin/csy-extras
         game_clip_refl(d);
         game_clip_ball(gd, d, ball_p);
 
@@ -579,10 +820,20 @@ static void game_draw_fore(struct s_rend *rend,
         case POSE_BALL:
             if (curr_tex_env == &tex_env_pose)
             {
+<<<<<<< HEAD
+=======
+                /*
+                 * We need the check above because otherwise the
+                 * active texture env is set up in a way that makes
+                 * level geometry visible, and we don't want that.
+                 */
+
+>>>>>>> origin/csy-extras
                 glDepthMask(GL_FALSE);
                 sol_draw(draw, rend, 0, 1);
                 glDepthMask(GL_TRUE);
             }
+<<<<<<< HEAD
             game_draw_balls(rend, gds, p_idx, p_count, M, t);
             break;
 
@@ -616,6 +867,43 @@ static void game_draw_fore(struct s_rend *rend,
             glEnable (GL_LIGHT0);
         }
         glDepthMask(GL_TRUE);
+=======
+            game_draw_balls(rend, draw->vary, M, t);
+            break;
+
+        case POSE_NONE:
+            /* Draw the coins. */
+
+            game_draw_items(rend, draw->vary, M, t);
+
+            /* Draw the floor. */
+
+            sol_draw(draw, rend, 0, 1);
+
+            /* Draw the ball. */
+
+            game_draw_balls(rend, draw->vary, M, t);
+
+            break;
+        }
+
+        /* Draw the billboards, entities, and  particles. */
+
+        glDisable(GL_LIGHTING);
+        glDepthMask(GL_FALSE);
+        {
+            sol_bill(draw, rend, M, t);
+
+            game_draw_goals(rend, gd, M, t);
+            game_draw_jumps(rend, gd, M, t);
+            game_draw_swchs(rend, draw->vary);
+
+            part_draw_coin(rend);
+            glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        }
+        glDepthMask(GL_TRUE);
+        glEnable(GL_LIGHTING);
+>>>>>>> origin/csy-extras
 
         if (d < 0)
             glDisable(GL_CLIP_PLANE0);
@@ -632,16 +920,28 @@ static void game_shadow_conf(int pose, int enable)
         switch (pose)
         {
         case POSE_LEVEL:
+<<<<<<< HEAD
+=======
+            /* No shadow. */
+>>>>>>> origin/csy-extras
             tex_env_active(&tex_env_default);
             break;
 
         case POSE_BALL:
+<<<<<<< HEAD
+=======
+            /* Shadow only. */
+>>>>>>> origin/csy-extras
             tex_env_select(&tex_env_pose,
                            &tex_env_default,
                            NULL);
             break;
 
         default:
+<<<<<<< HEAD
+=======
+            /* Regular shadow. */
+>>>>>>> origin/csy-extras
             tex_env_select(&tex_env_shadow_clip,
                            &tex_env_shadow,
                            &tex_env_default,
@@ -655,6 +955,7 @@ static void game_shadow_conf(int pose, int enable)
     }
 }
 
+<<<<<<< HEAD
 void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t, int vp_x, int vp_y, int vp_w, int vp_h)
 {
     struct game_draw *gd = &gds[p_idx];
@@ -667,12 +968,23 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
     {
         glViewport(vp_x, vp_y, vp_w, vp_h);
 
+=======
+void game_draw(struct game_draw *gd, int pose, float t)
+{
+    float fov = (float) config_get_d(CONFIG_VIEW_FOV);
+
+    if (gd->jump_b) fov *= 2.f * fabsf(gd->jump_dt - 0.5);
+
+    if (gd->state)
+    {
+>>>>>>> origin/csy-extras
         const struct game_view *view = &gd->view;
         struct s_rend rend;
 
         gd->draw.shadow_ui = 0;
 
         game_shadow_conf(pose, 1);
+<<<<<<< HEAD
         r_draw_enable(&rend);
 
         video_push_persp_ex(fov, 0.1f, FAR_DIST, vp_x, vp_y, vp_w, vp_h);
@@ -754,11 +1066,116 @@ void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t,
 
             r_draw_disable(&rend);
             game_shadow_conf(pose, 0);
+=======
+        sol_draw_enable(&rend);
+
+        video_push_persp(fov, 0.1f, FAR_DIST);
+        glPushMatrix();
+        {
+            float T[16], U[16], M[16], v[3];
+
+            /* Compute direct and reflected view bases. */
+
+            v[0] = +view->p[0];
+            v[1] = -view->p[1];
+            v[2] = +view->p[2];
+
+            m_view(T, view->c, view->p, view->e[1]);
+            m_view(U, view->c, v,       view->e[1]);
+
+            m_xps(M, T);
+
+            /* Apply the current view. */
+
+            v_sub(v, view->c, view->p);
+
+            glTranslatef(0.f, 0.f, -v_len(v));
+            glMultMatrixf(M);
+            glTranslatef(-view->c[0], -view->c[1], -view->c[2]);
+
+            /* Draw the background. */
+
+            game_draw_back(&rend, gd, pose, +1, t);
+
+            /* Draw the reflection. */
+
+            if (gd->draw.reflective && config_get_d(CONFIG_REFLECTION))
+            {
+                glEnable(GL_STENCIL_TEST);
+                {
+                    /* Draw the mirrors only into the stencil buffer. */
+
+                    glStencilFunc(GL_ALWAYS, 1, 0xFFFFFFFF);
+                    glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+                    glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+                    glDepthMask(GL_FALSE);
+
+                    game_refl_all(&rend, gd);
+
+                    glDepthMask(GL_TRUE);
+                    glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+                    glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+                    glStencilFunc(GL_EQUAL, 1, 0xFFFFFFFF);
+
+                    /* Draw the scene reflected into color and depth buffers. */
+
+                    glFrontFace(GL_CW);
+                    glPushMatrix();
+                    {
+                        glScalef(+1.0f, -1.0f, +1.0f);
+
+                        game_draw_light(gd, -1);
+
+                        game_draw_back(&rend, gd, pose,    -1, t);
+                        game_draw_fore(&rend, gd, pose, U, -1, t);
+                    }
+                    glPopMatrix();
+                    glFrontFace(GL_CCW);
+
+                    glStencilFunc(GL_ALWAYS, 0, 0xFFFFFFFF);
+                }
+                glDisable(GL_STENCIL_TEST);
+            }
+
+            /* Ready the lights for foreground rendering. */
+
+            game_draw_light(gd, 1);
+
+            /* When reflection is disabled, mirrors must be rendered opaque  */
+            /* to prevent the background from showing.                       */
+
+            if (gd->draw.reflective && !config_get_d(CONFIG_REFLECTION))
+            {
+                sol_color_mtrl(&rend, 1);
+                {
+                    glColor4f(0.0f, 0.0f, 0.0f, 1.0f);
+                    game_refl_all(&rend, gd);
+                    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+                }
+                sol_color_mtrl(&rend, 0);
+            }
+
+            /* Draw the mirrors and the rest of the foreground. */
+
+            game_refl_all (&rend, gd);
+            game_draw_fore(&rend, gd, pose, T, +1, t);
+        }
+        glPopMatrix();
+        video_pop_matrix();
+
+        /* Draw the fade overlay. */
+
+        sol_fade(&gd->draw, &rend, gd->fade_k);
+
+        sol_draw_disable(&rend);
+        game_shadow_conf(pose, 0);
+>>>>>>> origin/csy-extras
     }
 }
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 void game_lerp_init(struct game_lerp *l, struct game_draw *d)
 {
     sol_load_lerp(&l->lerp, &d->vary);
@@ -818,6 +1235,70 @@ void game_lerp_apply(struct game_lerp *l, struct game_draw *d)
     for (j=0; j<3; j++)
         for (i=0; i<3; i++)
             d->view.e[j][i] = l->view[1].e[j][i] + (l->view[0].e[j][i] - l->view[1].e[j][i]) * a;
+=======
+#define CURR 0
+#define PREV 1
+
+void game_lerp_init(struct game_lerp *gl, struct game_draw *gd)
+{
+    gl->alpha = 1.0f;
+
+    sol_load_lerp(&gl->lerp, &gd->vary);
+
+    gl->tilt[PREV] = gl->tilt[CURR] = gd->tilt;
+    gl->view[PREV] = gl->view[CURR] = gd->view;
+
+    gl->goal_k[PREV] = gl->goal_k[CURR] = gd->goal_k;
+    gl->jump_dt[PREV] = gl->jump_dt[CURR] = gd->jump_dt;
+}
+
+void game_lerp_free(struct game_lerp *gl)
+{
+    sol_free_lerp(&gl->lerp);
+}
+
+void game_lerp_copy(struct game_lerp *gl)
+{
+    sol_lerp_copy(&gl->lerp);
+
+    gl->tilt[PREV] = gl->tilt[CURR];
+    gl->view[PREV] = gl->view[CURR];
+
+    gl->goal_k[PREV] = gl->goal_k[CURR];
+    gl->jump_dt[PREV] = gl->jump_dt[CURR];
+}
+
+void game_lerp_apply(struct game_lerp *gl, struct game_draw *gd)
+{
+    float a = gl->alpha;
+
+    /* Solid. */
+
+    sol_lerp_apply(&gl->lerp, a);
+
+    /* Particles. */
+
+    part_lerp_apply(a);
+
+    /* Tilt. */
+
+    v_lerp(gd->tilt.x, gl->tilt[PREV].x, gl->tilt[CURR].x, a);
+    v_lerp(gd->tilt.z, gl->tilt[PREV].z, gl->tilt[CURR].z, a);
+
+    gd->tilt.rx = (gl->tilt[PREV].rx * (1.0f - a) + gl->tilt[CURR].rx * a);
+    gd->tilt.rz = (gl->tilt[PREV].rz * (1.0f - a) + gl->tilt[CURR].rz * a);
+
+    /* View. */
+
+    v_lerp(gd->view.c, gl->view[PREV].c, gl->view[CURR].c, a);
+    v_lerp(gd->view.p, gl->view[PREV].p, gl->view[CURR].p, a);
+    e_lerp(gd->view.e, gl->view[PREV].e, gl->view[CURR].e, a);
+
+    /* Effects. */
+
+    gd->goal_k = (gl->goal_k[PREV] * (1.0f - a) + gl->goal_k[CURR] * a);
+    gd->jump_dt = (gl->jump_dt[PREV] * (1.0f - a) + gl->jump_dt[CURR] * a);
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/

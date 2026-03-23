@@ -2,14 +2,23 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
+<<<<<<< HEAD
 "version" "1.1"
+=======
+"version" "1"
+>>>>>>> origin/csy-extras
 "shot" "shot-medium/islands.jpg"
 "back" "map-back/jupiter.sol"
 "grad" "back/space.png"
 "song" "bgm/track4.ogg"
 "coin_hs" "64 50"
+<<<<<<< HEAD
 "time_hs" "1200 2000"
 "goal_hs" "1750 2500"
+=======
+"time_hs" "1200 2500"
+"goal_hs" "1750 3000"
+>>>>>>> origin/csy-extras
 "goal" "40"
 "time" "3000"
 "message" "Catch the train before it leaves the station.\"

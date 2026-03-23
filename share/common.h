@@ -22,17 +22,23 @@
 
 #include <time.h>
 #include <stdio.h>
+<<<<<<< HEAD
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
+=======
+>>>>>>> origin/csy-extras
 #include "fs.h"
 
 /* Random stuff. */
 
+<<<<<<< HEAD
 #ifndef MAXSTR
 #define MAXSTR 256
 #endif
 
+=======
+>>>>>>> origin/csy-extras
 #ifdef __GNUC__
 #define NULL_TERMINATED __attribute__ ((__sentinel__))
 #else
@@ -44,9 +50,15 @@
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 #define MAX(a, b) ((a) > (b) ? (a) : (b))
 
+<<<<<<< HEAD
 #define CLAMP(min, val, max) MIN(MAX((min), (val)), (max))
 
 #define SIGN(n) ((n) < 0 ? -1 : ((n) > 0 ? +1 : 0))
+=======
+#define CLAMP(a, b, c) MIN(MAX(a, b), c)
+
+#define SIGN(n) ((n) < 0 ? -1 : ((n) ? +1 : 0))
+>>>>>>> origin/csy-extras
 #define ROUND(f) ((int) ((f) + 0.5f * SIGN(f)))
 
 #define TIME_TO_MS(t) ROUND((t) * 1000.0f)
@@ -56,6 +68,7 @@ int rand_between(int low, int high);
 
 /* Arrays and strings. */
 
+<<<<<<< HEAD
 #ifndef ARRAYSIZE
 #define ARRAYSIZE(a) (sizeof (a) / sizeof ((a)[0]))
 #endif
@@ -85,6 +98,18 @@ int rand_between(int low, int high);
 int   read_line(char **, fs_file);
 char *strip_newline(char *);
 char *strip_spaces(char *);
+=======
+#define ARRAYSIZE(a) (sizeof (a) / sizeof ((a)[0]))
+#define MAXSTRLEN(a) (sizeof (a) - 1)
+
+#define SAFECPY(dst, src) \
+    (strncpy((dst), (src), MAXSTRLEN(dst)))
+#define SAFECAT(dst, src) \
+    (strncat((dst), (src), MAXSTRLEN(dst) - MIN(strlen(dst), MAXSTRLEN(dst))))
+
+int   read_line(char **, fs_file);
+char *strip_newline(char *);
+>>>>>>> origin/csy-extras
 
 char *dupe_string(const char *);
 char *concat_string(const char *first, ...) NULL_TERMINATED;
@@ -95,6 +120,7 @@ char *concat_string(const char *first, ...) NULL_TERMINATED;
 #define strdup dupe_string
 
 #define str_starts_with(s, h) (strncmp((s), (h), strlen(h)) == 0)
+<<<<<<< HEAD
 #define str_ends_with(s, t) ((strlen(s) >= strlen(t)) && strcmp((s) + strlen(s) - strlen(t), (t)) == 0)
 
 /*
@@ -105,6 +131,9 @@ char *concat_string(const char *first, ...) NULL_TERMINATED;
 #ifndef __APPLE__
 extern int vsnprintf(char *, size_t, const char *, va_list);
 #endif
+=======
+#define str_ends_with(s, t) (strcmp((s) + strlen(s) - strlen(t), (t)) == 0)
+>>>>>>> origin/csy-extras
 
 /* Time. */
 
@@ -115,7 +144,10 @@ const char *date_to_str(time_t);
 
 int  file_exists(const char *);
 int  file_rename(const char *, const char *);
+<<<<<<< HEAD
 int  file_size(const char *);
+=======
+>>>>>>> origin/csy-extras
 void file_copy(FILE *fin, FILE *fout);
 
 /* Paths. */
@@ -124,7 +156,10 @@ int path_is_sep(int);
 int path_is_abs(const char *);
 
 char *path_join(const char *, const char *);
+<<<<<<< HEAD
 char *path_normalize(char *);
+=======
+>>>>>>> origin/csy-extras
 
 const char *path_last_sep(const char *);
 const char *path_next_sep(const char *);
@@ -133,8 +168,11 @@ const char *base_name(const char *name);
 const char *base_name_sans(const char *name, const char *suffix);
 const char *dir_name(const char *name);
 
+<<<<<<< HEAD
 /* Environment */
 
 int set_env_var(const char *, const char *);
 
+=======
+>>>>>>> origin/csy-extras
 #endif

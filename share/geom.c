@@ -26,11 +26,16 @@
 #include "image.h"
 #include "config.h"
 #include "video.h"
+<<<<<<< HEAD
 #include "hmd.h"
 #include "log.h"
 
 #include "solid_draw.h"
 #include "solid_sim.h"
+=======
+
+#include "solid_draw.h"
+>>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -282,6 +287,7 @@ int tex_env_stage(int stage)
         }
     }
     return 0;
+<<<<<<< HEAD
 }
 
 /*---------------------------------------------------------------------------*/
@@ -441,10 +447,13 @@ void item_draw(struct s_rend *rend,
         sol_draw(draw, rend, 0, 1);
     }
     glPopMatrix();
+=======
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 void back_init(const char *name)
 {
     if (back_state)
@@ -468,6 +477,60 @@ void back_init(const char *name)
 
 void back_free(void)
 {
+=======
+static struct s_full beam;
+static struct s_full jump;
+static struct s_full goal;
+static struct s_full flag;
+static struct s_full mark;
+static struct s_full vect;
+static struct s_full back;
+
+static int back_state = 0;
+
+/*---------------------------------------------------------------------------*/
+
+void geom_init(void)
+{
+    sol_load_full(&beam, "geom/beam/beam.sol", 0);
+    sol_load_full(&jump, "geom/jump/jump.sol", 0);
+    sol_load_full(&goal, "geom/goal/goal.sol", 0);
+    sol_load_full(&flag, "geom/flag/flag.sol", 0);
+    sol_load_full(&mark, "geom/mark/mark.sol", 0);
+    sol_load_full(&vect, "geom/vect/vect.sol", 0);
+}
+
+void geom_free(void)
+{
+    sol_free_full(&vect);
+    sol_free_full(&mark);
+    sol_free_full(&flag);
+    sol_free_full(&goal);
+    sol_free_full(&jump);
+    sol_free_full(&beam);
+}
+
+/*---------------------------------------------------------------------------*/
+
+void back_init(const char *name)
+{
+    if (back_state)
+        back_free();
+
+    /* Load the background SOL and modify its material in-place to use the   */
+    /* named gradient texture.                                               */
+
+    if (sol_load_full(&back, "geom/back/back.sol", 0))
+    {
+        back.draw.mv[0].o = make_image_from_file(name, IF_MIPMAP);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        back_state = 1;
+    }
+}
+
+void back_free(void)
+{
+>>>>>>> origin/csy-extras
     if (back_state)
         sol_free_full(&back);
 
@@ -476,6 +539,7 @@ void back_free(void)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 /* Draw a column of light with position p, color c, radius r, and height h. */
 
 void beam_draw(struct s_rend *rend, const GLfloat *p,
@@ -528,10 +592,113 @@ void flag_draw(struct s_rend *rend, const GLfloat *p)
         glTranslatef(p[0], p[1], p[2]);
         glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
         sol_draw(&flag.draw, rend, 1, 1);
+=======
+static void jump_part_draw(struct s_rend *rend, GLfloat s, GLfloat a)
+{
+    glMatrixMode(GL_TEXTURE);
+    glTranslatef(s, 0.0f, 0.0f);
+    glMatrixMode(GL_MODELVIEW);
+
+    glRotatef(a, 0.0f, 1.0f, 0.0f);
+    sol_draw(&jump.draw, rend, 1, 1);
+    glScalef(0.9f, 0.9f, 0.9f);
+}
+
+static void goal_part_draw(struct s_rend *rend, GLfloat s)
+{
+    glMatrixMode(GL_TEXTURE);
+    glTranslatef(0.0f, -s, 0.0f);
+    glMatrixMode(GL_MODELVIEW);
+
+    sol_draw(&goal.draw, rend, 1, 1);
+    glScalef(0.8f, 1.1f, 0.8f);
+}
+
+/*---------------------------------------------------------------------------*/
+
+void goal_draw(struct s_rend *rend, float t)
+{
+    glPushMatrix();
+    {
+        glScalef(1.0f, 3.0f, 1.0f);
+        glColor4f(1.0f, 1.0f, 0.0f, 0.5f);
+
+        sol_draw(&beam.draw, rend, 1, 1);
+
+        goal_part_draw(rend, t * 0.10f);
+        goal_part_draw(rend, t * 0.10f);
+        goal_part_draw(rend, t * 0.10f);
+        goal_part_draw(rend, t * 0.10f);
+
+        glMatrixMode(GL_TEXTURE);
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+>>>>>>> origin/csy-extras
     }
     glPopMatrix();
 }
 
+<<<<<<< HEAD
+=======
+void jump_draw(struct s_rend *rend, float t, int h)
+{
+    static GLfloat c[4][4] = {
+        { 0.75f, 0.5f, 1.0f, 0.5f },
+        { 0.75f, 0.5f, 1.0f, 0.8f },
+    };
+
+    glPushMatrix();
+    {
+        glColor4f(c[h][0], c[h][1], c[h][2], c[h][3]);
+
+        glScalef(1.0f, 2.0f, 1.0f);
+
+        sol_draw(&beam.draw, rend, 1, 1);
+
+        jump_part_draw(rend, t * 0.15f, t * 360.0f);
+        jump_part_draw(rend, t * 0.20f, t * 360.0f);
+        jump_part_draw(rend, t * 0.25f, t * 360.0f);
+
+        glMatrixMode(GL_TEXTURE);
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    glPopMatrix();
+}
+
+void swch_draw(struct s_rend *rend, int b, int e)
+{
+    static GLfloat c[4][4] = {
+        { 1.0f, 0.0f, 0.0f, 0.5f }, /* red out */
+        { 1.0f, 0.0f, 0.0f, 0.8f }, /* red in */
+        { 0.0f, 1.0f, 0.0f, 0.5f }, /* green out */
+        { 0.0f, 1.0f, 0.0f, 0.8f }, /* green in */
+    };
+
+    const int h = 2 * b + e;
+
+    glPushMatrix();
+    {
+        glScalef(1.0f, 2.0f, 1.0f);
+
+        glColor4f(c[h][0], c[h][1], c[h][2], c[h][3]);
+        sol_draw(&beam.draw, rend, 1, 1);
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    }
+    glPopMatrix();
+}
+
+void flag_draw(struct s_rend *rend)
+{
+    glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+    sol_draw(&flag.draw, rend, 1, 1);
+}
+
+>>>>>>> origin/csy-extras
 void mark_draw(struct s_rend *rend)
 {
     sol_draw(&mark.draw, rend, 1, 1);
@@ -547,6 +714,10 @@ void back_draw(struct s_rend *rend)
 {
     glDisable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
+<<<<<<< HEAD
+=======
+    glDisable(GL_LIGHTING);
+>>>>>>> origin/csy-extras
     glDepthMask(GL_FALSE);
 
     glPushMatrix();
@@ -557,6 +728,10 @@ void back_draw(struct s_rend *rend)
     glPopMatrix();
 
     glDepthMask(GL_TRUE);
+<<<<<<< HEAD
+=======
+    glEnable(GL_LIGHTING);
+>>>>>>> origin/csy-extras
     glEnable(GL_CULL_FACE);
     glEnable(GL_DEPTH_TEST);
 }
@@ -565,9 +740,15 @@ void back_draw_easy(void)
 {
     struct s_rend rend;
 
+<<<<<<< HEAD
     r_draw_enable(&rend);
     back_draw(&rend);
     r_draw_disable(&rend);
+=======
+    sol_draw_enable(&rend);
+    back_draw(&rend);
+    sol_draw_disable(&rend);
+>>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -636,7 +817,11 @@ void shad_draw_set(void)
             glEnable(GL_TEXTURE_2D);
             glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
+<<<<<<< HEAD
             glBindTexture_(GL_TEXTURE_2D, clip_text);
+=======
+            glBindTexture(GL_TEXTURE_2D, clip_text);
+>>>>>>> origin/csy-extras
         }
 
         tex_env_stage(TEX_STAGE_TEXTURE);
@@ -647,20 +832,29 @@ void shad_draw_clr(void)
 {
     if (tex_env_stage(TEX_STAGE_SHADOW))
     {
+<<<<<<< HEAD
         glBindTexture_(GL_TEXTURE_2D, 0);
+=======
+        glBindTexture(GL_TEXTURE_2D, 0);
+>>>>>>> origin/csy-extras
 
         glDisable(GL_TEXTURE_2D);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
         if (tex_env_stage(TEX_STAGE_CLIP))
         {
+<<<<<<< HEAD
             glBindTexture_(GL_TEXTURE_2D, 0);
+=======
+            glBindTexture(GL_TEXTURE_2D, 0);
+>>>>>>> origin/csy-extras
 
             glDisable(GL_TEXTURE_2D);
             glDisableClientState(GL_TEXTURE_COORD_ARRAY);
         }
 
         tex_env_stage(TEX_STAGE_TEXTURE);
+<<<<<<< HEAD
     }
 }
 
@@ -783,6 +977,8 @@ void light_load(void)
             }
         }
         fs_close(fp);
+=======
+>>>>>>> origin/csy-extras
     }
 }
 

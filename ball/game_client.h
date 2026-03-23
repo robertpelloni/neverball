@@ -18,9 +18,15 @@ void  game_client_sync(fs_file);
 void  game_client_draw(int, float);
 void  game_client_blend(float);
 
+<<<<<<< HEAD
 int   curr_clock(int);
 int   curr_coins(int);
 int   curr_status(int);
+=======
+int   curr_clock(void);
+int   curr_coins(void);
+int   curr_status(void);
+>>>>>>> origin/csy-extras
 
 void  game_look(float, float);
 

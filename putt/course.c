@@ -41,6 +41,7 @@ static struct course course_v[MAXCRS];
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int course_load(struct course *crs, const char *filename)
 {
     fs_file fin;
@@ -94,6 +95,61 @@ static int is_unseen_course(struct dir_item *item)
 void course_init(void)
 {
     fs_file fin;
+=======
+static int course_load(struct course *course, const char *filename)
+{
+    fs_file fin;
+    int rc = 0;
+
+    memset(course, 0, sizeof (*course));
+
+    strncpy(course->holes, filename, MAXSTR - 1);
+
+    if ((fin = fs_open(filename, "r")))
+    {
+        if (fs_gets(course->shot, sizeof (course->shot), fin) &&
+            fs_gets(course->desc, sizeof (course->desc), fin))
+        {
+            strip_newline(course->shot);
+            strip_newline(course->desc);
+
+            rc = 1;
+        }
+
+        fs_close(fin);
+    }
+
+    return rc;
+}
+
+static int cmp_dir_items(const void *A, const void *B)
+{
+    const struct dir_item *a = A, *b = B;
+    return strcmp(a->path, b->path);
+}
+
+static int course_is_loaded(const char *path)
+{
+    int i;
+
+    for (i = 0; i < count; i++)
+        if (strcmp(course_v[i].holes, path) == 0)
+            return 1;
+
+    return 0;
+}
+
+static int is_unseen_course(struct dir_item *item)
+{
+    return (str_starts_with(base_name(item->path), "holes-") &&
+            str_ends_with(item->path, ".txt") &&
+            !course_is_loaded(item->path));
+}
+
+void course_init()
+{
+    fs_file fin;
+>>>>>>> origin/csy-extras
     char *line;
 
     Array items;
@@ -104,7 +160,11 @@ void course_init(void)
 
     count = 0;
 
+<<<<<<< HEAD
     if ((fin = fs_open_read(COURSE_FILE)))
+=======
+    if ((fin = fs_open(COURSE_FILE, "r")))
+>>>>>>> origin/csy-extras
     {
         while (count < MAXCRS && read_line(&line, fin))
         {

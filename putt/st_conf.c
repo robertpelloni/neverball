@@ -22,8 +22,11 @@
 #include "audio.h"
 #include "config.h"
 #include "video.h"
+<<<<<<< HEAD
 #include "version.h"
 #include "lang.h"
+=======
+>>>>>>> origin/csy-extras
 
 #include "st_conf.h"
 #include "st_all.h"
@@ -33,9 +36,20 @@
 
 enum
 {
+<<<<<<< HEAD
     CONF_VIDEO = 1,
     CONF_LANG,
     CONF_BACK
+=======
+    CONF_FULL = 1,
+    CONF_WIN,
+    CONF_TEXHI,
+    CONF_TEXLO,
+    CONF_SHDON,
+    CONF_SHDOF,
+    CONF_BACK,
+    CONF_RESOL
+>>>>>>> origin/csy-extras
 };
 
 static int music_id[11];
@@ -51,6 +65,45 @@ static int conf_action(int i)
 
     switch (i)
     {
+<<<<<<< HEAD
+=======
+    case CONF_FULL:
+        goto_state(&st_null);
+        r = video_mode(1, w, h);
+        goto_state(&st_conf);
+        break;
+
+    case CONF_WIN:
+        goto_state(&st_null);
+        r = video_mode(0, w, h);
+        goto_state(&st_conf);
+        break;
+
+    case CONF_TEXHI:
+        goto_state(&st_null);
+        config_set_d(CONFIG_TEXTURES, 1);
+        goto_state(&st_conf);
+        break;
+
+    case CONF_TEXLO:
+        goto_state(&st_null);
+        config_set_d(CONFIG_TEXTURES, 2);
+        goto_state(&st_conf);
+        break;
+
+    case CONF_SHDON:
+        goto_state(&st_null);
+        config_set_d(CONFIG_SHADOW, 1);
+        goto_state(&st_conf);
+        break;
+
+    case CONF_SHDOF:
+        goto_state(&st_null);
+        config_set_d(CONFIG_SHADOW, 0);
+        goto_state(&st_conf);
+        break;
+
+>>>>>>> origin/csy-extras
     case CONF_BACK:
         exit_state(&st_title);
         break;
@@ -91,9 +144,17 @@ static int conf_action(int i)
     return r;
 }
 
+<<<<<<< HEAD
 static int conf_enter(struct state *st, struct state *prev, int intent)
 {
     int root_id;
+=======
+static int conf_enter(struct state *st, struct state *prev)
+{
+    int id, jd, kd;
+    int btn0, btn1;
+    int i;
+>>>>>>> origin/csy-extras
 
     back_init("back/gui.png");
 
@@ -101,11 +162,20 @@ static int conf_enter(struct state *st, struct state *prev, int intent)
 
     if ((root_id = gui_root()))
     {
+<<<<<<< HEAD
         int id, jd, kd;
         int i;
+=======
+        int f = config_get_d(CONFIG_FULLSCREEN);
+        int t = config_get_d(CONFIG_TEXTURES);
+        int h = config_get_d(CONFIG_SHADOW);
+        int s = config_get_d(CONFIG_SOUND_VOLUME);
+        int m = config_get_d(CONFIG_MUSIC_VOLUME);
+>>>>>>> origin/csy-extras
 
         if ((id = gui_vstack(root_id)))
         {
+<<<<<<< HEAD
             if ((jd = gui_harray(id)))
             {
                 gui_label(jd, _("Options"), GUI_SML, 0, 0);
@@ -168,14 +238,98 @@ static int conf_enter(struct state *st, struct state *prev, int intent)
             }
 
             gui_layout(id, 0, 0);
+=======
+            gui_label(jd, _("Options"), GUI_SML, 0, 0);
+            gui_space(jd);
+            gui_start(jd, _("Back"),    GUI_SML, CONF_BACK, 0);
+>>>>>>> origin/csy-extras
         }
 
         if ((id = gui_vstack(root_id)))
         {
+<<<<<<< HEAD
             gui_label(id, "Neverputt " VERSION, GUI_TNY, gui_wht, gui_wht);
             gui_clr_rect(id);
             gui_layout(id, 0, -1);
         }
+=======
+            btn0 = gui_state(kd, _("No"),  GUI_SML, CONF_WIN,  0);
+            btn1 = gui_state(kd, _("Yes"), GUI_SML, CONF_FULL, 0);
+
+            if (f) gui_set_hilite(btn1, 1);
+            else   gui_set_hilite(btn0, 1);
+
+            gui_label(jd, _("Fullscreen"), GUI_SML, 0, 0);
+        }
+
+        if ((jd = gui_harray(id)) &&
+            (kd = gui_harray(jd)))
+        {
+            gui_state(kd, resolution, GUI_SML, CONF_RESOL, 0);
+
+            gui_label(jd, _("Resolution"), GUI_SML, 0, 0);
+        }
+
+        gui_space(id);
+
+        if ((jd = gui_harray(id)) &&
+            (kd = gui_harray(jd)))
+        {
+            btn0 = gui_state(kd, _("Low"),  GUI_SML, CONF_TEXLO, 0);
+            btn1 = gui_state(kd, _("High"), GUI_SML, CONF_TEXHI, 0);
+
+            gui_set_hilite(btn0, (t == 2));
+            gui_set_hilite(btn1, (t == 1));
+
+            gui_label(jd, _("Textures"), GUI_SML, 0, 0);
+        }
+
+        if ((jd = gui_harray(id)) &&
+            (kd = gui_harray(jd)))
+        {
+            btn0 = gui_state(kd, _("Off"),  GUI_SML, CONF_SHDOF, (h == 0));
+            btn1 = gui_state(kd, _("On"),   GUI_SML, CONF_SHDON, (h == 1));
+
+            if (h) gui_set_hilite(btn1, 1);
+            else   gui_set_hilite(btn0, 1);
+
+            gui_label(jd, _("Shadow"), GUI_SML, 0, 0);
+        }
+
+        gui_space(id);
+
+        if ((jd = gui_harray(id)) &&
+            (kd = gui_harray(jd)))
+        {
+            /* A series of empty buttons forms the sound volume control. */
+
+            for (i = 10; i >= 0; i--)
+            {
+                sound_id[i] = gui_state(kd, NULL, GUI_SML, 100 + i, 0);
+
+                gui_set_hilite(sound_id[i], (s == i));
+            }
+
+            gui_label(jd, _("Sound Volume"), GUI_SML, 0, 0);
+        }
+
+        if ((jd = gui_harray(id)) &&
+            (kd = gui_harray(jd)))
+        {
+            /* A series of empty buttons forms the music volume control. */
+
+            for (i = 10; i >= 0; i--)
+            {
+                music_id[i] = gui_state(kd, NULL, GUI_SML, 200 + i, 0);
+
+                gui_set_hilite(music_id[i], (m == i));
+            }
+
+            gui_label(jd, _("Music Volume"), GUI_SML, 0, 0);
+        }
+
+        gui_layout(id, 0, 0);
+>>>>>>> origin/csy-extras
     }
 
     audio_music_fade_to(0.5f, "bgm/inter.ogg");
@@ -183,7 +337,11 @@ static int conf_enter(struct state *st, struct state *prev, int intent)
     return transition_slide(root_id, 1, intent);
 }
 
+<<<<<<< HEAD
 static int conf_leave(struct state *st, struct state *next, int id, int intent)
+=======
+static void conf_leave(struct state *st, struct state *next, int id)
+>>>>>>> origin/csy-extras
 {
     back_free();
     return transition_slide(id, 0, intent);
@@ -209,7 +367,11 @@ static void conf_point(int id, int x, int y, int dx, int dy)
     gui_pulse(gui_point(id, x, y), 1.2f);
 }
 
+<<<<<<< HEAD
 static void conf_stick(int id, int a, float v, int bump, int device_id)
+=======
+static void conf_stick(int id, int a, float v, int bump)
+>>>>>>> origin/csy-extras
 {
     gui_pulse(gui_stick(id, a, v, bump), 1.2f);
 }
@@ -241,7 +403,11 @@ static int conf_buttn(int b, int d, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int null_enter(struct state *st, struct state *prev, int intent)
+=======
+static int null_enter(struct state *st, struct state *prev)
+>>>>>>> origin/csy-extras
 {
     transition_quit();
     gui_free();
@@ -253,9 +419,14 @@ static int null_enter(struct state *st, struct state *prev, int intent)
     return 0;
 }
 
+<<<<<<< HEAD
 static int null_leave(struct state *st, struct state *next, int id, int intent)
 {
     mtrl_load_objects();
+=======
+static void null_leave(struct state *st, struct state *next, int id)
+{
+>>>>>>> origin/csy-extras
     shad_init();
     ball_init();
     geom_init();
