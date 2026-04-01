@@ -1,32 +1,46 @@
-# Universal Agent Instructions
+# Universal AI Agent Instructions
 
-This document serves as the central source of truth for all AI agents working on the Neverball project.
+This document consolidates instructions for all AI agents working on the Neverball repository. All agents (Claude, GPT, Gemini, Copilot, etc.) must adhere to these guidelines.
 
-## Core Directives
+## 1. Core Philosophy
+*   **Goal:** Achieve complete feature parity with the Super Monkey Ball series (SMB 1, 2, Deluxe, Banana Blitz/Mania) and Marble Blast, while preserving the open-source legacy.
+*   **Quality:** "Extremely robust," "no bugs," "full detail," "comprehensive documentation."
+*   **Persistence:** "Don't ever stop. Don't ever quit." Continue implementing features autonomously.
 
-1.  **Code Style:**
-    *   Use C99 standard.
-    *   Follow K&R brace style.
-    *   4-space indentation (no tabs).
-    *   Prefix global functions with module name (e.g., `game_server_init`).
-    *   Memory management: `malloc`/`free` or `realloc`. Ensure cleanup in `_free` functions.
+## 2. Documentation & UI
+*   **UI Representation:** Every feature must be fully represented in the UI with tooltips, labels, and descriptions. No hidden functionality.
+*   **Manuals:** Comprehensive documentation in `doc/manual.txt`, help files, and specific feature docs (e.g., `doc/party_games.txt`).
+*   **Input Documentation:** Document all user input and clarifications to ensure the project direction aligns with the vision.
 
-2.  **Architecture:**
-    *   **Client-Server:** The engine uses a local client-server model. `game_server.c` runs the simulation; `game_client.c` handles interpolation; `share/cmd.c` handles communication via a ring buffer.
-    *   **State Machine:** The game is a stack of states (`struct state`). Transition via `goto_state` or `push_state`.
-    *   **Physics:** `share/solid_sim_sol.c` is the physics core. Do not modify unless necessary for global physics changes.
+## 3. Versioning & Changelog
+*   **Single Source of Truth:** The version number must reside in a single text file (`VERSION`), not hardcoded in C source files. Code should read this file if possible or build scripts should inject it.
+*   **Incrementing:** Every build/session that produces changes should increment the version number (e.g., `1.6.2-dev` -> `1.6.3-dev`).
+*   **Changelog:** Maintain a detailed `CHANGELOG.md`. Sync all version references to this file.
 
-3.  **Versioning:**
-    *   Read version from `VERSION` file.
-    *   Update `CHANGELOG.md` for every user-facing change.
-    *   Bump version number in `VERSION` on every significant feature merge.
+## 4. Git & Workflow
+*   **Feature Branches:** Merge all local/AI-created feature branches into `main`.
+*   **Submodules:**
+    *   Update all submodules recursively.
+    *   Merge upstream changes (including forks).
+    *   Document all submodules in `docs/DASHBOARD.md`.
+*   **Commit Messages:** Descriptive messages referencing the version bump and specific changes.
+*   **Continuous Progress:** Commit, push, and proceed to the next feature without pausing for confirmation if possible.
 
-4.  **Documentation:**
-    *   Maintain `ROADMAP.md` to reflect current progress.
-    *   Update `docs/DASHBOARD.md` when adding new dependencies or modules.
+## 5. Project Structure
+*   **Source:** `ball/` (Core Game), `putt/` (Minigolf), `share/` (Engine/Shared).
+*   **Docs:** `doc/` (User Manuals), `docs/` (Dev Docs, Dashboard, Roadmap).
+*   **Data:** `data/` (Assets, Levels).
 
-5.  **Workflow:**
-    *   **Plan:** Analyze requirements, check `ROADMAP.md`.
-    *   **Implement:** Write code, add tests (if applicable) or verification steps.
-    *   **Verify:** Compile (`make`), check for warnings, run manual verification logic.
-    *   **Commit:** Use descriptive messages.
+## 6. Dashboard
+*   Maintain `docs/DASHBOARD.md` listing:
+    *   Project directory structure explanation.
+    *   List of all submodules with versions, dates, and build numbers.
+
+## 7. Handoff Protocol
+*   Before ending a session:
+    1.  Merge branches/Update submodules.
+    2.  Update Roadmap/Docs.
+    3.  Update Dashboard.
+    4.  Update Changelog & Version.
+    5.  Commit & Push.
+    6.  Create a `HANDOFF.md` with session history and memory.

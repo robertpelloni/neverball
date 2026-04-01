@@ -95,6 +95,7 @@ extern int CONFIG_KEY_RIGHT;
 extern int CONFIG_KEY_RESTART;
 extern int CONFIG_KEY_SCORE_NEXT;
 extern int CONFIG_KEY_ROTATE_FAST;
+extern int CONFIG_KEY_DASH;
 extern int CONFIG_VIEW_FOV;
 extern int CONFIG_VIEW_DP;
 extern int CONFIG_VIEW_DC;

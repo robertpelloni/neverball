@@ -364,6 +364,12 @@ BALL_OBJS := \
 	ball/st_pause.o     \
 	ball/st_party.o     \
 	ball/st_story.o     \
+	ball/st_shop.o      \
+	ball/profile.o      \
+	ball/achieve.o      \
+	ball/stats.o        \
+	ball/char.o         \
+	ball/st_char.o      \
 	ball/st_ball.o      \
 	ball/main.o
 PUTT_OBJS := \

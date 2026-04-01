@@ -194,6 +194,38 @@ void part_burst(const float *p, const float *c)
         }
 }
 
+void part_trail(const float *p, const float *c)
+{
+    int i, n = 0;
+
+    for (i = 0; n < 1 && i < PART_MAX_COIN; i++)
+        if (coin_part[i].t <= 0.f)
+        {
+            float w = rnd(-4.0f * PI, +4.0f * PI);
+
+            coin_part[i].c[0] = c[0];
+            coin_part[i].c[1] = c[1];
+            coin_part[i].c[2] = c[2];
+
+            coin_part[i].p[0] = p[0];
+            coin_part[i].p[1] = p[1];
+            coin_part[i].p[2] = p[2];
+
+            /* Low random velocity */
+            coin_part[i].v[0] = rnd(-0.5f, 0.5f);
+            coin_part[i].v[1] = rnd(-0.5f, 0.5f);
+            coin_part[i].v[2] = rnd(-0.5f, 0.5f);
+
+            coin_part[i].w = V_DEG(w);
+
+            coin_part[i].t = 0.5f; /* Short life */
+
+            part_lerp_burst(i);
+
+            n++;
+        }
+}
+
 /*---------------------------------------------------------------------------*/
 
 static void part_fall(const float *g, float dt)

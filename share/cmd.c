@@ -383,6 +383,32 @@ DEFINE_CMD(CMD_PUNCH, INDEX_BYTES, {
 
 /*---------------------------------------------------------------------------*/
 
+DEFINE_CMD(CMD_JUMP_READY, INDEX_BYTES, {
+    put_index(fp, cmd->jumpready.active);
+}, {
+    cmd->jumpready.active = get_index(fp);
+});
+
+/*---------------------------------------------------------------------------*/
+
+DEFINE_CMD(CMD_DASH_CHARGE, FLOAT_BYTES, {
+    put_float(fp, cmd->dashcharge.charge);
+}, {
+    cmd->dashcharge.charge = get_float(fp);
+});
+
+/*---------------------------------------------------------------------------*/
+
+DEFINE_CMD(CMD_GYRO_STATE, INDEX_BYTES + FLOAT_BYTES, {
+    put_index(fp, cmd->gyrostate.active);
+    put_float(fp, cmd->gyrostate.timer);
+}, {
+    cmd->gyrostate.active = get_index(fp);
+    cmd->gyrostate.timer  = get_float(fp);
+});
+
+/*---------------------------------------------------------------------------*/
+
 #define PUT_CASE(t) case t: cmd_put_ ## t(fp, cmd); break
 #define GET_CASE(t) case t: cmd_get_ ## t(fp, cmd); break
 
@@ -433,6 +459,9 @@ int cmd_put(fs_file fp, const union cmd *cmd)
         PUT_CASE(CMD_MOVE_TIME);
         PUT_CASE(CMD_SET_PLAYER);
         PUT_CASE(CMD_PUNCH);
+        PUT_CASE(CMD_JUMP_READY);
+        PUT_CASE(CMD_DASH_CHARGE);
+        PUT_CASE(CMD_GYRO_STATE);
 
     case CMD_NONE:
     case CMD_MAX:
@@ -502,6 +531,9 @@ int cmd_get(fs_file fp, union cmd *cmd)
             GET_CASE(CMD_MOVE_TIME);
             GET_CASE(CMD_SET_PLAYER);
             GET_CASE(CMD_PUNCH);
+            GET_CASE(CMD_JUMP_READY);
+            GET_CASE(CMD_DASH_CHARGE);
+            GET_CASE(CMD_GYRO_STATE);
 
         case CMD_NONE:
         case CMD_MAX:

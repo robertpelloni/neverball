@@ -1,0 +1,6 @@
+name Heavy Melon
+speed 0.8
+accel 0.6
+jump 0.5
+control 1.5
+cost 300

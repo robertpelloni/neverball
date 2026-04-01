@@ -21,6 +21,8 @@ int  progress_same(void);
 void progress_rename(int);
 
 int  progress_replay(const char *);
+int  progress_race(const char *replay_path);
+int  progress_hub(void);
 
 int  progress_dead(void);
 int  progress_done(void);
@@ -59,7 +61,16 @@ enum
     MODE_FIGHT,
     MODE_BILLIARDS,
     MODE_BOWLING,
+    MODE_GOLF,
+    MODE_BOAT,
+    MODE_SHOT,
+    MODE_SOCCER,
+    MODE_TENNIS,
+    MODE_BASEBALL,
     MODE_HUB,
+    MODE_MOLE,
+    MODE_HAMMER,
+    MODE_DOGFIGHT,
 
     MODE_MAX
 };

@@ -29,10 +29,10 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
     *   Refine Camera logic: Implement "Snap-to-Back" and tighter auto-follow.
     *   **Deliverable:** `MODE_ARCADE` in `game_server.c`.
 
-2.  **Core Game Loop Enhancements**
-    *   **Lives System:** Refactor Coin logic to grant Extra Lives (100 Bananas = 1 Life).
-    *   **Bonus Stages:** Support for "Collect All" levels with no exit (timer end = success).
-    *   **UI/UX:** Implement "Ready? GO!" and "Fall Out" announcer-style transitions.
+2.  **Core Game Loop Enhancements (Implemented)**
+    *   **Lives System:** Refactored Coin logic in `progress.c` to dynamically grant Extra Lives immediately (100 Bananas = 1 Life).
+    *   **Bonus Stages:** Handled `GAME_TIME` as success if `level_bonus()` is true.
+    *   **UI/UX:** Implemented visual "Ready? Set? GO!" and "Fall Out" states with sounds.
 
 3.  **The "Holy Trinity" Party Games**
     *   **Monkey Race:**
@@ -73,22 +73,24 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
 ### Phase 3: The "Modern" Mechanics (Banana Blitz/Mania)
 *Goal: Modernize the engine with features from the Wii/Switch eras.*
 
-1.  **Character Class System**
-    *   Implement `struct character_stats` (Weight, Speed, Acceleration, Jump, Size).
-    *   Character Selection Screen with stats visualization.
+1.  **Character Class System (Implemented)**
+    *   `struct character_stats` implemented (Speed, Acceleration, Jump, Control).
+    *   Character Selection Screen with interactive stat visualization and unlock requirements.
 
-2.  **New Mechanics**
-    *   **Jump:** Active ability to hop (toggleable per mode/level).
-    *   **Spin Dash:** Chargeable speed boost (Sonic-style).
+2.  **New Mechanics (SMB & MB)**
+    *   **Jump:** Active ability to hop (toggleable per mode/level). (Partially Implemented)
+    *   **Spin Dash:** Chargeable speed boost (Sonic-style). (In Progress)
+    *   **Powerups:** Super Speed, Super Jump, Gyrocopter (Marble Blast).
+    *   **Gravity:** Gravity Modifiers / Inverters.
 
-3.  **Unlock & Economy System**
-    *   "Bananas" as persistent currency (Play Points).
-    *   In-game Shop UI to unlock Characters, Costumes, and Modes.
+3.  **Unlock & Economy System (Implemented)**
+    *   "Bananas/Coins" as persistent currency (`profile.c`).
+    *   In-game Shop UI (`st_shop.c`) to unlock Characters, Costumes, and Modes.
 
-4.  **Minigame Explosion (Prioritized List)**
+4.  **Minigame Explosion (Implemented)**
     *   *Tier 1:* Monkey Boat, Monkey Shot, Monkey Soccer.
     *   *Tier 2:* Monkey Tennis, Monkey Baseball.
-    *   *Tier 3:* Whack-a-Mole, Hurdle Race, Hammer Throw.
+    *   *Tier 3:* Whack-a-Mole, Monkey Dogfight, Hammer Throw.
 
 ### Phase 4: Future Tech (Rumble & Online)
 *Goal: Bring Neverball into the next generation.*
@@ -101,7 +103,18 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
 3.  **Ghost Data Sharing**
     *   Global Leaderboards with replay downloads.
 
+## Progress Update (Current)
+
+### Completed Features
+*   **Phase 1, 2, and 3 are functionally complete.**
+*   **Minigames:** A massive suite of 14 party games is now fully playable, documented, and integrated into the UI.
+*   **Economy:** A persistent profile system stores coins, tracks stats, manages achievements, and allows purchasing unlockables in the new Shop.
+*   **Mechanics:** Spin Dash, Active Jump, and item powerups (Missile, Banana, Shock, Gyro, Super Speed) are operational.
+
+### In Progress / Next Steps
+*   **Campaign Content:** The logic for Hub Worlds and Scripted Cutscenes is done. Level designers now need to build the map files (`.map`) to utilize these features.
+
 ## Immediate Action Plan
-To begin this journey, the team should focus on **Phase 1, Item 3: Monkey Target**.
-*   **Reasoning:** It requires "Flight Physics" which is distinct from rolling, pushing the engine's capabilities. It is also the most requested party game.
-*   **Prerequisite:** The shared-world architecture (recently implemented) is ready for this.
+The team should pivot to **Phase 4: Future Tech**.
+*   **Reasoning:** With the core game loop, minigames, and mechanics complete, the remaining challenges are systemic (Online Multiplayer, Level Editor).
+*   Review the newly generated `docs/NETWORK_RESEARCH.md` and `docs/LEVEL_EDITOR_RESEARCH.md` to begin scaffolding these massive features.

@@ -104,6 +104,7 @@ int CONFIG_KEY_RIGHT;
 int CONFIG_KEY_RESTART;
 int CONFIG_KEY_SCORE_NEXT;
 int CONFIG_KEY_ROTATE_FAST;
+int CONFIG_KEY_DASH;
 int CONFIG_VIEW_FOV;
 int CONFIG_VIEW_DP;
 int CONFIG_VIEW_DC;
@@ -222,6 +223,7 @@ static struct
     { &CONFIG_KEY_RESTART,       "key_restart",       SDLK_r },
     { &CONFIG_KEY_SCORE_NEXT,    "key_score_next",    SDLK_TAB },
     { &CONFIG_KEY_ROTATE_FAST,   "key_rotate_fast",   SDLK_LSHIFT },
+    { &CONFIG_KEY_DASH,          "key_dash",          SDLK_z },
 
     { &CONFIG_VIEW_FOV,    "view_fov",    50 },
     { &CONFIG_VIEW_DP,     "view_dp",     75 },
@@ -422,7 +424,8 @@ void config_load(void)
                                  i == CONFIG_KEY_CAMERA_L      ||
                                  i == CONFIG_KEY_RESTART       ||
                                  i == CONFIG_KEY_SCORE_NEXT    ||
-                                 i == CONFIG_KEY_ROTATE_FAST)
+                                 i == CONFIG_KEY_ROTATE_FAST   ||
+                                 i == CONFIG_KEY_DASH)
                         {
                             config_key(val, i);
                         }
@@ -493,7 +496,8 @@ void config_save(void)
                      i == CONFIG_KEY_CAMERA_L      ||
                      i == CONFIG_KEY_RESTART       ||
                      i == CONFIG_KEY_SCORE_NEXT    ||
-                     i == CONFIG_KEY_ROTATE_FAST)
+                     i == CONFIG_KEY_ROTATE_FAST   ||
+                     i == CONFIG_KEY_DASH)
             {
                 s = SDL_GetKeyName((SDL_Keycode) option_d[i].cur);
             }

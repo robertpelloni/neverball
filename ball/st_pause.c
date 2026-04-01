@@ -28,6 +28,8 @@
 #include "st_level.h"
 #include "st_pause.h"
 #include "st_shared.h"
+#include "stats.h"
+#include "char.h"
 
 enum
 {

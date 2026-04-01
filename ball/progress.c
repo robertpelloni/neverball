@@ -20,6 +20,7 @@
 #include "lang.h"
 #include "score.h"
 #include "audio.h"
+#include "profile.h"
 
 #include "game_common.h"
 #include "game_client.h"
@@ -156,6 +157,19 @@ int  progress_play(struct level *l)
     return 0;
 }
 
+int progress_hub(void)
+{
+    /* Load a Hub World Level */
+    /* For now, reuse Easy Set Level 1 */
+    struct level *l = get_level(0);
+    if (l)
+    {
+        progress_init(MODE_HUB);
+        return progress_play(l);
+    }
+    return 0;
+}
+
 void progress_step(void)
 {
     int p;
@@ -164,6 +178,21 @@ void progress_step(void)
 
     for (p = 0; p < count; p++)
     {
+        /* Check for mid-level extra life (1 life per 100 coins) */
+        /* To do this we track the previous coin threshold.
+           We can simply use integer division if we track total coins. */
+        int current_total_coins = curr[p].score + curr_coins(p);
+        int previous_total_coins = curr[p].score + lprog[p].coins; /* Using lprog[p].coins from last step */
+
+        if (current_total_coins / 100 > previous_total_coins / 100) {
+            /* Crossed a 100 coin boundary! */
+            curr[p].balls++;
+            audio_play(AUD_GOAL, 1.0f); /* Extra life sound */
+        }
+
+        /* Update local copy of coins for the next step */
+        lprog[p].coins = curr_coins(p);
+
         if (lprog[p].goal > 0)
         {
             lprog[p].goal = lprog[p].goal_i - curr_coins(p);
@@ -181,7 +210,7 @@ void progress_step(void)
 
 void progress_stat(int s, int p)
 {
-    int i, dirty = 0;
+    int dirty = 0;
 
     if (p < 0 || p >= MAX_PLAYERS) return;
 
@@ -194,12 +223,19 @@ void progress_stat(int s, int p)
     {
     case GAME_GOAL:
 
-        for (i = curr[p].score + 1; i <= curr[p].score + lprog[p].coins; i++)
-            if (progress_reward_ball(i))
-                curr[p].balls++;
-
+        /* Extra lives are now granted in progress_step mid-level, so we don't grant them here again.
+           We just add the coins to the persistent score. */
         curr[p].score += lprog[p].coins;
+        profile_add_currency(lprog[p].coins);
         curr[p].times += lprog[p].timer;
+
+        if (!replay) {
+            if (mode == MODE_BATTLE) profile_add_stat(STAT_WINS_RACE, 1);
+            else if (mode == MODE_TARGET) profile_add_stat(STAT_WINS_TARGET, 1);
+            else if (mode == MODE_FIGHT) profile_add_stat(STAT_WINS_FIGHT, 1);
+
+            profile_add_stat(STAT_PLAYTIME, lprog[p].timer);
+        }
 
         dirty = level_score_update(level, lprog[p].timer, lprog[p].coins,
                                    &lprog[p].time_rank,
@@ -251,6 +287,46 @@ void progress_stat(int s, int p)
         /* Fall through. */
 
     case GAME_TIME:
+        /* Bonus Stages: Time Out = Success (Collect as many as you can) */
+        if (lprog[p].status == GAME_TIME && level_bonus(level))
+        {
+            /* Treat as Goal */
+            lprog[p].status = GAME_GOAL;
+
+            /* Give rewards but don't count as "Goal" ranking if we want */
+            /* Actually, just fall through to GAME_GOAL logic? */
+            /* We can't easily jump to GAME_GOAL case due to switch. */
+            /* Let's replicate the success logic or restart the switch? */
+            /* Recursive call? No. */
+
+            /* Copy-paste GOAL logic for now, simplified */
+            curr[p].score += lprog[p].coins;
+            profile_add_currency(lprog[p].coins);
+            curr[p].times += lprog[p].timer;
+
+            /* Mark completed */
+            if (!level_completed(level))
+            {
+                level_complete(level);
+                dirty = 1;
+            }
+
+            /* Compute next */
+            for (next = level->next;
+                 next && level_bonus(next) && !level_opened(next);
+                 next = next->next)
+                /* Do nothing */;
+
+            if (next) {
+                level_open(next);
+                dirty = 1;
+            } else {
+                done = mode == MODE_CHALLENGE;
+            }
+
+            break;
+        }
+
         for (next = level->next;
              next && !level_opened(next);
              next = next->next)
@@ -301,6 +377,27 @@ int  progress_replay(const char *filename)
     }
     else
         return 0;
+}
+
+int progress_race(const char *replay_path)
+{
+    struct demo d;
+    if (demo_load(&d, replay_path) == 0)
+    {
+        struct level l;
+        if (level_load(d.file, &l))
+        {
+            /* Setup standard play */
+            if (progress_play(&l))
+            {
+                /* Inject ghost */
+                demo_ghost_open(replay_path);
+                game_client_ghost_init();
+                return 1;
+            }
+        }
+    }
+    return 0;
 }
 
 int  progress_next_avail(void)

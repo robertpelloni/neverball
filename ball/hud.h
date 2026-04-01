@@ -28,6 +28,8 @@ void hud_speed_paint(void);
 void hud_touch_timer(float);
 void hud_touch_paint(void);
 
+void hud_show_toast(const char *text);
+
 /*---------------------------------------------------------------------------*/
 
 #endif

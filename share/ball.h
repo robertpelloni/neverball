@@ -31,6 +31,8 @@ void ball_draw(struct s_rend *,
                const float *,
                const float *, float);
 
+void ball_draw_geom(void);
+
 /*---------------------------------------------------------------------------*/
 
 #endif

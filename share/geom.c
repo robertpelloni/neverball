@@ -295,6 +295,10 @@ enum
     GEOM_COIN10,
     GEOM_GROW,
     GEOM_SHRINK,
+    GEOM_SUPER_JUMP,
+    GEOM_GYRO,
+    GEOM_SHOCK,
+    GEOM_SUPER_SPEED,
     GEOM_CLOCK5,
     GEOM_CLOCK15,
     GEOM_CLOCK30,
@@ -308,6 +312,10 @@ static const char item_sols[GEOM_MAX][PATHMAX] = {
     "item/coin/coin10.sol",
     "item/grow/grow.sol",
     "item/shrink/shrink.sol",
+    "item/grow/grow.sol", /* Reuse grow for Super Jump (placeholder) */
+    "item/grow/grow.sol", /* Reuse grow for Gyro (placeholder) */
+    "item/grow/grow.sol", /* Reuse grow for Shock (placeholder) */
+    "item/grow/grow.sol", /* Reuse grow for Super Speed (placeholder) */
     "item/clock/clock5.sol",
     "item/clock/clock15.sol",
     "item/clock/clock30.sol"
@@ -381,6 +389,10 @@ static struct s_draw *item_file(const struct v_item *hp)
         {
         case ITEM_GROW:   g = GEOM_GROW;   break;
         case ITEM_SHRINK: g = GEOM_SHRINK; break;
+        case ITEM_SUPER_JUMP: g = GEOM_SUPER_JUMP; break;
+        case ITEM_GYRO:   g = GEOM_GYRO;   break;
+        case ITEM_SHOCK:  g = GEOM_SHOCK;  break;
+        case ITEM_SUPER_SPEED: g = GEOM_SUPER_SPEED; break;
         case ITEM_CLOCK:
             if      (hp->n >= 30) g = GEOM_CLOCK30;
             else if (hp->n >= 15) g = GEOM_CLOCK15;

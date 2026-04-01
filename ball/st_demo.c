@@ -40,6 +40,7 @@
 #include "st_title.h"
 #include "st_shared.h"
 #include "st_common.h"
+#include "st_play.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -60,6 +61,7 @@ static int last_viewed = 0;
 enum
 {
     DEMO_PLAY = GUI_LAST,
+    DEMO_RACE,
     DEMO_SELECT
 };
 
@@ -96,6 +98,14 @@ static int demo_action(int tok, int val)
             return goto_state(&st_demo_play);
         }
         break;
+
+    case DEMO_RACE:
+        if (progress_race(DIR_ITEM_GET(items, selected)->path))
+        {
+            last_viewed = selected;
+            return goto_state(&st_play_ready);
+        }
+        break;
     }
     return 1;
 }
@@ -107,6 +117,7 @@ static struct thumb
     int item;
     int shot_id;
     int name_id;
+    int meta_id;
     int thumb_id;
 } thumbs[DEMO_STEP];
 
@@ -140,10 +151,11 @@ static int gui_demo_thumbs(int id)
                             gui_space(ld);
 
                             thumb->shot_id = gui_image(ld, " ", ww, hh);
-                            thumb->name_id = gui_label(ld, " ", GUI_SML,
-                                                       gui_wht, gui_wht);
+                            thumb->name_id = gui_label(ld, " ", GUI_SML, gui_wht, gui_wht);
+                            thumb->meta_id = gui_label(ld, " ", GUI_TNY, gui_gry, gui_gry);
 
                             gui_set_trunc(thumb->name_id, TRUNC_TAIL);
+                            gui_set_trunc(thumb->meta_id, TRUNC_TAIL);
                             gui_set_state(ld, DEMO_SELECT, j);
 
                             thumb->thumb_id = ld;
@@ -155,6 +167,7 @@ static int gui_demo_thumbs(int id)
 
                         thumb->shot_id = 0;
                         thumb->name_id = 0;
+                        thumb->meta_id = 0;
                         thumb->thumb_id = 0;
                     }
                 }
@@ -175,7 +188,20 @@ static void gui_demo_update_thumbs(void)
         demo = item->data;
 
         gui_set_image(thumbs[i].shot_id, demo ? demo->shot : "");
-        gui_set_label(thumbs[i].name_id, demo ? demo->name : base_name(item->path));
+
+        char name_label[256];
+        char meta_label[256];
+
+        if (demo) {
+            SAFECPY(name_label, demo->name);
+            sprintf(meta_label, "Coins: %d | Time: %.2f", demo->coins, demo->timer / 100.0f);
+        } else {
+            SAFECPY(name_label, base_name(item->path));
+            SAFECPY(meta_label, " ");
+        }
+
+        gui_set_label(thumbs[i].name_id, name_label);
+        gui_set_label(thumbs[i].meta_id, meta_label);
     }
 }
 
@@ -319,6 +345,9 @@ static int demo_gui(void)
             {
                 gui_label(jd, _("Select Replay"), GUI_SML, 0,0);
                 gui_filler(jd);
+                gui_state(jd, _("Watch"), GUI_SML, DEMO_PLAY, 0);
+                gui_state(jd, _("Race"),  GUI_SML, DEMO_RACE, 0);
+                gui_space(jd);
                 gui_navig(jd, total, first, DEMO_STEP);
             }
 

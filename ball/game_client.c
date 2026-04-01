@@ -33,6 +33,7 @@
 #include "game_common.h"
 #include "game_proxy.h"
 #include "game_draw.h"
+#include "progress.h"
 
 #include "cmd.h"
 
@@ -48,10 +49,19 @@ int game_compat_map;                    /* Client/server map compat flag     */
 static struct game_draw gd[MAX_PLAYERS];
 static struct game_lerp gl[MAX_PLAYERS];
 
+/* Ghost Player State */
+static struct game_draw ghost_gd;
+static struct game_lerp ghost_gl;
+static int ghost_active = 0;
+
 struct client_stats {
     float timer;
     int   status;
     int   coins;
+    int   jump_ready;
+    float dash_charge;
+    int   gyro_active;
+    float gyro_timer;
 };
 
 static struct client_stats stats[MAX_PLAYERS];
@@ -62,6 +72,9 @@ struct
 {
     int x, y;
 } version;                              /* Current map version               */
+
+static float map_min[3];
+static float map_max[3];
 
 /*---------------------------------------------------------------------------*/
 
@@ -164,6 +177,38 @@ static void game_run_cmd(const union cmd *cmd)
                 part_step(v, dt);
             }
 
+            /* Client-side Particle Logic */
+            for (p = 0; p < MAX_PLAYERS; p++)
+            {
+                if (gd[p].state)
+                {
+                    /* Spin Dash Charge Particles */
+                    float charge = curr_dash_charge(p);
+                    if (charge > 0.0f)
+                    {
+                        float pos[3];
+                        curr_ball_pos(p, pos);
+                        float color[3] = { 1.0f, 1.0f * (1.0f - charge), 0.0f }; /* Yellow to Red */
+
+                        /* Emit small trail */
+                        part_trail(pos, color);
+                    }
+
+                    /* Gyro Particles */
+                    if (curr_gyro_timer(p) > 0.0f)
+                    {
+                        float pos[3];
+                        curr_ball_pos(p, pos);
+                        /* Offset above ball */
+                        pos[1] += 1.5f;
+                        float color[3] = { 0.5f, 1.0f, 1.0f }; /* Cyan */
+
+                        if ((int)(curr_gyro_timer(p) * 10) % 2 == 0) /* Flicker */
+                            part_trail(pos, color);
+                    }
+                }
+            }
+
             break;
 
         case CMD_MAKE_BALL:
@@ -220,6 +265,19 @@ static void game_run_cmd(const union cmd *cmd)
 
         case CMD_COINS:
             cst->coins = cmd->coins.n;
+            break;
+
+        case CMD_JUMP_READY:
+            cst->jump_ready = cmd->jumpready.active;
+            break;
+
+        case CMD_DASH_CHARGE:
+            cst->dash_charge = cmd->dashcharge.charge;
+            break;
+
+        case CMD_GYRO_STATE:
+            cst->gyro_active = cmd->gyrostate.active;
+            cst->gyro_timer = cmd->gyrostate.timer;
             break;
 
         case CMD_JUMP_ENTER:
@@ -378,6 +436,8 @@ int  game_client_init(const char *file_name)
         cst->coins = 0;
         cst->status = GAME_NONE;
         cst->timer = 0.0f;
+        cst->jump_ready = 0;
+        cst->dash_charge = 0.0f;
 
         if (!sol_load_vary(&cg->vary, &game_base))
         {
@@ -461,6 +521,26 @@ int  game_client_init(const char *file_name)
 
     light_reset();
 
+    ghost_active = 0;
+
+    /* Compute map bounds */
+    if (gd[0].state) {
+        struct s_base *base = gd[0].vary.base;
+        if (base->vc > 0) {
+            v_cpy(map_min, base->vv[0].p);
+            v_cpy(map_max, base->vv[0].p);
+            for (i = 1; i < base->vc; i++) {
+                if (base->vv[i].p[0] < map_min[0]) map_min[0] = base->vv[i].p[0];
+                if (base->vv[i].p[0] > map_max[0]) map_max[0] = base->vv[i].p[0];
+                if (base->vv[i].p[2] < map_min[2]) map_min[2] = base->vv[i].p[2];
+                if (base->vv[i].p[2] > map_max[2]) map_max[2] = base->vv[i].p[2];
+            }
+        } else {
+            v_zero(map_min);
+            v_zero(map_max);
+        }
+    }
+
     return gd[0].state;
 }
 
@@ -495,6 +575,15 @@ void game_client_free(const char *next)
 
     game_base_free(next);
     back_free();
+
+    if (ghost_active)
+    {
+        game_lerp_free(&ghost_gl);
+        sol_free_draw(&ghost_gd.draw);
+        sol_free_vary(&ghost_gd.vary);
+        /* Back is shared */
+        ghost_active = 0;
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -553,6 +642,212 @@ void game_client_draw(int pose, float t)
     }
 }
 
+/*
+ * Ghost Playback Interface
+ */
+
+void game_client_ghost_init(void)
+{
+    if (!gd[0].state) return;
+
+    /* Clone P0 state for ghost */
+    if (sol_load_vary(&ghost_gd.vary, &game_base))
+    {
+        if (sol_load_draw(&ghost_gd.draw, &ghost_gd.vary, config_get_d(CONFIG_SHADOW)))
+        {
+            ghost_gd.state = 1;
+            game_tilt_init(&ghost_gd.tilt);
+            game_view_init(&ghost_gd.view);
+            ghost_gd.jump_e = 1;
+            ghost_gd.jump_b = 0;
+            ghost_gd.jump_dt = 0.0f;
+            ghost_gd.goal_e = 0;
+            ghost_gd.goal_k = 0.0f;
+            ghost_gd.fade_k = 1.0f;
+            ghost_gd.fade_d = -2.0f;
+
+            /* Share P0 background */
+            /* Actually sol_load_full does a deep copy/load. We need to manually set it or load again. */
+            /* Let's just point to gd[0].back for drawing if needed, but game_draw_balls doesn't need back. */
+
+            game_lerp_init(&ghost_gl, &ghost_gd);
+            ghost_active = 1;
+        }
+        else
+        {
+            sol_free_vary(&ghost_gd.vary);
+        }
+    }
+}
+
+void game_client_ghost_sync(fs_file fp)
+{
+    if (!ghost_active || !fp) return;
+
+    union cmd cmd;
+    static struct cmd_state ghost_cs;
+    static int init = 0;
+
+    if (!init) {
+        cmd_state_init(&ghost_cs);
+        init = 1;
+    }
+
+    while (cmd_get(fp, &cmd))
+    {
+        /* Minimal parser for ghost state */
+        switch (cmd.type)
+        {
+        case CMD_END_OF_UPDATE:
+            game_lerp_copy(&ghost_gl);
+            game_lerp_apply(&ghost_gl, &ghost_gd);
+            return; /* Done for this frame */
+
+        case CMD_BALL_POSITION:
+            if (ghost_gd.vary.uc > 0)
+                v_cpy(ghost_gd.vary.uv[0].p, cmd.ballpos.p);
+            break;
+
+        case CMD_BALL_BASIS:
+            if (ghost_gd.vary.uc > 0) {
+                v_cpy(ghost_gd.vary.uv[0].e[0], cmd.ballbasis.e[0]);
+                v_cpy(ghost_gd.vary.uv[0].e[1], cmd.ballbasis.e[1]);
+                v_crs(ghost_gd.vary.uv[0].e[2], cmd.ballbasis.e[0], cmd.ballbasis.e[1]);
+            }
+            break;
+
+        default:
+            /* Ignore other commands for ghost */
+            break;
+        }
+    }
+}
+
+/* Special draw for ghost ball overlaid on current view */
+void game_client_draw_ghost(int p, float t)
+{
+    if (!ghost_active || !ghost_gd.state) return;
+
+    game_lerp_apply(&ghost_gl, &ghost_gd);
+
+    /* Draw Ghost Ball */
+    struct s_vary *vary = &ghost_gd.vary;
+    if (vary->uc > 0)
+    {
+        float ball_M[16], pend_M[16], bill_M[16];
+        m_basis(ball_M, vary->uv[0].e[0], vary->uv[0].e[1], vary->uv[0].e[2]);
+        m_basis(pend_M, vary->uv[0].E[0], vary->uv[0].E[1], vary->uv[0].E[2]);
+        m_ident(bill_M); /* Billboard not strictly needed for ball */
+
+        glPushMatrix();
+        glTranslatef(vary->uv[0].p[0],
+                     vary->uv[0].p[1] + BALL_FUDGE,
+                     vary->uv[0].p[2]);
+
+        /* Ghost Color: Translucent White/Blue */
+        glColor4f(0.5f, 0.5f, 1.0f, 0.5f);
+
+        glDepthMask(GL_FALSE);
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_TEXTURE_2D);
+        glEnable(GL_LIGHTING);
+
+        /* Instead of trying to use solid_draw's ball_draw which needs private s_rend,
+           we just draw the shared ball object from ball.c directly. */
+
+        /* Since ball_draw_geom doesn't exist, we fallback to drawing a point,
+           but we'll just try to use the solid.draw directly if possible, but that's internal.
+           So instead, we just draw a basic sphere using points/lines for now to avoid the link error. */
+
+        glDisable(GL_TEXTURE_2D);
+        glDisable(GL_LIGHTING);
+        glPointSize(10.0f);
+        glBegin(GL_POINTS);
+        glVertex3f(0,0,0);
+        glEnd();
+        glEnable(GL_LIGHTING);
+        glEnable(GL_TEXTURE_2D);
+
+        glDisable(GL_BLEND);
+        glDepthMask(GL_TRUE);
+
+        glPopMatrix();
+    }
+}
+
+void game_client_draw_debug(int p)
+{
+    /* Only debug draw for P0 for now */
+    if (p != 0) return;
+
+    /* Check Mode */
+    /* Accessing mode via curr_mode() might be circular if not careful,
+       but game_common uses progress.h. */
+    /* Better: check internal state if possible or rely on caller. */
+    /* game_server is authoritative. */
+    /* Let's just draw generic bounds if enabled. */
+
+    /* Draw Court Lines based on mode */
+    /* Accessing 'game_mode' from game_server.c is via 'curr_mode()' */
+    int mode = curr_mode();
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glLineWidth(2.0f);
+
+    if (mode == MODE_TENNIS) {
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINES);
+        /* Baseline */
+        glVertex3f(-10, 0.1f, -15); glVertex3f(10, 0.1f, -15);
+        glVertex3f(-10, 0.1f,  15); glVertex3f(10, 0.1f,  15);
+        /* Sidelines */
+        glVertex3f(-10, 0.1f, -15); glVertex3f(-10, 0.1f, 15);
+        glVertex3f( 10, 0.1f, -15); glVertex3f( 10, 0.1f, 15);
+        /* Net */
+        glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+        glVertex3f(-12, 1.0f, 0); glVertex3f(12, 1.0f, 0);
+        glEnd();
+    }
+    else if (mode == MODE_SOCCER) {
+        /* Field */
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINES);
+        glVertex3f(-20, 0.1f, -40); glVertex3f(20, 0.1f, -40);
+        glVertex3f(-20, 0.1f,  40); glVertex3f(20, 0.1f,  40);
+        glVertex3f(-20, 0.1f, -40); glVertex3f(-20, 0.1f, 40);
+        glVertex3f( 20, 0.1f, -40); glVertex3f( 20, 0.1f, 40);
+
+        /* Goals */
+        /* Red Goal Z- */
+        glColor4f(1.0f, 0.0f, 0.0f, 1.0f);
+        glVertex3f(-5, 0, -40); glVertex3f(-5, 3, -40);
+        glVertex3f( 5, 0, -40); glVertex3f( 5, 3, -40);
+        glVertex3f(-5, 3, -40); glVertex3f( 5, 3, -40);
+
+        /* Blue Goal Z+ */
+        glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+        glVertex3f(-5, 0, 40); glVertex3f(-5, 3, 40);
+        glVertex3f( 5, 0, 40); glVertex3f( 5, 3, 40);
+        glVertex3f(-5, 3, 40); glVertex3f( 5, 3, 40);
+        glEnd();
+    }
+    else if (mode == MODE_BASEBALL) {
+        /* Diamond */
+        glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
+        glBegin(GL_LINE_LOOP);
+        glVertex3f(0, 0.1f, 15);  /* Home */
+        glVertex3f(15, 0.1f, 0);  /* 1st */
+        glVertex3f(0, 0.1f, -15); /* 2nd */
+        glVertex3f(-15, 0.1f, 0); /* 3rd */
+        glEnd();
+    }
+
+    glEnable(GL_LIGHTING);
+    glEnable(GL_TEXTURE_2D);
+}
+
 /*---------------------------------------------------------------------------*/
 
 int curr_clock(int p)
@@ -568,6 +863,50 @@ int curr_coins(int p)
 int curr_status(int p)
 {
     return stats[p].status;
+}
+
+int curr_jump_ready(int p)
+{
+    return stats[p].jump_ready;
+}
+
+float curr_dash_charge(int p)
+{
+    return stats[p].dash_charge;
+}
+
+float curr_gyro_timer(int p)
+{
+    return stats[p].gyro_active ? stats[p].gyro_timer : 0.0f;
+}
+
+void curr_map_bounds(float *min_v, float *max_v)
+{
+    v_cpy(min_v, map_min);
+    v_cpy(max_v, map_max);
+}
+
+void curr_ball_pos(int p, float *pos)
+{
+    if (gd[p].state && gd[p].vary.uc > 0)
+        v_cpy(pos, gd[p].vary.uv[0].p);
+    else
+        v_zero(pos);
+}
+
+int curr_goal_count(void)
+{
+    if (gd[0].state)
+        return gd[0].vary.base->zc;
+    return 0;
+}
+
+void curr_goal_pos(int i, float *pos)
+{
+    if (gd[0].state && i >= 0 && i < gd[0].vary.base->zc)
+        v_cpy(pos, gd[0].vary.base->zv[i].p);
+    else
+        v_zero(pos);
 }
 
 /*---------------------------------------------------------------------------*/

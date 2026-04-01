@@ -56,6 +56,10 @@ void demo_rename(const char *);
 
 void demo_rename_player(const char *name, const char *player);
 
+int demo_ghost_record(const char *name);
+int demo_ghost_load(const char *name);
+int demo_ghost_open(const char *path);
+
 /*---------------------------------------------------------------------------*/
 
 int  demo_replay_init(const char *, int *, int *, int *, int *, int *);
@@ -70,6 +74,7 @@ void demo_replay_speed(int);
 /*---------------------------------------------------------------------------*/
 
 extern fs_file demo_fp;
+extern fs_file ghost_fp;
 
 /*---------------------------------------------------------------------------*/
 

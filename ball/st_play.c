@@ -107,10 +107,10 @@ static int play_ready_gui(void)
 {
     int id;
 
-    if ((id = gui_label(0, _("Ready?"), GUI_LRG, 0, 0)))
+    if ((id = gui_label(0, _("Ready?"), GUI_LRG, gui_yel, gui_red)))
     {
         gui_layout(id, 0, 0);
-        gui_pulse(id, 1.2f);
+        gui_pulse(id, 1.5f); /* Stronger Pulse */
     }
 
     return id;
@@ -202,10 +202,10 @@ static int play_set_gui(void)
 {
     int id;
 
-    if ((id = gui_label(0, _("Set?"), GUI_LRG, 0, 0)))
+    if ((id = gui_label(0, _("Set?"), GUI_LRG, gui_grn, gui_blu)))
     {
         gui_layout(id, 0, 0);
-        gui_pulse(id, 1.2f);
+        gui_pulse(id, 1.5f);
     }
 
     return id;
@@ -359,10 +359,10 @@ static int play_loop_gui(void)
 {
     int id;
 
-    if ((id = gui_label(0, _("GO!"), GUI_LRG, gui_blu, gui_grn)))
+    if ((id = gui_label(0, _("GO!"), GUI_LRG, gui_grn, gui_blu)))
     {
         gui_layout(id, 0, 0);
-        gui_pulse(id, 1.2f);
+        gui_pulse(id, 2.0f); /* Massive Pulse */
     }
 
     return id;
@@ -413,6 +413,8 @@ static int play_loop_leave(struct state *st, struct state *next, int id, int int
 static void play_loop_paint(int id, float t)
 {
     game_client_draw(0, t);
+    game_client_draw_ghost(0, t);
+    game_client_draw_debug(0);
 
     if (show_hud)
         hud_paint(0, 0, video.device_w, video.device_h);
@@ -459,6 +461,7 @@ static void play_loop_timer(int id, float dt)
 
     game_server_step(dt);
     game_client_sync(demo_fp);
+    game_client_ghost_sync(ghost_fp);
     game_client_blend(game_server_blend());
 
     for (p = 0; p < count; p++)
@@ -618,6 +621,8 @@ static int play_loop_keybd(int c, int d)
             rot_set(DIR_L, 1.0f, 0);
         if (config_tst_d(CONFIG_KEY_ROTATE_FAST, c))
             fast_rotate = 1;
+        if (config_tst_d(CONFIG_KEY_DASH, c))
+            game_set_dash(1, 0);
 
         keybd_camera(c);
 
@@ -638,6 +643,8 @@ static int play_loop_keybd(int c, int d)
             rot_clr(DIR_L);
         if (config_tst_d(CONFIG_KEY_ROTATE_FAST, c))
             fast_rotate = 0;
+        if (config_tst_d(CONFIG_KEY_DASH, c))
+            game_set_dash(0, 0);
     }
 
     if (d && c == KEY_LOOKAROUND && config_cheat())
@@ -658,6 +665,8 @@ static int play_loop_buttn(int b, int d, int device_id)
 {
     if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
         game_set_action(d, device_id);
+    if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
+        game_set_dash(d, device_id);
 
     if (d == 1)
     {

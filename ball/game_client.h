@@ -18,9 +18,22 @@ void  game_client_sync(fs_file);
 void  game_client_draw(int, float);
 void  game_client_blend(float);
 
+void  game_client_ghost_init(void);
+void  game_client_ghost_sync(fs_file);
+void  game_client_draw_ghost(int, float);
+void  game_client_draw_debug(int p);
+
 int   curr_clock(int);
 int   curr_coins(int);
 int   curr_status(int);
+int   curr_jump_ready(int);
+float curr_dash_charge(int);
+float curr_gyro_timer(int);
+
+void curr_map_bounds(float *min_v, float *max_v);
+void curr_ball_pos(int p, float *pos);
+int curr_goal_count(void);
+void curr_goal_pos(int i, float *pos);
 
 void  game_look(float, float);
 

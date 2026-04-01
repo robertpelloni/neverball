@@ -42,6 +42,7 @@
 #define DATELEN sizeof ("YYYY-MM-DDTHH:MM:SS")
 
 fs_file demo_fp;
+fs_file ghost_fp; /* Ghost recording file pointer */
 
 /*---------------------------------------------------------------------------*/
 
@@ -112,6 +113,40 @@ static int demo_header_read(fs_file fp, struct demo *d)
         d->times = get_index(fp);
 
         return 1;
+    }
+    return 0;
+}
+
+int demo_ghost_open(const char *path)
+{
+    if ((ghost_fp = fs_open_read(path)))
+    {
+        struct demo d;
+        if (demo_header_read(ghost_fp, &d))
+        {
+            return 1;
+        }
+        fs_close(ghost_fp);
+        ghost_fp = NULL;
+    }
+    return 0;
+}
+
+int demo_ghost_load(const char *name)
+{
+    char path[MAXSTR];
+    sprintf(path, "Replays/%s.gho", name);
+
+    if ((ghost_fp = fs_open_read(path)))
+    {
+        /* Skip Header */
+        struct demo d;
+        if (demo_header_read(ghost_fp, &d))
+        {
+            return 1;
+        }
+        fs_close(ghost_fp);
+        ghost_fp = NULL;
     }
     return 0;
 }
@@ -301,6 +336,23 @@ int demo_play_init(const char *name, const struct level *level,
     return 0;
 }
 
+int demo_ghost_record(const char *name)
+{
+    char path[MAXSTR];
+    sprintf(path, "Replays/%s.gho", name);
+
+    if ((ghost_fp = fs_open_write(path)))
+    {
+        /* Minimal header or just reuse demo header */
+        /* For simplicity, no header for raw ghost stream or minimal? */
+        /* Let's assume standard demo format for ghost too */
+        struct demo d = demo_play; /* Copy current */
+        demo_header_write(ghost_fp, &d);
+        return 1;
+    }
+    return 0;
+}
+
 void demo_play_stat(int status, int coins, int timer)
 {
     if (demo_fp)
@@ -315,6 +367,8 @@ void demo_play_stat(int status, int coins, int timer)
 
         fs_seek(demo_fp, pos, SEEK_SET);
     }
+
+    /* Ghost Stat Update? Usually not needed if we just record frames */
 }
 
 static void demo_refresh(void)
@@ -337,6 +391,12 @@ void demo_play_stop(int d)
         if (d) fs_remove(demo_play.path);
 
         demo_refresh();
+    }
+
+    if (ghost_fp)
+    {
+        fs_close(ghost_fp);
+        ghost_fp = NULL;
     }
 }
 

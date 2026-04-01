@@ -32,6 +32,9 @@ void  game_set_z  (float, int);
 void  game_set_cam(int, int);
 void  game_set_rot(float, int);
 void  game_set_action(int, int);
+void  game_set_dash(int, int);
+void  game_set_gravity(int p, float x, float y, float z);
+void  game_set_cpu_count(int n);
 
 float curr_time_elapsed(int p);
 float curr_speed(int p);

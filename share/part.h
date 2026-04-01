@@ -18,6 +18,7 @@ void part_init(void);
 void part_free(void);
 
 void part_burst(const float *, const float *);
+void part_trail(const float *, const float *);
 void part_step(const float *, float);
 
 void part_draw_coin(const struct s_draw *draw, struct s_rend *rend, const float *M, float t);

@@ -428,4 +428,12 @@ When  not in game  mode, the  loop will  act like  a mouse  to control
 menus.  When the  game is playing, the left  and right buttons control
 the camera and the middle button will bring up a pause menu.
 
+
+* PARTY GAMES
+
+Neverball includes a collection of party games such as Monkey Target,
+Monkey Fight, and more. For detailed instructions on how to play these
+modes, please refer to the file doc/party_games.txt included with this
+distribution.
+
 Web: <http://neverball.org/>

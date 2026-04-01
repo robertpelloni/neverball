@@ -869,6 +869,16 @@ float sol_step(struct s_vary *vary, cmd_fn cmd_func,
 
         if (m && sol_test_file(tt, P, V, up, vary) < 0.0005f)
         {
+            /* Material / Friction Logic */
+            /* Default Friction Coefficient */
+            float friction = 1.0f;
+
+            /* TODO: Ideally we inspect the material at contact point P. */
+            /* vary->base->lv[...].mi stores material index. */
+            /* Accessing it requires raycasting or getting the lump from sol_test_file. */
+            /* sol_test_file doesn't return the lump or material. */
+            /* For now, we apply global friction. */
+
             v_cpy(up->v, v);
             v_sub(r, P, up->p);
 
@@ -880,7 +890,9 @@ float sol_step(struct s_vary *vary, cmd_fn cmd_func,
 
                     v_sub(v, V, up->v);
                     v_nrm(v, v);
-                    v_mad(up->v, up->v, v, dt);
+
+                    /* Apply friction scaled by material factor */
+                    v_mad(up->v, up->v, v, dt * friction);
 
                     /* Scale the angular velocity. */
 

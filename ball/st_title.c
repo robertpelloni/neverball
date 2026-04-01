@@ -45,6 +45,9 @@
 #include "st_package.h"
 #include "st_party.h"
 #include "st_story.h"
+#include "st_shop.h"
+#include "profile.h"
+#include "st_char.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -94,6 +97,7 @@ enum
     TITLE_PLAY = GUI_LAST,
     TITLE_STORY,
     TITLE_PARTY,
+    TITLE_SHOP,
     TITLE_HELP,
     TITLE_DEMO,
     TITLE_CONF,
@@ -103,6 +107,7 @@ enum
 static int title_action(int tok, int val)
 {
     static const char keyphrase[] = "xyzzy";
+    static const char unlockphrase[] = "idkfa";
     static char queue[sizeof (keyphrase)] = "";
 
     size_t queue_len = strlen(queue);
@@ -117,9 +122,9 @@ static int title_action(int tok, int val)
 
     case TITLE_PLAY:
         if (strlen(config_get_s(CONFIG_PLAYER)) == 0)
-            return goto_name(&st_set, &st_title, 0);
+            return goto_name(&st_char, &st_title, 0);
         else
-            return goto_state(&st_set);
+            return goto_state(&st_char);
         break;
 
     case TITLE_STORY:
@@ -129,6 +134,7 @@ static int title_action(int tok, int val)
     case TITLE_PARTY: return goto_state(&st_party); break;
 
     case TITLE_HELP: return goto_state(&st_help); break;
+    case TITLE_SHOP: return goto_state(&st_shop); break;
     case TITLE_DEMO: return goto_state(&st_demo); break;
     case TITLE_CONF: return goto_state(&st_conf); break;
     case TITLE_PACKAGES: return goto_state(&st_package); break;
@@ -158,6 +164,12 @@ static int title_action(int tok, int val)
         {
             config_set_cheat();
             gui_set_label(play_id, gt_prefix("menu^Cheat"));
+            gui_pulse(play_id, 1.2f);
+        }
+        else if (strcmp(queue, unlockphrase) == 0)
+        {
+            profile_add_currency(10000);
+            gui_set_label(play_id, "Rich!");
             gui_pulse(play_id, 1.2f);
         }
         else if (config_cheat())
@@ -205,6 +217,7 @@ static int title_gui(void)
 
                     gui_state(kd, "Story Mode",              GUI_MED, TITLE_STORY, 0);
                     gui_state(kd, "Party Games",             GUI_MED, TITLE_PARTY, 0);
+                    gui_state(kd, "Monkey Shop",             GUI_MED, TITLE_SHOP, 0);
                     gui_state(kd, gt_prefix("menu^Replay"),  GUI_MED, TITLE_DEMO, 0);
                     gui_state(kd, gt_prefix("menu^Help"),    GUI_MED, TITLE_HELP, 0);
                     gui_state(kd, gt_prefix("menu^Options"), GUI_MED, TITLE_CONF, 0);
@@ -229,6 +242,18 @@ static int title_gui(void)
             gui_layout(id, 0, -1);
         }
 #endif
+
+        if (profile_get_currency() > 0)
+        {
+            char buf[64];
+            sprintf(buf, "Bananas: %d", profile_get_currency());
+            if ((id = gui_label(root_id, buf, GUI_SML, gui_yel, gui_red)))
+            {
+                gui_clr_rect(id);
+                gui_set_slide(id, GUI_S, 0.9f, 0.4f, 0);
+                gui_layout(id, -1, -1); /* Bottom left */
+            }
+        }
 
 #if ENABLE_FETCH
         if (config_get_d(CONFIG_ONLINE))

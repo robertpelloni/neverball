@@ -117,6 +117,10 @@
 #define ITEM_SPEED      5
 #define ITEM_MISSILE    6
 #define ITEM_BANANA     7
+#define ITEM_SUPER_JUMP 8
+#define ITEM_GYRO       9
+#define ITEM_SHOCK      10
+#define ITEM_SUPER_SPEED 11
 
 /* Path flags. */
 
