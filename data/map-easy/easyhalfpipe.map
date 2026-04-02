@@ -1,3 +1,4 @@
+
 // entity 0
 {
 "classname" "worldspawn"
@@ -9,7 +10,7 @@
 "version" "1"
 >>>>>>> origin/csy-extras
 "grad" "back/space.png"
-"back" "map-back/jupiter.sol"
+"back" "map-back/earth.sol"
 "shot" "shot-easy/easyhalfpipe.jpg"
 "song" "bgm/track4.ogg"
 "time" "12000"
