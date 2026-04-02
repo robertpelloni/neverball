@@ -219,6 +219,47 @@ static void game_run_cmd(const union cmd *cmd)
             /* Not supported anymore. */
             break;
 
+        case CMD_PLACE_ITEM:
+            {
+                /* Dynamically add item to the vary struct */
+                /* This is a hacky way to insert items at runtime since solid_vary usually expects them from .sol */
+                struct s_vary *vary = &cg->vary;
+
+                /* Reallocate if needed, or find empty slot */
+                int found = -1;
+                int i;
+                for (i = 0; i < vary->hc; i++) {
+                    if (vary->hv[i].t == ITEM_NONE) {
+                        found = i;
+                        break;
+                    }
+                }
+
+                if (found == -1) {
+                    /* Need to grow array */
+                    int new_c = vary->hc + 1;
+                    struct v_item *new_v = realloc(vary->hv, new_c * sizeof(struct v_item));
+                    if (new_v) {
+                        vary->hv = new_v;
+                        found = vary->hc;
+                        vary->hc = new_c;
+                    }
+                }
+
+                if (found != -1) {
+                    struct v_item *hp = &vary->hv[found];
+                    memset(hp, 0, sizeof(struct v_item));
+                    v_cpy(hp->p, cmd->placeitem.p);
+                    hp->t = cmd->placeitem.t;
+                    hp->n = cmd->placeitem.n;
+
+                    /* Needs parent mapping, identity for now */
+                    hp->mi = -1;
+                    hp->mj = -1;
+                }
+            }
+            break;
+
         case CMD_PICK_ITEM:
             /* Set up particle effects and discard the item. */
 

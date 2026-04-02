@@ -70,6 +70,7 @@ enum cmd_type
     CMD_JUMP_READY,
     CMD_DASH_CHARGE,
     CMD_GYRO_STATE,
+    CMD_PLACE_ITEM,
 
     CMD_MAX
 };
@@ -329,6 +330,14 @@ struct cmd_gyro_state
     float timer;
 };
 
+struct cmd_place_item
+{
+    CMD_HEADER;
+    float p[3];
+    int   t; /* type */
+    int   n; /* value */
+};
+
 union cmd
 {
     enum cmd_type type;
@@ -374,6 +383,7 @@ union cmd
     struct cmd_jump_ready         jumpready;
     struct cmd_dash_charge        dashcharge;
     struct cmd_gyro_state         gyrostate;
+    struct cmd_place_item         placeitem;
 };
 
 #undef CMD_HEADER

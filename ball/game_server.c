@@ -1102,6 +1102,8 @@ static void game_player_init(int p, int t, int e, int mode)
         /* No collision, free flight */
         pl->fly_active = 1;
         pl->fly_pitch = 0.0f;
+        pl->action_prev = 0;
+        pl->held_item = ITEM_BANANA; /* Default spawn item */
     }
     else
     {
@@ -1587,17 +1589,35 @@ static void game_fly_step(int p, float dt)
 
         /* WASD mapped to Z and X input? We assume input_z is fwd/back, input_x is left/right */
         float z_input = input_get_z(p) / ANGLE_BOUND; /* 1.0 = forward */
-        float x_input = input_get_x(p) / ANGLE_BOUND; /* 1.0 = left? Usually x is roll */
 
         /* Directly set velocity instead of accelerating */
         v_zero(b->v);
         v_mad(b->v, b->v, fwd, z_input * move_speed);
 
-        /* If we want to move left/right, we need a way to input that. X input rolls board normally. */
-        /* For now, just moving forward/back and relying on camera rotation is enough. */
-
         /* Stop gravity */
         b->v[1] += (input_get_action(p) ? move_speed : 0.0f) * dt;
+
+        /* Handle Place Item Input via Dash button */
+        int dash = input_get_dash(p);
+        if (dash && !pl->punch_state) { /* Reuse punch_state as a debounce flag for dash */
+            pl->punch_state = 1;
+
+            /* Spawn item 10 units in front of camera */
+            float spawn_pos[3];
+            v_cpy(spawn_pos, b->p);
+            v_mad(spawn_pos, spawn_pos, fwd, 10.0f);
+
+            /* Tell clients to render the new item */
+            cmd.type = CMD_PLACE_ITEM;
+            v_cpy(cmd.placeitem.p, spawn_pos);
+            cmd.placeitem.t = pl->held_item;
+            cmd.placeitem.n = 1;
+            game_proxy_enq(&cmd);
+
+            audio_play(AUD_GOAL, 1.0f);
+        } else if (!dash) {
+            pl->punch_state = 0;
+        }
 
         return;
     }

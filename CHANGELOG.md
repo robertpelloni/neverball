@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.13-dev] - Dynamic Level Editing
+
+### Added
+- **Dynamic Item Placement:** In `MODE_EDITOR`, users can now press the Dash (B) button to spawn an item (defaulting to Banana) 10 units in front of the camera.
+- **Dynamic Networking:** Added `CMD_PLACE_ITEM` to `cmd.c` to synchronize dynamically generated level objects over the network to `game_client.c`, resolving the inability of `s_vary` to spawn items outside of `.sol` file compilation.
+
 ## [1.6.12-dev] - Editor Scaffolding
 
 ### Added

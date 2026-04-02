@@ -36,7 +36,7 @@ static int edit_gui(void)
         gui_filler(root);
 
         int bottom_bar = gui_hstack(root);
-        gui_label(bottom_bar, "[WASD/Stick] Move | [Mouse/Stick] Look | [A] Ascend | [ESC] Exit", GUI_SML, gui_gry, gui_gry);
+        gui_label(bottom_bar, "[WASD/Stick] Move | [Mouse/Stick] Look | [A] Ascend | [B] Place Item | [ESC] Exit", GUI_SML, gui_gry, gui_gry);
 
         gui_layout(root, 0, 0);
     }
@@ -129,6 +129,10 @@ static int edit_buttn(int b, int d, int device_id)
     /* Action button ascends */
     if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
         game_set_action(d, device_id);
+
+    /* Dash button places item */
+    if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
+        game_set_dash(d, device_id);
 
     return 1;
 }

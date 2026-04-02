@@ -409,6 +409,18 @@ DEFINE_CMD(CMD_GYRO_STATE, INDEX_BYTES + FLOAT_BYTES, {
 
 /*---------------------------------------------------------------------------*/
 
+DEFINE_CMD(CMD_PLACE_ITEM, ARRAY_BYTES(3) + INDEX_BYTES + INDEX_BYTES, {
+    put_array(fp, cmd->placeitem.p, 3);
+    put_index(fp, cmd->placeitem.t);
+    put_index(fp, cmd->placeitem.n);
+}, {
+    get_array(fp, cmd->placeitem.p, 3);
+    cmd->placeitem.t = get_index(fp);
+    cmd->placeitem.n = get_index(fp);
+});
+
+/*---------------------------------------------------------------------------*/
+
 #define PUT_CASE(t) case t: cmd_put_ ## t(fp, cmd); break
 #define GET_CASE(t) case t: cmd_get_ ## t(fp, cmd); break
 
@@ -462,6 +474,7 @@ int cmd_put(fs_file fp, const union cmd *cmd)
         PUT_CASE(CMD_JUMP_READY);
         PUT_CASE(CMD_DASH_CHARGE);
         PUT_CASE(CMD_GYRO_STATE);
+        PUT_CASE(CMD_PLACE_ITEM);
 
     case CMD_NONE:
     case CMD_MAX:
@@ -534,6 +547,7 @@ int cmd_get(fs_file fp, union cmd *cmd)
             GET_CASE(CMD_JUMP_READY);
             GET_CASE(CMD_DASH_CHARGE);
             GET_CASE(CMD_GYRO_STATE);
+            GET_CASE(CMD_PLACE_ITEM);
 
         case CMD_NONE:
         case CMD_MAX:
