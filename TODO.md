@@ -1,7 +1,7 @@
 # Remaining Tasks (TODO)
 
 ## Future Tech (Phase 4)
-- [ ] **Level Editor:** Implement a basic tile-based layout editor inside `st_play` using precompiled `.sol` chunks.
+- [ ] **Level Editor:** Implement a basic tile-based layout editor inside `st_edit` using precompiled `.sol` chunks. Currently exists as a free-flight prototype.
 - [ ] **Online Multiplayer:** Isolate the physics state into a serialize-able block and wrap the `game_proxy` queue with UDP/ENet logic.
 - [ ] **Ghost Data Sharing:** Build a simple web service backend to host and download `.gho` files natively from the Replay Browser.
 

@@ -46,6 +46,7 @@
 #include "st_party.h"
 #include "st_story.h"
 #include "st_shop.h"
+#include "st_edit.h"
 #include "profile.h"
 #include "st_char.h"
 
@@ -98,6 +99,7 @@ enum
     TITLE_STORY,
     TITLE_PARTY,
     TITLE_SHOP,
+    TITLE_EDITOR,
     TITLE_HELP,
     TITLE_DEMO,
     TITLE_CONF,
@@ -135,6 +137,7 @@ static int title_action(int tok, int val)
 
     case TITLE_HELP: return goto_state(&st_help); break;
     case TITLE_SHOP: return goto_state(&st_shop); break;
+    case TITLE_EDITOR: return goto_state(&st_edit); break;
     case TITLE_DEMO: return goto_state(&st_demo); break;
     case TITLE_CONF: return goto_state(&st_conf); break;
     case TITLE_PACKAGES: return goto_state(&st_package); break;

@@ -71,6 +71,7 @@ enum
     MODE_MOLE,
     MODE_HAMMER,
     MODE_DOGFIGHT,
+    MODE_EDITOR,
 
     MODE_MAX
 };

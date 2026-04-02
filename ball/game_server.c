@@ -1078,6 +1078,31 @@ static void game_player_init(int p, int t, int e, int mode)
         pl->ammo = 20; /* Machine gun / missiles */
         pl->reload_timer = 0.0f;
     }
+    else if (mode == MODE_EDITOR)
+    {
+        ball_count = 1;
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+            game_init_party_mode_physics(pl, ball_count);
+
+            /* Give editor a specific radius and position */
+            pl->vary.uv[0].r = 0.1f;
+            pl->vary.uv[0].p[1] = 10.0f;
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+        pl->ball_index = 0;
+
+        /* No collision, free flight */
+        pl->fly_active = 1;
+        pl->fly_pitch = 0.0f;
+    }
     else
     {
         /* Race / Independent */
@@ -1545,6 +1570,37 @@ static void game_fly_step(int p, float dt)
 {
     struct server_player *pl = &players[p];
     struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+
+    /* Editor Free-Cam Logic */
+    if (game_mode == MODE_EDITOR)
+    {
+        float fwd[3], right[3], up[3] = {0, 1, 0};
+
+        /* View Forward is -e[2] */
+        v_cpy(fwd, pl->view.e[2]);
+        v_scl(fwd, fwd, -1.0f);
+
+        /* View Right is e[0] */
+        v_cpy(right, pl->view.e[0]);
+
+        float move_speed = 30.0f;
+
+        /* WASD mapped to Z and X input? We assume input_z is fwd/back, input_x is left/right */
+        float z_input = input_get_z(p) / ANGLE_BOUND; /* 1.0 = forward */
+        float x_input = input_get_x(p) / ANGLE_BOUND; /* 1.0 = left? Usually x is roll */
+
+        /* Directly set velocity instead of accelerating */
+        v_zero(b->v);
+        v_mad(b->v, b->v, fwd, z_input * move_speed);
+
+        /* If we want to move left/right, we need a way to input that. X input rolls board normally. */
+        /* For now, just moving forward/back and relying on camera rotation is enough. */
+
+        /* Stop gravity */
+        b->v[1] += (input_get_action(p) ? move_speed : 0.0f) * dt;
+
+        return;
+    }
 
     /* Control Pitch */
     float z_input = input_get_z(p) / ANGLE_BOUND; /* Normalize to -1..1 range approximately */
@@ -2719,7 +2775,7 @@ static int game_step(int p, const float g[3], float dt, int bt)
             game_race_item_step(p, dt);
         }
 
-        if (pl->sim_owner)
+        if (pl->sim_owner && game_mode != MODE_EDITOR)
         {
             game_grav_test(p);
         }
@@ -2859,7 +2915,12 @@ static int game_step(int p, const float g[3], float dt, int bt)
             }
         }
 
-        game_tilt_grav(h, g, &pl->tilt);
+        if (game_mode == MODE_EDITOR) {
+            /* Zero gravity in editor */
+            v_zero(h);
+        } else {
+            game_tilt_grav(h, g, &pl->tilt);
+        }
 
         if (pl->jump_b > 0)
         {

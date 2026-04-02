@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.12-dev] - Editor Scaffolding
+
+### Added
+- **Level Editor Prototype:** Added `st_edit.c` to serve as a foundational state for a future in-game level editor. Currently acts as a free-flight camera viewer loading a default environment.
+- **Editor Mode:** Implemented `MODE_EDITOR` in `progress.h` and `game_server.c`, utilizing the flight mechanics (zero gravity) and standard movement inputs to allow users to free-roam and inspect geometry.
+- **Main Menu UI:** Exposed the prototype via a "Level Editor" button in the main menu (`st_title.c`).
+
 ## [1.6.11-dev] - Phase Parity Met & Research
 
 ### Added
