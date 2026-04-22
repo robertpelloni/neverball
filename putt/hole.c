@@ -25,10 +25,7 @@
 #include "audio.h"
 #include "config.h"
 #include "fs.h"
-<<<<<<< HEAD
 #include "lang.h"
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -66,11 +63,7 @@ static void hole_init_rc(const char *filename)
 
     /* Load the holes list. */
 
-<<<<<<< HEAD
     if ((fin = fs_open_read(filename)))
-=======
-    if ((fin = fs_open(filename, "r")))
->>>>>>> origin/csy-extras
     {
         /* Skip shot and description. */
 

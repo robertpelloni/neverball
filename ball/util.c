@@ -15,10 +15,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <assert.h>
-<<<<<<< HEAD
 #include <math.h>
-=======
->>>>>>> origin/csy-extras
 
 #include "gui.h"
 #include "lang.h"
@@ -380,52 +377,20 @@ char gui_keyboard_char(char c)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 int gui_back_button(int pd)
-=======
-int gui_navig(int id, int prev, int next)
->>>>>>> origin/csy-extras
 {
     int id;
 
     if ((id = gui_hstack(pd)))
     {
-<<<<<<< HEAD
         gui_label(id, GUI_CROSS, GUI_SML, gui_red, gui_red);
         gui_label(id, _("Back"), GUI_SML, gui_wht, gui_wht);
 
         gui_set_state(id, GUI_BACK, 0);
         gui_set_rect(id, GUI_ALL);
-=======
-        if (next || prev)
-        {
-            gui_maybe(jd, _("Next"), GUI_NEXT, GUI_NONE, next);
-            gui_maybe(jd, _("Prev"), GUI_PREV, GUI_NONE, prev);
-        }
-
-        gui_space(jd);
-
-        gui_start(jd, _("Back"), GUI_SML, GUI_BACK, 0);
->>>>>>> origin/csy-extras
     }
 
-<<<<<<< HEAD
     return id;
-=======
-int gui_maybe(int id, const char *label, int etoken, int dtoken, int enabled)
-{
-    int bd;
-
-    if (!enabled)
-    {
-        bd = gui_state(id, label, GUI_SML, dtoken, 0);
-        gui_set_color(bd, gui_gry, gui_gry);
-    }
-    else
-        bd = gui_state(id, label, GUI_SML, etoken, 0);
-
-    return bd;
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/

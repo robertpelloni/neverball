@@ -15,13 +15,9 @@
 #include <png.h>
 #include <jpeglib.h>
 #include <stdlib.h>
-<<<<<<< HEAD
 #include <string.h>
 #include <assert.h>
 #include <setjmp.h>
-=======
-#include <assert.h>
->>>>>>> origin/csy-extras
 
 #include "base_config.h"
 #include "base_image.h"
@@ -68,11 +64,7 @@ static void *image_load_png(const char *filename, int *width,
 
     /* Initialize all PNG import data structures. */
 
-<<<<<<< HEAD
     if (!(fh = fs_open_read(filename)))
-=======
-    if (!(fh = fs_open(filename, "r")))
->>>>>>> origin/csy-extras
         return NULL;
 
     if (!(readp = png_create_read_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0)))
@@ -113,11 +105,7 @@ static void *image_load_png(const char *filename, int *width,
         default: longjmp(png_jmpbuf(readp), -1);
         }
 
-<<<<<<< HEAD
         if (!(bytep = png_malloc(readp, h * sizeof (png_bytep))))
-=======
-        if (!(bytep = png_malloc(readp, h * png_sizeof(png_bytep))))
->>>>>>> origin/csy-extras
             longjmp(png_jmpbuf(readp), -1);
 
         /* Allocate the final pixel buffer and read pixels there. */
@@ -173,11 +161,7 @@ static void *image_load_jpg(const char *filename, int *width,
     unsigned char *p = NULL;
     fs_file fp;
 
-<<<<<<< HEAD
     if ((fp = fs_open_read(filename)))
-=======
-    if ((fp = fs_open(filename, "r")))
->>>>>>> origin/csy-extras
     {
         struct jpeg_decompress_struct cinfo;
         struct image_jpg_error err;
@@ -186,16 +170,7 @@ static void *image_load_jpg(const char *filename, int *width,
 
         /* Initialize the JPG decompressor. */
 
-<<<<<<< HEAD
         memset(&cinfo, 0, sizeof (cinfo));
-=======
-        cinfo.err = jpeg_std_error(&jerr);
-        jpeg_create_decompress(&cinfo);
-
-        /* Set up a VFS source manager. */
-
-        fs_jpg_src(&cinfo, fp);
->>>>>>> origin/csy-extras
 
         /* Install our error_exit replacement. */
 
@@ -203,13 +178,7 @@ static void *image_load_jpg(const char *filename, int *width,
 
         err.mgr.error_exit = image_jpg_error_exit;
 
-<<<<<<< HEAD
         if (setjmp(err.setjmp_buffer) == 0)
-=======
-        /* Allocate the final pixel buffer and copy pixels there. */
-
-        if ((p = (unsigned char *) malloc (w * h * b)))
->>>>>>> origin/csy-extras
         {
             jpeg_create_decompress(&cinfo);
 
@@ -230,7 +199,6 @@ static void *image_load_jpg(const char *filename, int *width,
 
             if ((p = (unsigned char *) malloc (w * h * b)))
             {
-<<<<<<< HEAD
                 while (cinfo.output_scanline < cinfo.output_height)
                 {
                     unsigned char *buffer = p + w * b * (h - i - 1);
@@ -240,10 +208,6 @@ static void *image_load_jpg(const char *filename, int *width,
                 if (width)  *width  = w;
                 if (height) *height = h;
                 if (bytes)  *bytes  = b;
-=======
-                unsigned char *buffer = p + w * b * (h - i - 1);
-                i += jpeg_read_scanlines(&cinfo, &buffer, 1);
->>>>>>> origin/csy-extras
             }
 
             jpeg_finish_decompress(&cinfo);
@@ -260,18 +224,9 @@ void *image_load(const char *filename, int *width,
                                        int *height,
                                        int *bytes)
 {
-<<<<<<< HEAD
     if (filename && strlen(filename) > 4)
     {
         const char *ext = filename + strlen(filename) - 4;
-=======
-    const char *ext = filename + strlen(filename) - 4;
-
-    if      (strcmp(ext, ".png") == 0 || strcmp(ext, ".PNG") == 0)
-        return image_load_png(filename, width, height, bytes);
-    else if (strcmp(ext, ".jpg") == 0 || strcmp(ext, ".JPG") == 0)
-        return image_load_jpg(filename, width, height, bytes);
->>>>>>> origin/csy-extras
 
         if      (strcmp(ext, ".png") == 0 || strcmp(ext, ".PNG") == 0)
             return image_load_png(filename, width, height, bytes);

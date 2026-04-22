@@ -12,14 +12,10 @@
  * General Public License for more details.
  */
 
-<<<<<<< HEAD
 #include <SDL.h>
 #include <string.h>
 
 #include "common.h"
-=======
-#include <string.h>
->>>>>>> origin/csy-extras
 #include "text.h"
 
 /*---------------------------------------------------------------------------*/

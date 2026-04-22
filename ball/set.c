@@ -23,11 +23,8 @@
 #include "set.h"
 #include "common.h"
 #include "fs.h"
-<<<<<<< HEAD
 #include "log.h"
 #include "lang.h"
-=======
->>>>>>> origin/csy-extras
 
 #include "game_server.h"
 #include "game_client.h"
@@ -108,11 +105,7 @@ void set_store_hs(void)
     const struct set *s = SET_GET(sets, curr);
     fs_file fp;
 
-<<<<<<< HEAD
     if ((fp = fs_open_write(config_cheat() ? s->cheat_scores : s->user_scores)))
-=======
-    if ((fp = fs_open(config_cheat() ? s->cheat_scores : s->user_scores, "w")))
->>>>>>> origin/csy-extras
     {
         int i;
 
@@ -243,11 +236,7 @@ static void set_load_hs(void)
     struct set *s = SET_GET(sets, curr);
     fs_file fp;
 
-<<<<<<< HEAD
     if ((fp = fs_open_read(config_cheat() ? s->cheat_scores : s->user_scores)))
-=======
-    if ((fp = fs_open(config_cheat() ? s->cheat_scores : s->user_scores, "r")))
->>>>>>> origin/csy-extras
     {
         char buf[MAXSTR];
 
@@ -282,19 +271,11 @@ static int set_load(struct set *s, const char *filename)
     if (strcmp(filename, SET_MISC) == 0 && !config_cheat())
         return 0;
 
-<<<<<<< HEAD
     fin = fs_open_read(filename);
 
     if (!fin)
     {
         log_printf("Failure to load set file %s\n", filename);
-=======
-    fin = fs_open(filename, "r");
-
-    if (!fin)
-    {
-        fprintf(stderr, L_("Failure to load set file '%s'\n"), filename);
->>>>>>> origin/csy-extras
         return 0;
     }
 
@@ -320,7 +301,6 @@ static int set_load(struct set *s, const char *filename)
                &s->coin_score.coins[RANK_HARD],
                &s->coin_score.coins[RANK_MEDM],
                &s->coin_score.coins[RANK_EASY]);
-<<<<<<< HEAD
 
         free(scores);
 
@@ -345,32 +325,13 @@ static int set_load(struct set *s, const char *filename)
             }
         }
 
-=======
-
-        free(scores);
-
-        s->user_scores  = concat_string("Scores/", s->id, ".txt",       NULL);
-        s->cheat_scores = concat_string("Scores/", s->id, "-cheat.txt", NULL);
-
-        s->count = 0;
-
-        while (s->count < MAXLVL && read_line(&level_name, fin))
-        {
-            s->level_name_v[s->count] = level_name;
-            s->count++;
-        }
-
->>>>>>> origin/csy-extras
         fs_close(fin);
 
         return 1;
     }
 
-<<<<<<< HEAD
     log_printf("Failure to load set file %s\n", filename);
 
-=======
->>>>>>> origin/csy-extras
     free(s->name);
     free(s->desc);
     free(s->id);
@@ -400,7 +361,6 @@ static void set_free(struct set *s)
 /*---------------------------------------------------------------------------*/
 
 static int cmp_dir_items(const void *A, const void *B)
-<<<<<<< HEAD
 {
     const struct dir_item *a = A, *b = B;
     return strcmp(a->path, b->path);
@@ -426,39 +386,6 @@ int set_init(void)
     Array items;
     int i;
 
-=======
-{
-    const struct dir_item *a = A, *b = B;
-    return strcmp(a->path, b->path);
-}
-
-static int set_is_loaded(const char *path)
-{
-    int i;
-
-    for (i = 0; i < array_len(sets); i++)
-        if (strcmp(SET_GET(sets, i)->file, path) == 0)
-            return 1;
-
-    return 0;
-}
-
-static int is_unseen_set(struct dir_item *item)
-{
-    return (str_starts_with(base_name(item->path), "set-") &&
-            str_ends_with(item->path, ".txt") &&
-            !set_is_loaded(item->path));
-}
-
-int set_init()
-{
-    fs_file fin;
-    char *name;
-
-    Array items;
-    int i;
-
->>>>>>> origin/csy-extras
     if (sets)
         set_quit();
 
@@ -469,11 +396,7 @@ int set_init()
      * First, load the sets listed in the set file, preserving order.
      */
 
-<<<<<<< HEAD
     if ((fin = fs_open_read(SET_FILE)))
-=======
-    if ((fin = fs_open(SET_FILE, "r")))
->>>>>>> origin/csy-extras
     {
         while (read_line(&name, fin))
         {
@@ -512,7 +435,6 @@ int set_init()
 
 void set_quit(void)
 {
-<<<<<<< HEAD
     if (sets)
     {
         int i, n = array_len(sets);
@@ -523,15 +445,6 @@ void set_quit(void)
         array_free(sets);
         sets = NULL;
     }
-=======
-    int i;
-
-    for (i = 0; i < array_len(sets); i++)
-        set_free(array_get(sets, i));
-
-    array_free(sets);
-    sets = NULL;
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -541,7 +454,6 @@ int set_exists(int i)
     return sets ? 0 <= i && i < array_len(sets) : 0;
 }
 
-<<<<<<< HEAD
 const char *set_file(int i)
 {
     return set_exists(i) ? SET_GET(sets, i)->file : NULL;
@@ -564,25 +476,6 @@ const char *set_desc(int i)
 
 const char *set_shot(int i)
 {
-=======
-const char *set_id(int i)
-{
-    return set_exists(i) ? SET_GET(sets, i)->id : NULL;
-}
-
-const char *set_name(int i)
-{
-    return set_exists(i) ? _(SET_GET(sets, i)->name) : NULL;
-}
-
-const char *set_desc(int i)
-{
-    return set_exists(i) ? _(SET_GET(sets, i)->desc) : NULL;
-}
-
-const char *set_shot(int i)
-{
->>>>>>> origin/csy-extras
     return set_exists(i) ? SET_GET(sets, i)->shot : NULL;
 }
 
@@ -622,7 +515,6 @@ static void set_load_levels(void)
         l->number = i;
 
         if (l->is_bonus)
-<<<<<<< HEAD
         {
             SAFECPY(l->name, roman[bonus]);
             bonus++;
@@ -632,11 +524,6 @@ static void set_load_levels(void)
             sprintf(l->name, "%02d", regular);
             regular++;
         }
-=======
-            SAFECPY(l->name, roman[bonus++]);
-        else
-            sprintf(l->name, "%02d", regular++);
->>>>>>> origin/csy-extras
 
         l->is_locked = (i > 0);
         l->is_completed = 0;
@@ -654,7 +541,6 @@ void set_goto(int i)
     set_load_hs();
 }
 
-<<<<<<< HEAD
 int set_find(const char *file)
 {
     if (sets)
@@ -677,21 +563,9 @@ struct level *set_find_level(const char *basename)
     if (sets && curr_set() < array_len(sets))
     {
         struct set *s = SET_GET(sets, curr_set());
-=======
-int curr_set(void)
-{
-    return curr;
-}
-
-struct level *get_level(int i)
-{
-    return (i >= 0 && i < SET_GET(sets, curr)->count) ? &level_v[i] : NULL;
-}
->>>>>>> origin/csy-extras
 
         int i;
 
-<<<<<<< HEAD
         for (i = 0; i < s->count; ++i)
         {
             if (strcmp(basename, base_name(level_v[i].file)) == 0)
@@ -741,35 +615,6 @@ void set_rename_player(int score_rank, int times_rank, const char *player)
 
 void level_snap(int i, const char *path)
 {
-=======
-int set_score_update(int timer, int coins, int *score_rank, int *times_rank)
-{
-    struct set *s = SET_GET(sets, curr);
-    const char *player = config_get_s(CONFIG_PLAYER);
-
-    score_coin_insert(&s->coin_score, score_rank, player, timer, coins);
-    score_time_insert(&s->time_score, times_rank, player, timer, coins);
-
-    if ((score_rank && *score_rank < RANK_LAST) ||
-        (times_rank && *times_rank < RANK_LAST))
-        return 1;
-    else
-        return 0;
-}
-
-void set_rename_player(int score_rank, int times_rank, const char *player)
-{
-    struct set *s = SET_GET(sets, curr);
-
-    SAFECPY(s->coin_score.player[score_rank], player);
-    SAFECPY(s->time_score.player[times_rank], player);
-}
-
-/*---------------------------------------------------------------------------*/
-
-void level_snap(int i, const char *path)
-{
->>>>>>> origin/csy-extras
     char *filename;
 
     /* Convert the level name to a PNG filename. */
@@ -795,14 +640,8 @@ void level_snap(int i, const char *path)
         game_client_fly(1.0f);
         game_kill_fade();
         game_client_draw(POSE_LEVEL, 0);
-<<<<<<< HEAD
         video_snap(filename);
         video_swap();
-=======
-        image_snap(filename);
-
-        SDL_GL_SwapBuffers();
->>>>>>> origin/csy-extras
     }
 
     free(filename);

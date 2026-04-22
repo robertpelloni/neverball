@@ -12,13 +12,10 @@
  * General Public License for more details.
  */
 
-<<<<<<< HEAD
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
-=======
->>>>>>> origin/csy-extras
 #include <string.h>
 #include <assert.h>
 
@@ -30,11 +27,8 @@
 #include "config.h"
 #include "cmd.h"
 #include "demo_dir.h"
-<<<<<<< HEAD
 #include "version.h"
 #include "key.h"
-=======
->>>>>>> origin/csy-extras
 
 #include "game_common.h"
 #include "game_server.h"
@@ -48,7 +42,6 @@
 #include "st_set.h"
 #include "st_name.h"
 #include "st_shared.h"
-<<<<<<< HEAD
 #include "st_package.h"
 #include "st_party.h"
 #include "st_story.h"
@@ -60,14 +53,6 @@
 int load_title_background(void)
 {
     if (game_client_init("gui/title.sol"))
-=======
-
-/*---------------------------------------------------------------------------*/
-
-static int init_title_level(void)
-{
-    if (game_client_init("map-medium/title.sol"))
->>>>>>> origin/csy-extras
     {
         union cmd cmd;
 
@@ -109,24 +94,20 @@ static int play_id = 0;
 enum
 {
     TITLE_PLAY = GUI_LAST,
-<<<<<<< HEAD
     TITLE_STORY,
     TITLE_PARTY,
+    TITLE_SHOP,
+    TITLE_EDITOR,
     TITLE_HELP,
     TITLE_DEMO,
     TITLE_CONF,
     TITLE_PACKAGES
-=======
-    TITLE_HELP,
-    TITLE_DEMO,
-    TITLE_CONF,
-    TITLE_EXIT
->>>>>>> origin/csy-extras
 };
 
 static int title_action(int tok, int val)
 {
     static const char keyphrase[] = "xyzzy";
+    static const char unlockphrase[] = "idkfa";
     static char queue[sizeof (keyphrase)] = "";
 
     size_t queue_len = strlen(queue);
@@ -135,16 +116,9 @@ static int title_action(int tok, int val)
 
     switch (tok)
     {
-<<<<<<< HEAD
     case GUI_BACK:
         return 0;
-=======
-    case TITLE_PLAY:
-        if (strlen(config_get_s(CONFIG_PLAYER)) == 0)
-            return goto_name(&st_set, &st_title, 0);
-        else
             return goto_state(&st_set);
->>>>>>> origin/csy-extras
         break;
 
     case TITLE_PLAY:
@@ -161,13 +135,11 @@ static int title_action(int tok, int val)
     case TITLE_PARTY: return goto_state(&st_party); break;
 
     case TITLE_HELP: return goto_state(&st_help); break;
+    case TITLE_SHOP: return goto_state(&st_shop); break;
+    case TITLE_EDITOR: return goto_state(&st_edit); break;
     case TITLE_DEMO: return goto_state(&st_demo); break;
     case TITLE_CONF: return goto_state(&st_conf); break;
-<<<<<<< HEAD
     case TITLE_PACKAGES: return goto_state(&st_package); break;
-=======
-    case TITLE_EXIT: return 0;                    break;
->>>>>>> origin/csy-extras
     case GUI_CHAR:
 
         /* Let the queue fill up. */
@@ -196,6 +168,12 @@ static int title_action(int tok, int val)
             gui_set_label(play_id, gt_prefix("menu^Cheat"));
             gui_pulse(play_id, 1.2f);
         }
+        else if (strcmp(queue, unlockphrase) == 0)
+        {
+            profile_add_currency(10000);
+            gui_set_label(play_id, "Rich!");
+            gui_pulse(play_id, 1.2f);
+        }
         else if (config_cheat())
         {
             config_clr_cheat();
@@ -216,38 +194,12 @@ static int title_gui(void)
 
     if ((root_id = gui_root()))
     {
-<<<<<<< HEAD
         if ((id = gui_vstack(root_id)))
-=======
-        gui_label(id, "Neverball", GUI_LRG, 0, 0);
-
-        gui_space(id);
-
-        if ((jd = gui_harray(id)))
->>>>>>> origin/csy-extras
         {
             if ((jd = gui_label(id, "  Neverball  ", GUI_LRG, 0, 0)))
             {
-<<<<<<< HEAD
                 gui_set_fill(jd);
                 gui_set_slide(jd, GUI_N | GUI_FLING | GUI_EASE_ELASTIC, 0, 1.6f, 0);
-=======
-                if (config_cheat())
-                    play_id = gui_start(kd, sgettext("menu^Cheat"),
-                                        GUI_MED, TITLE_PLAY, 0);
-                else
-                    play_id = gui_start(kd, sgettext("menu^Play"),
-                                        GUI_MED, TITLE_PLAY, 0);
-
-                gui_state(kd, sgettext("menu^Replay"),  GUI_MED, TITLE_DEMO, 0);
-                gui_state(kd, sgettext("menu^Help"),    GUI_MED, TITLE_HELP, 0);
-                gui_state(kd, sgettext("menu^Options"), GUI_MED, TITLE_CONF, 0);
-                gui_state(kd, sgettext("menu^Exit"),    GUI_MED, TITLE_EXIT, 0);
-
-                /* Hilight the start button. */
-
-                gui_set_hilite(play_id, 1);
->>>>>>> origin/csy-extras
             }
 
             gui_space(id);
@@ -267,6 +219,7 @@ static int title_gui(void)
 
                     gui_state(kd, "Story Mode",              GUI_MED, TITLE_STORY, 0);
                     gui_state(kd, "Party Games",             GUI_MED, TITLE_PARTY, 0);
+                    gui_state(kd, "Monkey Shop",             GUI_MED, TITLE_SHOP, 0);
                     gui_state(kd, gt_prefix("menu^Replay"),  GUI_MED, TITLE_DEMO, 0);
                     gui_state(kd, gt_prefix("menu^Help"),    GUI_MED, TITLE_HELP, 0);
                     gui_state(kd, gt_prefix("menu^Options"), GUI_MED, TITLE_CONF, 0);
@@ -324,7 +277,6 @@ static int title_gui(void)
 #endif
     }
 
-<<<<<<< HEAD
     return root_id;
 }
 
@@ -337,24 +289,13 @@ static int title_enter(struct state *st, struct state *prev, int intent)
 {
     game_proxy_filter(filter_cmd);
 
-=======
-    return id;
-}
-
-static int title_enter(struct state *st, struct state *prev)
-{
->>>>>>> origin/csy-extras
     /* Start the title screen music. */
 
     audio_music_fade_to(0.5f, "bgm/title.ogg");
 
     /* Initialize the title level for display. */
 
-<<<<<<< HEAD
     if (load_title_background())
-=======
-    if (init_title_level())
->>>>>>> origin/csy-extras
         mode = MODE_LEVEL;
     else
         mode = MODE_NONE;
@@ -367,11 +308,7 @@ static int title_enter(struct state *st, struct state *prev)
     return title_gui();
 }
 
-<<<<<<< HEAD
 static int title_leave(struct state *st, struct state *next, int id, int intent)
-=======
-static void title_leave(struct state *st, struct state *next, int id)
->>>>>>> origin/csy-extras
 {
     if (items)
     {
@@ -379,10 +316,6 @@ static void title_leave(struct state *st, struct state *next, int id)
         items = NULL;
     }
 
-<<<<<<< HEAD
-=======
-    SDL_EnableUNICODE(0);
->>>>>>> origin/csy-extras
     demo_replay_stop(0);
     game_proxy_filter(NULL);
 
@@ -458,11 +391,7 @@ static void title_timer(int id, float dt)
 
         if (real_time > 1.0f)
         {
-<<<<<<< HEAD
             load_title_background();
-=======
-            init_title_level();
->>>>>>> origin/csy-extras
 
             real_time = 0.0f;
             mode = MODE_LEVEL;
@@ -476,17 +405,10 @@ static void title_timer(int id, float dt)
 
 static void title_point(int id, int x, int y, int dx, int dy)
 {
-<<<<<<< HEAD
     int jd;
 
     if ((jd = gui_point(id, x, y)))
         gui_pulse(jd, 1.2f);
-=======
-    if (d)
-        return title_action(GUI_CHAR, c);
-    else
-        return 1;
->>>>>>> origin/csy-extras
 }
 
 void title_stick(int id, int a, float v, int bump, int device_id)
@@ -501,7 +423,6 @@ static int title_keybd(int c, int d)
 {
     if (d)
     {
-<<<<<<< HEAD
         if (c == KEY_EXIT)
             return title_action(GUI_BACK, 0);
         if (c >= SDLK_a && c <= SDLK_z)
@@ -514,19 +435,12 @@ static int title_buttn(int b, int d, int device_id)
 {
     if (d)
     {
-=======
->>>>>>> origin/csy-extras
         int active = gui_active();
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return title_action(gui_token(active), gui_value(active));
-<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
             return title_action(GUI_BACK, 0);
-=======
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
-            return 0;
->>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -538,13 +452,8 @@ struct state st_title = {
     title_leave,
     title_paint,
     title_timer,
-<<<<<<< HEAD
     title_point,
     title_stick,
-=======
-    shared_point,
-    shared_stick,
->>>>>>> origin/csy-extras
     shared_angle,
     shared_click,
     title_keybd,

@@ -16,7 +16,6 @@
 #define GUI_H
 
 #include "glext.h"
-<<<<<<< HEAD
 #include "video.h"
 #include "font.h"
 
@@ -30,18 +29,6 @@
 #define GUI_MED FONT_SIZE_MED
 #define GUI_LRG FONT_SIZE_LRG
 
-=======
-#include "lang.h"
-
-/*---------------------------------------------------------------------------*/
-
-#define GUI_FACE N_("ttf/DejaVuSans-Bold.ttf")
-
-#define GUI_SML  0
-#define GUI_MED  1
-#define GUI_LRG  2
-
->>>>>>> origin/csy-extras
 /* Sides */
 
 #define GUI_N    1
@@ -56,7 +43,6 @@
 #define GUI_NE   (GUI_N | GUI_E)
 #define GUI_SE   (GUI_S | GUI_E)
 
-<<<<<<< HEAD
 /* Animation flags */
 
 #define GUI_BACKWARD     (GUI_W << 1)
@@ -65,8 +51,6 @@
 #define GUI_EASE_ELASTIC (GUI_W << 4)
 #define GUI_EASE_BACK    (GUI_W << 5)
 
-=======
->>>>>>> origin/csy-extras
 /* Multiple corners */
 
 #define GUI_LFT  (GUI_NW  | GUI_SW)
@@ -82,7 +66,6 @@ extern const GLubyte gui_blu[4];
 extern const GLubyte gui_grn[4];
 extern const GLubyte gui_blk[4];
 extern const GLubyte gui_gry[4];
-<<<<<<< HEAD
 
 extern const GLubyte gui_wht2[4];
 
@@ -103,8 +86,6 @@ enum trunc
 #define GUI_CROSS "×"
 #define GUI_ROMAN_2 "Ⅱ"
 #define GUI_FISHEYE "◉"
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -134,12 +115,9 @@ void gui_set_fill(int);
 int  gui_set_state(int, int, int);
 void gui_set_hilite(int, int);
 void gui_set_rect(int, int);
-<<<<<<< HEAD
 void gui_clr_rect(int);
 void gui_set_cursor(int);
 void gui_set_hidden(int id, int hidden);
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -164,10 +142,7 @@ int  gui_space(int);
 void gui_dump(int, int);
 void gui_layout(int, int, int);
 int  gui_search(int, int, int);
-<<<<<<< HEAD
 int  gui_child(int id, int index);
-=======
->>>>>>> origin/csy-extras
 int  gui_delete(int);
 void gui_remove(int id);
 

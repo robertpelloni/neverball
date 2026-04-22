@@ -17,7 +17,6 @@
 #include <assert.h>
 
 #include "vec3.h"
-<<<<<<< HEAD
 #include "geom.h"
 #include "config.h"
 #include "binary.h"
@@ -26,32 +25,18 @@
 
 #include "solid_sim.h"
 #include "solid_all.h"
-=======
-#include "item.h"
-#include "config.h"
-#include "binary.h"
-#include "common.h"
-
-#include "solid_sim.h"
-#include "solid_all.h"
-#include "solid_cmd.h"
->>>>>>> origin/csy-extras
 
 #include "game_common.h"
 #include "game_server.h"
 #include "game_proxy.h"
 
 #include "cmd.h"
-<<<<<<< HEAD
 #include "progress.h"
 #include "stats.h"
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
 static int server_state = 0;
-<<<<<<< HEAD
 static int game_mode = MODE_NORMAL;
 
 struct server_player
@@ -99,44 +84,84 @@ struct server_player
     int   punch_state; /* 0=None, 1=Extending, 2=Retracting */
     float punch_timer;
 
-    /* Billiards/Bowling State */
+    /* Gyrocopter State */
+    int   gyro_active;
+    float gyro_timer;
+
+    /* Shock Absorber State */
+    int   shock_active;
+    float shock_timer;
+
+    /* Super Speed State */
+    int   speed_active;
+    float speed_timer;
+
+    /* Billiards/Bowling/Golf State */
     float shot_power;
     int   bowling_frame;
     int   bowling_throw;
+    int   golf_strokes;
+    int   golf_par;
     int   bowling_pins[10];
     float bowling_pin_start[10][3];
     int   shot_state; /* 0=Aim, 1=Power, 2=Rolling */
 
+    /* Boat State */
+    float paddle_left_timer;
+    float paddle_right_timer;
+    float boat_speed;
+
+    /* Shot State */
+    float cursor_x;
+    float cursor_y;
+    int   ammo;
+    float reload_timer;
+
+    /* Soccer State */
+    int team; /* 0=Red, 1=Blue */
+    int score;
+
+    /* Tennis State */
+    /* score is reused */
+    int serve_state; /* 0=Serve, 1=Play */
+
+    /* Baseball State */
+    int baseball_role; /* 0=Pitcher, 1=Batter */
+    float baseball_charge;
+
+    /* Race Items */
+    int   held_item; /* 0=None, ITEM_MISSILE, ITEM_BANANA */
+    float stun_timer;
+
+    /* Hub State */
     /* Hub State */
     int   warp_id;
 
+    /* Mole State */
+    int   mole_grid[16]; /* 4x4 */
+    float mole_timers[16];
+
+    /* Hammer Throw State */
+    float hammer_angle;
+    float hammer_spin_speed;
+    int   hammer_thrown;
+
     int   action_prev;
+
+    float gravity_dir[3];
+    float dist_accumulator;
+
+    int   is_cpu;
+    float ai_timer;
+    int   ai_state;
 };
 
 static struct server_player players[MAX_PLAYERS];
 static int player_count = 1;
-=======
-
-static struct s_vary vary;
-
-static float timer      = 0.f;          /* Clock time                        */
-static int   timer_down = 1;            /* Timer go up or down?              */
-
-static int status = GAME_NONE;          /* Outcome of the game               */
-
-static struct game_tilt tilt;           /* Floor rotation                    */
-static struct game_view view;           /* Current view                      */
-
-static float view_k;
-
-static float view_time;                 /* Manual rotation time              */
-static float view_fade;
->>>>>>> origin/csy-extras
 
 #define VIEW_FADE_MIN 0.2f
 #define VIEW_FADE_MAX 1.0f
 
-<<<<<<< HEAD
 #define ZOOM_DELAY (GROW_TIME * 0.5f)
 #define ZOOM_TIME (ZOOM_DELAY + GROW_TIME)
 #define ZOOM_MIN 0.75f
@@ -147,32 +172,12 @@ static float view_fade;
 struct input
 {
     float s;
-=======
-static int   coins  = 0;                /* Collected coins                   */
-static int   goal_e = 0;                /* Goal enabled flag                 */
-static int   jump_e = 1;                /* Jumping enabled flag              */
-static int   jump_b = 0;                /* Jump-in-progress flag             */
-static float jump_dt;                   /* Jump duration                     */
-static float jump_p[3];                 /* Jump destination                  */
-static float jump_w[3];                 /* View destination                  */
-
-/*---------------------------------------------------------------------------*/
-
-/*
- * This is an abstraction of the game's input state.  All input is
- * encapsulated here, and all references to the input by the game are
- * made here.
- */
-
-struct input
-{
->>>>>>> origin/csy-extras
     float x;
     float z;
     float r;
     int   c;
-<<<<<<< HEAD
     int   action;
+    int   dash;
 };
 
 static struct input input_players[MAX_PLAYERS];
@@ -199,6 +204,7 @@ static void input_init(void)
         input_players[i].r = 0;
         input_players[i].c = 0;
         input_players[i].action = 0;
+        input_players[i].dash = 0;
     }
 }
 
@@ -229,42 +235,10 @@ static void input_set_z(int p, float z)
 }
 
 static void input_set_r(int p, float r)
-=======
-};
-
-static struct input input_current;
-
-static void input_init(void)
-{
-    input_current.x = 0;
-    input_current.z = 0;
-    input_current.r = 0;
-    input_current.c = 0;
-}
-
-static void input_set_x(float x)
-{
-    if (x < -ANGLE_BOUND) x = -ANGLE_BOUND;
-    if (x >  ANGLE_BOUND) x =  ANGLE_BOUND;
-
-    input_current.x = x;
-}
-
-static void input_set_z(float z)
-{
-    if (z < -ANGLE_BOUND) z = -ANGLE_BOUND;
-    if (z >  ANGLE_BOUND) z =  ANGLE_BOUND;
-
-    input_current.z = z;
-}
-
-static void input_set_r(float r)
->>>>>>> origin/csy-extras
 {
     if (r < -VIEWR_BOUND) r = -VIEWR_BOUND;
     if (r >  VIEWR_BOUND) r =  VIEWR_BOUND;
 
-<<<<<<< HEAD
     if (p >= 0 && p < MAX_PLAYERS)
         input_players[p].r = r;
 }
@@ -279,6 +253,12 @@ static void input_set_action(int p, int a)
 {
     if (p >= 0 && p < MAX_PLAYERS)
         input_players[p].action = a;
+}
+
+static void input_set_dash(int p, int d)
+{
+    if (p >= 0 && p < MAX_PLAYERS)
+        input_players[p].dash = d;
 }
 
 static float input_get_s(int p)
@@ -311,39 +291,15 @@ static int input_get_c(int p)
 static int input_get_action(int p)
 {
     return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].action : 0;
-=======
-    input_current.r = r;
 }
 
-static void input_set_c(int c)
+static int input_get_dash(int p)
 {
-    input_current.c = c;
-}
-
-static float input_get_x(void)
-{
-    return input_current.x;
-}
-
-static float input_get_z(void)
-{
-    return input_current.z;
-}
-
-static float input_get_r(void)
-{
-    return input_current.r;
-}
-
-static int input_get_c(void)
-{
-    return input_current.c;
->>>>>>> origin/csy-extras
+    return (p >= 0 && p < MAX_PLAYERS) ? input_players[p].dash : 0;
 }
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 /* Target Zones Configuration */
 static const struct target_zone zones[] = {
     {  2.0f, 500, { 1.0f, 0.0f, 0.0f, 0.5f } }, /* Red Bullseye */
@@ -363,12 +319,6 @@ const struct target_zone *game_get_zones(void)
 }
 
 /*---------------------------------------------------------------------------*/
-=======
-/*
- * Utility functions for preparing the "server" state and events for
- * consumption by the "client".
- */
->>>>>>> origin/csy-extras
 
 static union cmd cmd;
 
@@ -406,7 +356,6 @@ static void game_cmd_sound(const char *filename, float a)
 
 #define audio_play(s, f) game_cmd_sound((s), (f))
 
-<<<<<<< HEAD
 static void game_cmd_set_player(int p)
 {
     cmd.type = CMD_SET_PLAYER;
@@ -417,15 +366,10 @@ static void game_cmd_set_player(int p)
 static void game_cmd_goalopen(int p)
 {
     game_cmd_set_player(p);
-=======
-static void game_cmd_goalopen(void)
-{
->>>>>>> origin/csy-extras
     cmd.type = CMD_GOAL_OPEN;
     game_proxy_enq(&cmd);
 }
 
-<<<<<<< HEAD
 static void game_cmd_updball(int p)
 {
     struct server_player *pl = &players[p];
@@ -539,105 +483,48 @@ static void game_cmd_init_balls(int p, int count)
 static void game_cmd_pkitem(int p, int hi)
 {
     game_cmd_set_player(p);
-=======
-static void game_cmd_updball(void)
-{
-    cmd.type = CMD_BALL_POSITION;
-    v_cpy(cmd.ballpos.p, vary.uv[0].p);
-    game_proxy_enq(&cmd);
-
-    cmd.type = CMD_BALL_BASIS;
-    v_cpy(cmd.ballbasis.e[0], vary.uv[0].e[0]);
-    v_cpy(cmd.ballbasis.e[1], vary.uv[0].e[1]);
-    game_proxy_enq(&cmd);
-
-    cmd.type = CMD_BALL_PEND_BASIS;
-    v_cpy(cmd.ballpendbasis.E[0], vary.uv[0].E[0]);
-    v_cpy(cmd.ballpendbasis.E[1], vary.uv[0].E[1]);
-    game_proxy_enq(&cmd);
-}
-
-static void game_cmd_updview(void)
-{
-    cmd.type = CMD_VIEW_POSITION;
-    v_cpy(cmd.viewpos.p, view.p);
-    game_proxy_enq(&cmd);
-
-    cmd.type = CMD_VIEW_CENTER;
-    v_cpy(cmd.viewcenter.c, view.c);
-    game_proxy_enq(&cmd);
-
-    cmd.type = CMD_VIEW_BASIS;
-    v_cpy(cmd.viewbasis.e[0], view.e[0]);
-    v_cpy(cmd.viewbasis.e[1], view.e[1]);
-    game_proxy_enq(&cmd);
-}
-
-static void game_cmd_ballradius(void)
-{
-    cmd.type         = CMD_BALL_RADIUS;
-    cmd.ballradius.r = vary.uv[0].r;
-    game_proxy_enq(&cmd);
-}
-
-static void game_cmd_init_balls(void)
-{
-    cmd.type = CMD_CLEAR_BALLS;
-    game_proxy_enq(&cmd);
-
-    cmd.type = CMD_MAKE_BALL;
-    game_proxy_enq(&cmd);
-
-    game_cmd_updball();
-    game_cmd_ballradius();
-}
-
-static void game_cmd_init_items(void)
-{
-    int i;
-
-    cmd.type = CMD_CLEAR_ITEMS;
-    game_proxy_enq(&cmd);
-
-    for (i = 0; i < vary.hc; i++)
-    {
-        cmd.type = CMD_MAKE_ITEM;
-
-        v_cpy(cmd.mkitem.p, vary.hv[i].p);
-
-        cmd.mkitem.t = vary.hv[i].t;
-        cmd.mkitem.n = vary.hv[i].n;
-
-        game_proxy_enq(&cmd);
-    }
-}
-
-static void game_cmd_pkitem(int hi)
-{
->>>>>>> origin/csy-extras
     cmd.type      = CMD_PICK_ITEM;
     cmd.pkitem.hi = hi;
     game_proxy_enq(&cmd);
 }
 
-<<<<<<< HEAD
 static void game_cmd_jump(int p, int e)
 {
     game_cmd_set_player(p);
-=======
-static void game_cmd_jump(int e)
-{
->>>>>>> origin/csy-extras
     cmd.type = e ? CMD_JUMP_ENTER : CMD_JUMP_EXIT;
     game_proxy_enq(&cmd);
 }
 
-<<<<<<< HEAD
 static void game_cmd_punch(int p, int e)
 {
     game_cmd_set_player(p);
     cmd.type = CMD_PUNCH;
     cmd.punch.active = e;
+    game_proxy_enq(&cmd);
+}
+
+static void game_cmd_jump_ready(int p, int e)
+{
+    game_cmd_set_player(p);
+    cmd.type = CMD_JUMP_READY;
+    cmd.jumpready.active = e;
+    game_proxy_enq(&cmd);
+}
+
+static void game_cmd_dash_charge(int p, float charge)
+{
+    game_cmd_set_player(p);
+    cmd.type = CMD_DASH_CHARGE;
+    cmd.dashcharge.charge = charge;
+    game_proxy_enq(&cmd);
+}
+
+static void game_cmd_gyro_state(int p, int active, float timer)
+{
+    game_cmd_set_player(p);
+    cmd.type = CMD_GYRO_STATE;
+    cmd.gyrostate.active = active;
+    cmd.gyrostate.timer = timer;
     game_proxy_enq(&cmd);
 }
 
@@ -648,19 +535,10 @@ static void game_cmd_tiltangles(int p)
 
     cmd.tiltangles.x = players[p].tilt.rx;
     cmd.tiltangles.z = players[p].tilt.rz;
-=======
-static void game_cmd_tiltangles(void)
-{
-    cmd.type = CMD_TILT_ANGLES;
-
-    cmd.tiltangles.x = tilt.rx;
-    cmd.tiltangles.z = tilt.rz;
->>>>>>> origin/csy-extras
 
     game_proxy_enq(&cmd);
 }
 
-<<<<<<< HEAD
 static void game_cmd_tiltaxes(int p)
 {
     game_cmd_set_player(p);
@@ -668,19 +546,10 @@ static void game_cmd_tiltaxes(int p)
 
     v_cpy(cmd.tiltaxes.x, players[p].tilt.x);
     v_cpy(cmd.tiltaxes.z, players[p].tilt.z);
-=======
-static void game_cmd_tiltaxes(void)
-{
-    cmd.type = CMD_TILT_AXES;
-
-    v_cpy(cmd.tiltaxes.x, tilt.x);
-    v_cpy(cmd.tiltaxes.z, tilt.z);
->>>>>>> origin/csy-extras
 
     game_proxy_enq(&cmd);
 }
 
-<<<<<<< HEAD
 static void game_cmd_timer(int p)
 {
     game_cmd_set_player(p);
@@ -702,32 +571,11 @@ static void game_cmd_status(int p)
     game_cmd_set_player(p);
     cmd.type     = CMD_STATUS;
     cmd.status.t = players[p].status;
-=======
-static void game_cmd_timer(void)
-{
-    cmd.type    = CMD_TIMER;
-    cmd.timer.t = timer;
-    game_proxy_enq(&cmd);
-}
-
-static void game_cmd_coins(void)
-{
-    cmd.type    = CMD_COINS;
-    cmd.coins.n = coins;
-    game_proxy_enq(&cmd);
-}
-
-static void game_cmd_status(void)
-{
-    cmd.type     = CMD_STATUS;
-    cmd.status.t = status;
->>>>>>> origin/csy-extras
     game_proxy_enq(&cmd);
 }
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 static int grow_init(int p, int type)
 {
     struct server_player *pl = &players[p];
@@ -784,123 +632,23 @@ static void grow_step(int p, float dt)
 
         game_cmd_ballradius(p);
     }
-=======
-static int   grow = 0;                  /* Should the ball be changing size? */
-static float grow_orig = 0;             /* the original ball size            */
-static float grow_goal = 0;             /* how big or small to get!          */
-static float grow_t = 0.0;              /* timer for the ball to grow...     */
-static float grow_strt = 0;             /* starting value for growth         */
-static int   got_orig = 0;              /* Do we know original ball size?    */
-
-#define GROW_TIME  0.5f                 /* sec for the ball to get to size.  */
-#define GROW_BIG   1.5f                 /* large factor                      */
-#define GROW_SMALL 0.5f                 /* small factor                      */
-
-static int   grow_state = 0;            /* Current state (values -1, 0, +1)  */
-
-static void grow_init(const struct s_vary *vary, int type)
-{
-    if (!got_orig)
-    {
-        grow_orig  = vary->uv->r;
-        grow_goal  = grow_orig;
-        grow_strt  = grow_orig;
-
-        grow_state = 0;
-
-        got_orig   = 1;
-    }
-
-    if (type == ITEM_SHRINK)
-    {
-        switch (grow_state)
-        {
-        case -1:
-            break;
-
-        case  0:
-            audio_play(AUD_SHRINK, 1.f);
-            grow_goal = grow_orig * GROW_SMALL;
-            grow_state = -1;
-            grow = 1;
-            break;
-
-        case +1:
-            audio_play(AUD_SHRINK, 1.f);
-            grow_goal = grow_orig;
-            grow_state = 0;
-            grow = 1;
-            break;
-        }
-    }
-    else if (type == ITEM_GROW)
-    {
-        switch (grow_state)
-        {
-        case -1:
-            audio_play(AUD_GROW, 1.f);
-            grow_goal = grow_orig;
-            grow_state = 0;
-            grow = 1;
-            break;
-
-        case  0:
-            audio_play(AUD_GROW, 1.f);
-            grow_goal = grow_orig * GROW_BIG;
-            grow_state = +1;
-            grow = 1;
-            break;
-
-        case +1:
-            break;
-        }
-    }
-
-    if (grow)
-    {
-        grow_t = 0.0;
-        grow_strt = vary->uv->r;
-    }
-}
-
-static void grow_step(const struct s_vary *vary, float dt)
-{
-    float dr;
-
-    if (!grow)
-        return;
-
-    /* Calculate new size based on how long since you touched the coin... */
-
-    grow_t += dt;
-
-    if (grow_t >= GROW_TIME)
-    {
-        grow = 0;
-        grow_t = GROW_TIME;
-    }
-
-    dr = grow_strt + ((grow_goal-grow_strt) * (1.0f / (GROW_TIME / grow_t)));
-
-    /* No sinking through the floor! Keeps ball's bottom constant. */
-
-    vary->uv->p[1] += (dr - vary->uv->r);
-    vary->uv->r     =  dr;
-
-    game_cmd_ballradius();
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
 
 static struct lockstep server_step;
 
-<<<<<<< HEAD
 static void game_player_init(int p, int t, int e, int mode)
 {
     struct server_player *pl = &players[p];
     int i;
     int ball_count = 1;
+
+    /* Clean up existing physics state if re-initializing */
+    if (pl->sim_owner) {
+        sol_free_vary(&pl->vary);
+    }
+    memset(&pl->vary, 0, sizeof(struct s_vary));
 
     pl->time_limit = (float) t / 100.0f;
     pl->time_elapsed = 0.0f;
@@ -915,6 +663,15 @@ static void game_player_init(int p, int t, int e, int mode)
     pl->punch_state = 0;
     pl->punch_timer = 0.0f;
 
+    pl->gyro_active = 0;
+    pl->gyro_timer = 0.0f;
+
+    pl->shock_active = 0;
+    pl->shock_timer = 0.0f;
+
+    pl->speed_active = 0;
+    pl->speed_timer = 0.0f;
+
     pl->shot_power = 0.0f;
 
     pl->action_prev = 0;
@@ -922,9 +679,47 @@ static void game_player_init(int p, int t, int e, int mode)
     pl->bowling_frame = 1;
     pl->bowling_throw = 1;
     for(i=0; i<10; i++) pl->bowling_pins[i] = 0;
+    pl->golf_strokes = 0;
     pl->shot_state = 0;
 
+    pl->paddle_left_timer = 0.0f;
+    pl->paddle_right_timer = 0.0f;
+    pl->boat_speed = 0.0f;
+
+    pl->cursor_x = 0.0f;
+    pl->cursor_y = 0.0f;
+    pl->ammo = 6;
+    pl->reload_timer = 0.0f;
+
+    pl->team = (p % 2); /* 0, 1, 0, 1 */
+    pl->score = 0;
+    pl->serve_state = 0;
+
+    pl->baseball_role = 0;
+    pl->baseball_charge = 0.0f;
+
+    pl->held_item = 0;
+    pl->stun_timer = 0.0f;
+
     pl->warp_id = -1;
+    pl->dist_accumulator = 0.0f;
+
+    /* CPU flag based on player count and config */
+    /* If total players = P, and cpu_count = C, then players [P-C .. P-1] are CPU */
+    if (p >= (player_count - cpu_count)) {
+        pl->is_cpu = 1;
+    } else {
+        pl->is_cpu = 0;
+    }
+    pl->ai_timer = 0.0f;
+    pl->ai_state = 0;
+
+    /* Load stats for the current ball */
+    stats_load(&player_stats[p], config_get_s(CONFIG_BALL_FILE));
+
+    /* Adjust jump force based on stats (default is implicitly handled by physics engine but we can tweak it?) */
+    /* The jump logic uses sol_jump_test which just checks for jump pads. */
+    /* But we can affect acceleration. */
 
     /* Load stats for the current ball */
     stats_load(&player_stats[p], config_get_s(CONFIG_BALL_FILE));
@@ -943,21 +738,12 @@ static void game_player_init(int p, int t, int e, int mode)
             pl->sim_state = &pl->vary;
             pl->sim_owner = 1;
 
-            /* Resize balls */
-            if (ball_count > 1)
+            game_init_party_mode_physics(pl, ball_count);
+
+            for (i = 1; i < ball_count; i++)
             {
-                 struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * ball_count);
-                 if (new_uv)
-                 {
-                     pl->vary.uv = new_uv;
-                     for (i = 1; i < ball_count; i++)
-                     {
-                         pl->vary.uv[i] = pl->vary.uv[0];
-                         pl->vary.uv[i].p[0] += (float)i * 1.5f;
-                         pl->vary.uv[i].p[2] += (float)i * 1.5f;
-                     }
-                     pl->vary.uc = ball_count;
-                 }
+                pl->vary.uv[i].p[0] += (float)i * 1.5f;
+                pl->vary.uv[i].p[2] += (float)i * 1.5f;
             }
         }
         else
@@ -977,31 +763,25 @@ static void game_player_init(int p, int t, int e, int mode)
             pl->sim_state = &pl->vary;
             pl->sim_owner = 1;
 
-            /* Resize balls */
-            struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * ball_count);
-            if (new_uv)
-            {
-                pl->vary.uv = new_uv;
-                pl->vary.uc = ball_count;
+            game_init_party_mode_physics(pl, ball_count);
 
-                /* Init Billiard Positions (Triangle) */
-                float x = pl->vary.uv[0].p[0];
-                float z = pl->vary.uv[0].p[2] + 5.0f; /* Start further down */
-                float r = pl->vary.uv[0].r;
-                float d = r * 2.05f; /* Diameter + padding */
+            /* Init Billiard Positions (Triangle) */
+            float x = pl->vary.uv[0].p[0];
+            float z = pl->vary.uv[0].p[2] + 5.0f; /* Start further down */
+            float r = pl->vary.uv[0].r;
+            float d = r * 2.05f; /* Diameter + padding */
 
-                int b = 1;
-                int row, col;
-                for (row = 0; row < 5; row++) {
-                    float z_row = z + row * d * 0.866f; /* sin(60) */
-                    float x_start = x - (row * d) * 0.5f;
-                    for (col = 0; col <= row; col++) {
-                        if (b < ball_count) {
-                            pl->vary.uv[b] = pl->vary.uv[0];
-                            pl->vary.uv[b].p[0] = x_start + col * d;
-                            pl->vary.uv[b].p[2] = z_row;
-                            b++;
-                        }
+            int b = 1;
+            int row, col;
+            for (row = 0; row < 5; row++) {
+                float z_row = z + row * d * 0.866f; /* sin(60) */
+                float x_start = x - (row * d) * 0.5f;
+                for (col = 0; col <= row; col++) {
+                    if (b < ball_count) {
+                        pl->vary.uv[b] = pl->vary.uv[0];
+                        pl->vary.uv[b].p[0] = x_start + col * d;
+                        pl->vary.uv[b].p[2] = z_row;
+                        b++;
                     }
                 }
             }
@@ -1022,36 +802,31 @@ static void game_player_init(int p, int t, int e, int mode)
             pl->sim_state = &pl->vary;
             pl->sim_owner = 1;
 
-            struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * ball_count);
-            if (new_uv)
-            {
-                pl->vary.uv = new_uv;
-                pl->vary.uc = ball_count;
+            game_init_party_mode_physics(pl, ball_count);
 
-                /* Setup Pins (Triangle) at end of lane */
-                /* Assuming standard lane length, e.g. 20m? */
-                /* Base position for pins */
-                float x = pl->vary.uv[0].p[0];
-                float z = pl->vary.uv[0].p[2] + 20.0f;
-                float r = pl->vary.uv[0].r;
-                float d = r * 2.5f; /* Pins spaced out a bit */
+            /* Setup Pins (Triangle) at end of lane */
+            /* Assuming standard lane length, e.g. 20m? */
+            /* Base position for pins */
+            float x = pl->vary.uv[0].p[0];
+            float z = pl->vary.uv[0].p[2] + 20.0f;
+            float r = pl->vary.uv[0].r;
+            float d = r * 2.5f; /* Pins spaced out a bit */
 
-                int b = 1;
-                int row, col;
-                for (row = 0; row < 4; row++) { /* 4 rows for 10 pins */
-                    float z_row = z + row * d * 0.866f;
-                    float x_start = x - (row * d) * 0.5f;
-                    for (col = 0; col <= row; col++) {
-                         if (b < ball_count) {
-                            pl->vary.uv[b] = pl->vary.uv[0];
-                            pl->vary.uv[b].p[0] = x_start + col * d;
-                            pl->vary.uv[b].p[2] = z_row;
+            int b = 1;
+            int row, col;
+            for (row = 0; row < 4; row++) { /* 4 rows for 10 pins */
+                float z_row = z + row * d * 0.866f;
+                float x_start = x - (row * d) * 0.5f;
+                for (col = 0; col <= row; col++) {
+                     if (b < ball_count) {
+                        pl->vary.uv[b] = pl->vary.uv[0];
+                        pl->vary.uv[b].p[0] = x_start + col * d;
+                        pl->vary.uv[b].p[2] = z_row;
 
-                            /* Store start pos */
-                            v_cpy(pl->bowling_pin_start[b-1], pl->vary.uv[b].p);
-                            b++;
-                         }
-                    }
+                        /* Store start pos */
+                        v_cpy(pl->bowling_pin_start[b-1], pl->vary.uv[b].p);
+                        b++;
+                     }
                 }
             }
         }
@@ -1061,6 +836,250 @@ static void game_player_init(int p, int t, int e, int mode)
             pl->sim_owner = 0;
         }
         pl->ball_index = 0;
+    }
+    else if (mode == MODE_GOLF)
+    {
+        ball_count = 1;
+        sol_load_vary(&pl->vary, &game_base);
+        pl->sim_state = &pl->vary;
+        pl->sim_owner = 1;
+        pl->ball_index = 0;
+        pl->golf_strokes = 0;
+
+        if (p > 0)
+        {
+            /* Multiplayer Golf: Alternating or Concurrent? */
+            /* For now, concurrent independent worlds like Race */
+            pl->vary.uv[0].p[0] += (float)p * 1.5f;
+            pl->vary.uv[0].p[2] += (float)p * 1.5f;
+        }
+    }
+    else if (mode == MODE_SOCCER)
+    {
+        ball_count = player_count + 1;
+
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+
+            game_init_party_mode_physics(pl, ball_count);
+
+            /* Init Soccer Ball */
+            pl->vary.uv[0].r = 2.0f; /* Big ball */
+
+            /* Init Player Balls */
+            for(i=1; i < ball_count; i++) {
+                pl->vary.uv[i] = pl->vary.uv[0]; /* Copy defaults */
+                pl->vary.uv[i].r = 0.5f; /* Normal size */
+
+                /* Team Positions */
+                int team = ((i-1) % 2);
+                float z_offset = (team == 0) ? -10.0f : 10.0f;
+                float x_offset = (((i-1) / 2) * 2.0f) - 1.0f;
+
+                pl->vary.uv[i].p[0] = x_offset;
+                pl->vary.uv[i].p[1] += 5.0f;
+                pl->vary.uv[i].p[2] = z_offset;
+            }
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+
+        pl->ball_index = p + 1;
+    }
+    else if (mode == MODE_TENNIS)
+    {
+        ball_count = player_count + 1;
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+
+            game_init_party_mode_physics(pl, ball_count);
+
+            /* Tennis Ball (Index 0) */
+            pl->vary.uv[0].r = 0.3f;
+            pl->vary.uv[0].p[1] = 2.0f;
+
+            /* Player Balls */
+            for(i=1; i<ball_count; i++) {
+                pl->vary.uv[i] = pl->vary.uv[0];
+                pl->vary.uv[i].r = 0.5f;
+
+                /* Court Positioning */
+                int team = ((i-1) % 2);
+                float z_offset = (team == 0) ? -10.0f : 10.0f;
+                float x_offset = (((i-1) / 2) * 3.0f) - 1.5f;
+
+                pl->vary.uv[i].p[0] = x_offset;
+                pl->vary.uv[i].p[1] = 0.5f;
+                pl->vary.uv[i].p[2] = z_offset;
+            }
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+        pl->ball_index = p + 1;
+    }
+    else if (mode == MODE_BASEBALL)
+    {
+        ball_count = player_count + 1;
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+
+            game_init_party_mode_physics(pl, ball_count);
+
+            /* Baseball (Index 0) */
+            pl->vary.uv[0].r = 0.2f;
+            v_zero(pl->vary.uv[0].p);
+
+            /* Player 1 (Pitcher - Team 0) */
+            pl->vary.uv[1] = pl->vary.uv[0];
+            pl->vary.uv[1].r = 0.5f;
+            pl->vary.uv[1].p[2] = -15.0f; /* Mound */
+
+            /* Player 2 (Batter - Team 1) */
+            if (ball_count > 2) {
+                pl->vary.uv[2] = pl->vary.uv[0];
+                pl->vary.uv[2].r = 0.5f;
+                pl->vary.uv[2].p[2] = 15.0f; /* Home Plate */
+            }
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+
+        pl->ball_index = p + 1;
+        pl->baseball_role = (p == 0) ? 0 : 1; /* P1 Pitch, P2 Bat */
+    }
+    else if (mode == MODE_MOLE)
+    {
+        ball_count = player_count + 16; /* 16 Moles */
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+
+            game_init_party_mode_physics(pl, ball_count);
+
+            /* Init Moles (Indices 1 to 16) */
+            for(i=0; i<16; i++) {
+                pl->vary.uv[i+player_count] = pl->vary.uv[0];
+                pl->vary.uv[i+player_count].r = 0.5f;
+                /* 4x4 Grid */
+                int row = i / 4;
+                int col = i % 4;
+                pl->vary.uv[i+player_count].p[0] = -4.5f + (col * 3.0f);
+                pl->vary.uv[i+player_count].p[1] = -2.0f; /* Hidden underground */
+                pl->vary.uv[i+player_count].p[2] = -4.5f + (row * 3.0f);
+                pl->mole_grid[i] = 0;
+                pl->mole_timers[i] = 0.0f;
+            }
+
+            /* Player starting pos (Index 0 to player_count-1) */
+            for(i=0; i<player_count; i++) {
+                pl->vary.uv[i] = pl->vary.uv[0];
+                pl->vary.uv[i].p[0] = 0.0f;
+                pl->vary.uv[i].p[1] = 5.0f;
+                pl->vary.uv[i].p[2] = 10.0f + (i * 2.0f);
+            }
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+        pl->ball_index = p;
+    }
+    else if (mode == MODE_HAMMER)
+    {
+        ball_count = player_count;
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+            game_init_party_mode_physics(pl, ball_count);
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+        pl->ball_index = p;
+        pl->hammer_angle = 0.0f;
+        pl->hammer_spin_speed = 0.0f;
+        pl->hammer_thrown = 0;
+    }
+    else if (mode == MODE_DOGFIGHT)
+    {
+        ball_count = player_count;
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+            game_init_party_mode_physics(pl, ball_count);
+            for (i = 1; i < ball_count; i++)
+            {
+                pl->vary.uv[i].p[0] += (float)i * 5.0f;
+                pl->vary.uv[i].p[1] += 10.0f; /* Start in the air */
+                pl->vary.uv[i].p[2] += (float)i * 5.0f;
+            }
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+        pl->ball_index = p;
+
+        /* Auto-deploy wings */
+        pl->fly_active = 1;
+        pl->fly_pitch = 0.0f;
+        pl->ammo = 20; /* Machine gun / missiles */
+        pl->reload_timer = 0.0f;
+    }
+    else if (mode == MODE_EDITOR)
+    {
+        ball_count = 1;
+        if (p == 0)
+        {
+            sol_load_vary(&pl->vary, &game_base);
+            pl->sim_state = &pl->vary;
+            pl->sim_owner = 1;
+            game_init_party_mode_physics(pl, ball_count);
+
+            /* Give editor a specific radius and position */
+            pl->vary.uv[0].r = 0.1f;
+            pl->vary.uv[0].p[1] = 10.0f;
+        }
+        else
+        {
+            pl->sim_state = &players[0].vary;
+            pl->sim_owner = 0;
+        }
+        pl->ball_index = 0;
+
+        /* No collision, free flight */
+        pl->fly_active = 1;
+        pl->fly_pitch = 0.0f;
+        pl->action_prev = 0;
+        pl->held_item = ITEM_BANANA; /* Default spawn item */
     }
     else
     {
@@ -1086,6 +1105,8 @@ static void game_player_init(int p, int t, int e, int mode)
     }
 
     game_tilt_init(&pl->tilt);
+
+    v_cpy(pl->gravity_dir, GRAVITY_DN);
 
     pl->jump_e = 1;
     pl->jump_b = 0;
@@ -1126,49 +1147,14 @@ int game_server_init(const char *file_name, int t, int e, int mode)
 
     server_state = 1;
     game_mode = mode;
-=======
-int game_server_init(const char *file_name, int t, int e)
-{
-    struct { int x, y; } version;
-    int i;
-
-    timer      = (float) t / 100.f;
-    timer_down = (t > 0);
-    coins      = 0;
-    status     = GAME_NONE;
-
-    game_server_free(file_name);
-
-    /* Load SOL data. */
-
-    if (!game_base_load(file_name))
-        return (server_state = 0);
-
-    if (!sol_load_vary(&vary, &game_base))
-    {
-        game_base_free(NULL);
-        return (server_state = 0);
-    }
-
-    server_state = 1;
-
-    /* Get SOL version. */
->>>>>>> origin/csy-extras
 
     version.x = 0;
     version.y = 0;
 
-<<<<<<< HEAD
     for (i = 0; i < game_base.dc; i++)
     {
         char *k = game_base.av + game_base.dv[i].ai;
         char *v = game_base.av + game_base.dv[i].aj;
-=======
-    for (i = 0; i < vary.base->dc; i++)
-    {
-        char *k = vary.base->av + vary.base->dv[i].ai;
-        char *v = vary.base->av + vary.base->dv[i].aj;
->>>>>>> origin/csy-extras
 
         if (strcmp(k, "version") == 0)
             sscanf(v, "%d.%d", &version.x, &version.y);
@@ -1176,7 +1162,6 @@ int game_server_init(const char *file_name, int t, int e)
 
     input_init();
 
-<<<<<<< HEAD
     game_cmd_map(file_name, version.x, version.y);
     game_cmd_ups();
 
@@ -1187,53 +1172,6 @@ int game_server_init(const char *file_name, int t, int e)
 
     game_cmd_eou();
 
-=======
-    game_tilt_init(&tilt);
-
-    /* Initialize jump and goal states. */
-
-    jump_e = 1;
-    jump_b = 0;
-
-    goal_e = e ? 1 : 0;
-
-    /* Initialize the view (and put it at the ball). */
-
-    game_view_fly(&view, &vary, 0.0f);
-
-    view_k = 1.0f;
-
-    view_time = 0.0f;
-    view_fade = 0.0f;
-
-    /* Initialize ball size tracking. */
-
-    got_orig = 0;
-    grow = 0;
-
-    /* Initialize simulation. */
-
-    sol_init_sim(&vary);
-    sol_cmd_enq_func(game_proxy_enq);
-
-    /* Send initial update. */
-
-    game_cmd_map(file_name, version.x, version.y);
-    game_cmd_ups();
-    game_cmd_timer();
-
-    if (goal_e)
-        game_cmd_goalopen();
-
-    game_cmd_init_balls();
-    game_cmd_init_items();
-
-    game_cmd_updview();
-    game_cmd_eou();
-
-    /* Reset lockstep state. */
-
->>>>>>> origin/csy-extras
     lockstep_clr(&server_step);
 
     return server_state;
@@ -1241,7 +1179,6 @@ int game_server_init(const char *file_name, int t, int e)
 
 void game_server_free(const char *next)
 {
-<<<<<<< HEAD
     int p;
     if (server_state)
     {
@@ -1252,12 +1189,6 @@ void game_server_free(const char *next)
             if (players[p].sim_owner)
                 sol_free_vary(&players[p].vary);
         }
-=======
-    if (server_state)
-    {
-        sol_quit_sim();
-        sol_free_vary(&vary);
->>>>>>> origin/csy-extras
 
         game_base_free(next);
 
@@ -1267,7 +1198,6 @@ void game_server_free(const char *next)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 static void game_update_view(int p, float dt)
 {
     struct server_player *pl = &players[p];
@@ -1299,27 +1229,17 @@ static void game_update_view(int p, float dt)
 
     float dc = pl->view.dc * (pl->jump_b > 0 ? 2.0f * fabsf(pl->jump_dt - 0.5f) : 1.0f);
     float da = 90.0f * input_get_r(p) * dt;
-=======
-static void game_update_view(float dt)
-{
-    float dc = view.dc * (jump_b ? 2.0f * fabsf(jump_dt - 0.5f) : 1.0f);
-    float da = input_get_r() * dt * 90.0f;
->>>>>>> origin/csy-extras
     float k;
 
     float M[16], v[3], Y[3] = { 0.0f, 1.0f, 0.0f };
     float view_v[3];
 
-<<<<<<< HEAD
     float spd = (float) cam_speed(input_get_c(p)) / 1000.0f;
 
-=======
->>>>>>> origin/csy-extras
     /* Track manual rotation time. */
 
     if (da == 0.0f)
     {
-<<<<<<< HEAD
         if (pl->view_time < 0.0f)
         {
             pl->view_fade = CLAMP(VIEW_FADE_MIN, -pl->view_time, VIEW_FADE_MAX);
@@ -1335,36 +1255,10 @@ static void game_update_view(float dt)
             pl->view_time = 0.0f;
         }
         pl->view_time -= dt;
-=======
-        if (view_time < 0.0f)
-        {
-            /* Transition time is influenced by activity time. */
-
-            view_fade = CLAMP(VIEW_FADE_MIN, -view_time, VIEW_FADE_MAX);
-            view_time = 0.0f;
-        }
-
-        /* Inactivity. */
-
-        view_time += dt;
-    }
-    else
-    {
-        if (view_time > 0.0f)
-        {
-            view_fade = 0.0f;
-            view_time = 0.0f;
-        }
-
-        /* Activity (yes, this is negative). */
-
-        view_time -= dt;
->>>>>>> origin/csy-extras
     }
 
     /* Center the view about the ball. */
 
-<<<<<<< HEAD
     v_cpy(pl->view.c, b->p);
 
     view_v[0] = -b->v[0];
@@ -1394,86 +1288,10 @@ static void game_update_view(float dt)
         pl->view.e[2][1] = 0.0;
         pl->view.e[2][2] = fcosf(V_RAD(pl->view.a));
     }
-=======
-    v_cpy(view.c, vary.uv->p);
-
-    view_v[0] = -vary.uv->v[0];
-    view_v[1] =  0.0f;
-    view_v[2] = -vary.uv->v[2];
-
-    switch (input_get_c())
-    {
-    case VIEW_LAZY: /* Viewpoint chases the ball position. */
-
-        v_sub(view.e[2], view.p, view.c);
-
-        break;
-
-    case VIEW_MANUAL:  /* View vector is given by view angle. */
-
-        view.e[2][0] = fsinf(V_RAD(view.a));
-        view.e[2][1] = 0.0;
-        view.e[2][2] = fcosf(V_RAD(view.a));
-
-        break;
-
-    case VIEW_CHASE: /* View vector approaches the ball velocity vector. */
-
-        v_sub(view.e[2], view.p, view.c);
-        v_nrm(view.e[2], view.e[2]);
-        v_mad(view.e[2], view.e[2], view_v, v_dot(view_v, view_v) * dt / 4);
-
-        break;
-
-    case VIEW_TEST1:
-    case VIEW_TEST2:
-
-        /*
-         * Random curiosity of view vector computation for chase view.
-         *
-         * z + v * |v|^2 * dt / 4 =
-         * z + u * |v|^3 * dt / 4
-         */
-
-        /*
-         * So let's experiment with that.
-         *
-         * z + v * |v|   * dt / 4 =
-         * z + u * |v|^2 * dt / 4
-         */
-
-        if (da == 0.0f)
-        {
-            v_sub(view.e[2], view.p, view.c);
-            v_nrm(view.e[2], view.e[2]);
-
-            if (input_get_c() == VIEW_TEST1)
-            {
-                v_mad(view.e[2], view.e[2], view_v, v_len(view_v) * dt / 4);
-            }
-            else if (input_get_c() == VIEW_TEST2)
-            {
-                /* Gradually restore view vector convergence rate. */
-
-                float s;
-
-                s = fpowf(view_time, 3.0f) / fpowf(view_fade, 3.0f);
-                s = CLAMP(0.0f, s, 1.0f);
-
-                v_mad(view.e[2], view.e[2], view_v, v_len(view_v) * s * dt / 4);
-            }
-        }
-
-        break;
-    }
-
-    /* Apply manual rotation. */
->>>>>>> origin/csy-extras
 
     if (da != 0.0f)
     {
         m_rot(M, Y, V_RAD(da));
-<<<<<<< HEAD
         m_vxfm(v, M, pl->view.e[2]);
         v_cpy(pl->view.e[2], v);
     }
@@ -1560,6 +1378,7 @@ static int game_update_state(int p, int bt)
         if (hp->t == ITEM_COIN)
         {
             pl->coins += hp->n;
+            if (!pl->is_cpu) profile_add_stat(STAT_COINS, hp->n);
             game_cmd_coins(p);
         }
         else if (hp->t == ITEM_CLOCK)
@@ -1605,114 +1424,57 @@ static int game_update_state(int p, int bt)
             }
             audio_play(AUD_JUMP, 1.0f);
         }
+        else if (hp->t == ITEM_SUPER_JUMP)
+        {
+            /* Marble Blast Style Super Jump */
+            struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+            /* Launch straight up with immense force */
+            b->v[1] += 30.0f;
+            audio_play(AUD_JUMP, 2.0f);
+        }
+        else if (hp->t == ITEM_GYRO)
+        {
+            pl->gyro_active = 1;
+            pl->gyro_timer = 20.0f;
+            game_cmd_gyro_state(p, 1, pl->gyro_timer);
+            audio_play(AUD_JUMP, 1.0f);
+        }
+        else if (hp->t == ITEM_SHOCK)
+        {
+            pl->shock_active = 1;
+            pl->shock_timer = 30.0f;
+            /* TODO: Add CMD_SHOCK_STATE for HUD */
+            audio_play(AUD_COIN, 1.0f);
+        }
+        else if (hp->t == ITEM_SUPER_SPEED)
+        {
+            pl->speed_active = 1;
+            pl->speed_timer = 15.0f;
+            /* TODO: Add CMD_SPEED_STATE for HUD */
+            audio_play(AUD_COIN, 1.0f);
+        }
         else if (hp->t == ITEM_MISSILE)
         {
+            pl->held_item = ITEM_MISSILE;
             audio_play(AUD_COIN, 1.f);
         }
         else if (hp->t == ITEM_BANANA)
         {
             audio_play(AUD_FALL, 1.f);
-=======
-        m_vxfm(v, M, view.e[2]);
-        v_cpy(view.e[2], v);
-    }
-
-    /* Orthonormalize the new view reference frame. */
-
-    v_crs(view.e[0], view.e[1], view.e[2]);
-    v_crs(view.e[2], view.e[0], view.e[1]);
-    v_nrm(view.e[0], view.e[0]);
-    v_nrm(view.e[2], view.e[2]);
-
-    /* Compute the new view position. */
-
-    k = 1.0f + v_dot(view.e[2], view_v) / 10.0f;
-
-    view_k = view_k + (k - view_k) * dt;
-
-    if (view_k < 0.5) view_k = 0.5;
-
-    v_scl(v,    view.e[1], view.dp * view_k);
-    v_mad(v, v, view.e[2], view.dz * view_k);
-    v_add(view.p, v, vary.uv->p);
-
-    /* Compute the new view center. */
-
-    v_cpy(view.c, vary.uv->p);
-    v_mad(view.c, view.c, view.e[1], dc);
-
-    /* Note the current view angle. */
-
-    view.a = V_DEG(fatan2f(view.e[2][0], view.e[2][2]));
-
-    game_cmd_updview();
-}
-
-static void game_update_time(float dt, int b)
-{
-   /* The ticking clock. */
-
-    if (b && timer_down)
-    {
-        if (timer < 600.f)
-            timer -= dt;
-        if (timer < 0.f)
-            timer = 0.f;
-    }
-    else if (b)
-    {
-        timer += dt;
-    }
-
-    if (b) game_cmd_timer();
-}
-
-static int game_update_state(int bt)
-{
-    struct b_goal *zp;
-    int hi;
-
-    float p[3];
-
-    /* Test for an item. */
-
-    if (bt && (hi = sol_item_test(&vary, p, ITEM_RADIUS)) != -1)
-    {
-        struct v_item *hp = vary.hv + hi;
-
-        game_cmd_pkitem(hi);
-
-        grow_init(&vary, hp->t);
-
-        if (hp->t == ITEM_COIN)
-        {
-            coins += hp->n;
-            game_cmd_coins();
->>>>>>> origin/csy-extras
         }
 
         audio_play(AUD_COIN, 1.f);
 
-<<<<<<< HEAD
-=======
-        /* Discard item. */
-
->>>>>>> origin/csy-extras
         hp->t = ITEM_NONE;
     }
 
     /* Test for a switch. */
 
-<<<<<<< HEAD
     if (sol_swch_test(pl->sim_state, game_proxy_enq, 0) == SWCH_INSIDE)
-=======
-    if (sol_swch_test(&vary, 0) == SWCH_INSIDE)
->>>>>>> origin/csy-extras
         audio_play(AUD_SWITCH, 1.f);
 
     /* Test for a jump. */
 
-<<<<<<< HEAD
     if (pl->jump_e == 1 && pl->jump_b == 0 && (sol_jump_test(pl->sim_state, pl->jump_p, 0) ==
                                        JUMP_INSIDE))
     {
@@ -1729,36 +1491,11 @@ static int game_update_state(int bt)
     {
         pl->jump_e = 1;
         game_cmd_jump(p, 0);
-=======
-    if (jump_e == 1 && jump_b == 0 && (sol_jump_test(&vary, jump_p, 0) ==
-                                       JUMP_INSIDE))
-    {
-        jump_b  = 1;
-        jump_e  = 0;
-        jump_dt = 0.f;
-
-        v_sub(jump_w, jump_p, vary.uv->p);
-        v_add(jump_w, view.p, jump_w);
-
-        audio_play(AUD_JUMP, 1.f);
-
-        game_cmd_jump(1);
-    }
-    if (jump_e == 0 && jump_b == 0 && (sol_jump_test(&vary, jump_p, 0) ==
-                                       JUMP_OUTSIDE))
-    {
-        jump_e = 1;
-        game_cmd_jump(0);
->>>>>>> origin/csy-extras
     }
 
     /* Test for a goal. */
 
-<<<<<<< HEAD
     if (bt && pl->goal_e && (zp = sol_goal_test(pl->sim_state, NULL, 0)))
-=======
-    if (bt && goal_e && (zp = sol_goal_test(&vary, p, 0)))
->>>>>>> origin/csy-extras
     {
         audio_play(AUD_GOAL, 1.0f);
         return GAME_GOAL;
@@ -1766,11 +1503,7 @@ static int game_update_state(int bt)
 
     /* Test for time-out. */
 
-<<<<<<< HEAD
     if (bt && pl->time_limit > 0.0f && pl->time_elapsed >= pl->time_limit)
-=======
-    if (bt && timer_down && timer <= 0.f)
->>>>>>> origin/csy-extras
     {
         audio_play(AUD_TIME, 1.0f);
         return GAME_TIME;
@@ -1778,24 +1511,88 @@ static int game_update_state(int bt)
 
     /* Test for fall-out. */
 
-<<<<<<< HEAD
     if (bt && (pl->sim_state->base->vc == 0 || pl->sim_state->uv[pl->ball_index].p[1] < pl->sim_state->base->vv[0].p[1]))
-=======
-    if (bt && vary.uv[0].p[1] < vary.base->vv[0].p[1])
->>>>>>> origin/csy-extras
     {
         audio_play(AUD_FALL, 1.0f);
         return GAME_FALL;
     }
 
+    /* Party Mode Specific Fall Out Logic for shared balls (Soccer, Tennis) */
+    if (bt && pl->sim_owner) {
+        if (game_mode == MODE_SOCCER || game_mode == MODE_TENNIS) {
+            struct v_ball *game_ball = &pl->sim_state->uv[0];
+            /* Check if game ball fell */
+            if (pl->sim_state->base->vc == 0 || game_ball->p[1] < pl->sim_state->base->vv[0].p[1]) {
+                audio_play(AUD_FALL, 1.0f);
+
+                /* Reset Ball */
+                v_zero(game_ball->v);
+                v_zero(game_ball->p);
+                game_ball->p[1] = 5.0f;
+
+                game_cmd_upd_all_balls(p);
+
+                hud_show_toast("Ball Reset!");
+            }
+        }
+    }
+
     return GAME_NONE;
 }
 
-<<<<<<< HEAD
 static void game_fly_step(int p, float dt)
 {
     struct server_player *pl = &players[p];
     struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+
+    /* Editor Free-Cam Logic */
+    if (game_mode == MODE_EDITOR)
+    {
+        float fwd[3], right[3], up[3] = {0, 1, 0};
+
+        /* View Forward is -e[2] */
+        v_cpy(fwd, pl->view.e[2]);
+        v_scl(fwd, fwd, -1.0f);
+
+        /* View Right is e[0] */
+        v_cpy(right, pl->view.e[0]);
+
+        float move_speed = 30.0f;
+
+        /* WASD mapped to Z and X input? We assume input_z is fwd/back, input_x is left/right */
+        float z_input = input_get_z(p) / ANGLE_BOUND; /* 1.0 = forward */
+
+        /* Directly set velocity instead of accelerating */
+        v_zero(b->v);
+        v_mad(b->v, b->v, fwd, z_input * move_speed);
+
+        /* Stop gravity */
+        b->v[1] += (input_get_action(p) ? move_speed : 0.0f) * dt;
+
+        /* Handle Place Item Input via Dash button */
+        int dash = input_get_dash(p);
+        if (dash && !pl->punch_state) { /* Reuse punch_state as a debounce flag for dash */
+            pl->punch_state = 1;
+
+            /* Spawn item 10 units in front of camera */
+            float spawn_pos[3];
+            v_cpy(spawn_pos, b->p);
+            v_mad(spawn_pos, spawn_pos, fwd, 10.0f);
+
+            /* Tell clients to render the new item */
+            cmd.type = CMD_PLACE_ITEM;
+            v_cpy(cmd.placeitem.p, spawn_pos);
+            cmd.placeitem.t = pl->held_item;
+            cmd.placeitem.n = 1;
+            game_proxy_enq(&cmd);
+
+            audio_play(AUD_GOAL, 1.0f);
+        } else if (!dash) {
+            pl->punch_state = 0;
+        }
+
+        return;
+    }
 
     /* Control Pitch */
     float z_input = input_get_z(p) / ANGLE_BOUND; /* Normalize to -1..1 range approximately */
@@ -1955,6 +1752,565 @@ static void game_billiards_step(int p, float dt)
     }
 }
 
+static void game_race_item_step(int p, float dt)
+{
+    if (p < 0 || p >= MAX_PLAYERS) return;
+    struct server_player *pl = &players[p];
+    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+    int action = input_get_action(p);
+
+    if (pl->stun_timer > 0.0f) {
+        pl->stun_timer -= dt;
+        /* Spin out effect */
+
+        /* Apply torque to spin */
+        /* Since w is directly updated in sol_step via sol_rotate/pendulum, */
+        /* we can add to w. */
+        /* b->w[1] += ... */
+        /* Or just rotate view? */
+        /* Let's just dampen control */
+        pl->tilt.rx *= 0.1f;
+        pl->tilt.rz *= 0.1f;
+        return;
+    }
+
+    if (action && !pl->action_prev && pl->held_item) {
+        if (pl->held_item == ITEM_MISSILE) {
+            /* Fire Missile */
+            /* Simplified: Scan for target in front and stun them */
+            int i;
+            float best_dist = 100.0f;
+            int target = -1;
+
+            float fwd[3];
+            v_cpy(fwd, pl->view.e[2]);
+            v_scl(fwd, fwd, -1.0f);
+
+            for(i=0; i<player_count; i++) {
+                if (i==p) continue;
+                struct v_ball *other = &pl->sim_state->uv[players[i].ball_index];
+                float vec[3];
+                v_sub(vec, other->p, b->p);
+
+                float dist = v_len(vec);
+                v_nrm(vec, vec);
+
+                if (dist < best_dist && v_dot(fwd, vec) > 0.9f) {
+                    best_dist = dist;
+                    target = i;
+                }
+            }
+
+            if (target != -1) {
+                players[target].stun_timer = 2.0f;
+                audio_play(AUD_BUMPL, 1.0f);
+
+                /* Knockback */
+                float force[3];
+                v_cpy(force, fwd);
+                v_scl(force, force, 20.0f);
+                v_add(pl->sim_state->uv[players[target].ball_index].v,
+                      pl->sim_state->uv[players[target].ball_index].v, force);
+            } else {
+                audio_play(AUD_BUMPM, 1.0f); /* Miss sound */
+            }
+
+            pl->held_item = 0;
+        }
+        else if (pl->held_item == ITEM_BANANA) {
+            /* Drop Banana */
+            /* Spawn static hazard? */
+            /* For MVP: Just drop it behind. If someone hits it (collision check), they slip. */
+            /* We need to allocate a new hazard entity. */
+            /* Reusing ITEM system: Spawn ITEM_BANANA at current position */
+            /* Wait, sol_load_vary loads items from file. We can't easily add dynamic items without dynamic array. */
+            /* But items are just an array in vary struct. */
+            /* We can resize it? Or reuse ITEM_NONE slots? */
+
+            /* Scan for free item slot */
+            int i;
+            for(i=0; i < pl->sim_state->hc; i++) {
+                if (pl->sim_state->hv[i].t == ITEM_NONE) {
+                    struct v_item *h = &pl->sim_state->hv[i];
+                    h->t = ITEM_BANANA;
+                    h->n = 1;
+
+                    /* Transform world position to item local space? */
+                    /* Assume item space is Identity for spawned items or use simpler logic */
+                    /* Actually, items have mi/mj parents. If we use existing slot, we inherit parent. */
+                    /* If parent moves, banana moves. This might be weird. */
+                    /* MVP: Just stun self to simulate slipping? No. */
+
+                    /* Let's just play sound for now. */
+                    audio_play(AUD_FALL, 1.0f);
+                    pl->held_item = 0;
+                    break;
+                }
+            }
+        }
+    }
+}
+
+static void game_baseball_step(int p, float dt)
+{
+    if (p < 0 || p >= MAX_PLAYERS) return;
+    struct server_player *pl = &players[p];
+
+    /* Server controls out-of-bounds / inning logic */
+    if (p == 0 && pl->sim_owner) {
+        struct v_ball *ball = &pl->sim_state->uv[0];
+
+        /* If ball falls below a threshold or goes out of bounds laterally */
+        if (ball->p[1] < 0.2f || fabsf(ball->p[0]) > 40.0f || fabsf(ball->p[2]) > 60.0f) {
+            /* Foul or Reset */
+            v_zero(ball->v);
+            ball->p[0] = 0.0f;
+            ball->p[1] = 5.0f; /* Drop it somewhere */
+            ball->p[2] = -15.0f; /* Back near pitcher */
+            game_cmd_upd_all_balls(p);
+        }
+    }
+
+    /* Pitcher Logic (Role 0) */
+    if (pl->baseball_role == 0) {
+        if (input_get_action(p)) {
+            pl->baseball_charge += dt;
+            if (pl->baseball_charge > 1.0f) pl->baseball_charge = 1.0f;
+            game_cmd_dash_charge(p, pl->baseball_charge); /* Show power meter */
+        } else if (pl->baseball_charge > 0.0f) {
+            /* Throw */
+            struct v_ball *ball = &pl->sim_state->uv[0];
+            struct v_ball *me = &pl->sim_state->uv[pl->ball_index];
+
+            /* Reset ball to pitcher hand */
+            v_cpy(ball->p, me->p);
+            ball->p[1] += 1.0f;
+
+            /* Pitching direction includes some curve based on X/Z tilt */
+            float fwd[3];
+            v_cpy(fwd, pl->view.e[2]);
+            v_scl(fwd, fwd, -1.0f);
+
+            /* Apply spin/curve based on tilt (input x) */
+            float curve = input_get_x(p) * 0.05f;
+            fwd[0] += curve;
+
+            v_nrm(fwd, fwd);
+
+            float speed = 20.0f + (pl->baseball_charge * 40.0f); /* Fastball up to 60 */
+            v_scl(ball->v, fwd, speed);
+
+            pl->baseball_charge = 0.0f;
+            game_cmd_dash_charge(p, 0.0f);
+            audio_play(AUD_JUMP, 1.0f);
+        }
+    }
+
+    /* Batter Logic (Role 1) */
+    else {
+        if (input_get_action(p) && !pl->action_prev) {
+            /* Swing */
+            game_cmd_punch(p, 1);
+            audio_play(AUD_JUMP, 1.0f);
+
+            struct v_ball *ball = &pl->sim_state->uv[0];
+            struct v_ball *me = &pl->sim_state->uv[pl->ball_index];
+
+            float dist_vec[3];
+            v_sub(dist_vec, ball->p, me->p);
+            float dist = v_len(dist_vec);
+
+            /* Sweet spot hit detection */
+            if (dist < 3.5f) {
+                float fwd[3];
+                v_cpy(fwd, pl->view.e[2]);
+                v_scl(fwd, fwd, -1.0f);
+
+                /* Check if ball is in front of batter */
+                if (v_dot(fwd, dist_vec) > 0) {
+                    /* Contact! */
+
+                    /* Aim direction based on swing timing (distance on Z axis roughly) */
+                    /* Add Upward Angle based on input_z */
+                    float loft = 0.5f + (input_get_z(p) * 0.05f);
+                    fwd[1] += loft;
+                    v_nrm(fwd, fwd);
+
+                    /* Hit speed depends on incoming speed + power */
+                    float incoming_speed = v_len(ball->v);
+                    float hit_speed = incoming_speed * 1.5f + 20.0f;
+
+                    v_scl(ball->v, fwd, hit_speed);
+                    audio_play(AUD_BUMPL, 1.0f);
+
+                    if (hit_speed > 60.0f) {
+                        hud_show_toast("HOME RUN!");
+                        pl->coins += 100;
+                    } else {
+                        hud_show_toast("HIT!");
+                        pl->coins += 10;
+                    }
+                    game_cmd_coins(p);
+                }
+            }
+        } else {
+            game_cmd_punch(p, 0);
+        }
+    }
+}
+
+static void game_tennis_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+
+    /* Swing Mechanic */
+    if (input_get_action(p) && !pl->action_prev) {
+        /* Swing Racket */
+        game_cmd_punch(p, 1); /* Visuals */
+        audio_play(AUD_JUMP, 1.0f);
+
+        /* Hit detection against Tennis Ball (Index 0) */
+        struct v_ball *tennis_ball = &pl->sim_state->uv[0];
+        struct v_ball *me = &pl->sim_state->uv[pl->ball_index];
+
+        float dist_vec[3];
+        v_sub(dist_vec, tennis_ball->p, me->p);
+        float dist = v_len(dist_vec);
+
+        /* Range check (Racket reach) */
+        if (dist < 2.5f) {
+            /* Check angle - must be in front */
+            float fwd[3];
+            v_cpy(fwd, pl->view.e[2]);
+            v_scl(fwd, fwd, -1.0f);
+
+            if (v_dot(fwd, dist_vec) > 0) {
+                /* HIT! */
+                float force[3];
+                v_cpy(force, fwd);
+                /* Add some lift */
+                force[1] += 0.5f;
+                v_nrm(force, force);
+
+                v_scl(force, force, 30.0f); /* Smash speed */
+                v_cpy(tennis_ball->v, force);
+
+                audio_play(AUD_BUMPL, 1.0f);
+            }
+        }
+    }
+    else {
+        game_cmd_punch(p, 0);
+    }
+
+    /* Server Logic: Scoring and Sound */
+    if (p == 0 && pl->sim_owner) {
+        struct v_ball *b = &pl->sim_state->uv[0];
+
+        /* Tennis Ball bounce sound check based on vertical velocity change */
+        /* Normally solid_sim_sol handles this, but since we modify ball speed/position manually in party modes
+           we can also add explicit hit sounds. The swing hit already plays AUD_BUMPL. */
+
+        /* Out of bounds / Ground touch logic */
+        /* Assuming court is flat at y=0. Ball radius 0.3. */
+        /* If ball touches ground (y < 0.3) check position */
+        if (b->p[1] < 0.35f) {
+            /* Bounce logic handled by physics? Yes. */
+            /* But we need to track bounces or out of bounds. */
+            /* Simplified: If it goes too far Z, point. */
+
+            if (b->p[2] > 15.0f) {
+                /* Past Team 1 baseline -> Point for Team 0 */
+                hud_show_toast("Point Team Red!");
+                /* Reset */
+                v_zero(b->v);
+                b->p[0] = 0; b->p[1] = 5; b->p[2] = 0;
+            }
+            else if (b->p[2] < -15.0f) {
+                /* Past Team 0 baseline -> Point for Team 1 */
+                hud_show_toast("Point Team Blue!");
+                v_zero(b->v);
+                b->p[0] = 0; b->p[1] = 5; b->p[2] = 0;
+            }
+        }
+
+        /* Net Logic (Physical net exists in geometry? Or invisible wall?) */
+        /* If no geometry, enforce net collision here */
+        if (fabsf(b->p[2]) < 0.5f && b->p[1] < 1.0f) {
+            /* Hit net */
+            b->v[2] *= -0.5f; /* Bounce back */
+        }
+    }
+}
+
+static void game_soccer_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+
+    /* Only Server (Player 0) handles game logic like scoring */
+    if (p == 0 && pl->sim_owner) {
+        struct v_ball *soccer_ball = &pl->sim_state->uv[0];
+
+        /* Check Goal */
+        if (soccer_ball->p[2] > 20.0f) {
+            /* Goal for Red Team (Team 0) */
+            /* Assuming Blue Goal is at +Z */
+            audio_play(AUD_GOAL, 1.0f);
+            hud_show_toast("GOAL! Red Team Scores!");
+
+            /* Reset */
+            game_respawn(0); /* Respawns everyone? No, game_respawn(p) respawns p. */
+            /* We need a full reset */
+
+            /* Add Score */
+            /* How to track team score? */
+            /* Use player coins for now. */
+            /* Give coins to all Red Team players */
+            int i;
+            for(i=0; i<player_count; i++) {
+                if (players[i].team == 0) {
+                    players[i].coins++;
+                    game_cmd_coins(i);
+                }
+            }
+
+            /* Reset Positions */
+            v_zero(soccer_ball->v);
+            v_zero(soccer_ball->p);
+            soccer_ball->p[1] = 5.0f; /* Drop */
+
+             for(i=0; i<player_count; i++) {
+                game_respawn(i);
+            }
+        }
+        else if (soccer_ball->p[2] < -20.0f) {
+            /* Goal for Blue Team (Team 1) */
+             audio_play(AUD_GOAL, 1.0f);
+             hud_show_toast("GOAL! Blue Team Scores!");
+
+            int i;
+            for(i=0; i<player_count; i++) {
+                if (players[i].team == 1) {
+                    players[i].coins++;
+                    game_cmd_coins(i);
+                }
+            }
+
+            /* Reset Positions */
+            v_zero(soccer_ball->v);
+            v_zero(soccer_ball->p);
+            soccer_ball->p[1] = 5.0f;
+
+             for(i=0; i<player_count; i++) {
+                game_respawn(i);
+            }
+        }
+    }
+}
+
+static void game_shot_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+
+    /* Rail Shooter: Ball moves automatically along path (if defined) or constant speed */
+    /* For MVP, just constant forward */
+    float fwd[3];
+    v_cpy(fwd, pl->view.e[2]);
+    v_scl(fwd, fwd, -1.0f);
+    fwd[1] = 0.0f;
+    v_nrm(fwd, fwd);
+    v_scl(b->v, fwd, 5.0f);
+
+    /* Cursor Control */
+    float dx = input_get_x(p) * 2.0f * dt; /* Stick X */
+    float dy = input_get_z(p) * 2.0f * dt; /* Stick Y */
+
+    pl->cursor_x += dx;
+    pl->cursor_y += dy;
+
+    /* Clamp Cursor */
+    if (pl->cursor_x < -1.0f) pl->cursor_x = -1.0f;
+    if (pl->cursor_x > 1.0f)  pl->cursor_x = 1.0f;
+    if (pl->cursor_y < -1.0f) pl->cursor_y = -1.0f;
+    if (pl->cursor_y > 1.0f)  pl->cursor_y = 1.0f;
+
+    /* TODO: Sync cursor position to HUD via CMD? */
+    /* We don't have CMD_CURSOR yet. */
+
+    int action = input_get_action(p);
+    if (action && !pl->action_prev)
+    {
+        if (pl->ammo > 0) {
+            pl->ammo--;
+            audio_play(AUD_BUMPS, 1.0f); /* Pew pew */
+
+            /* Raycast Logic */
+            /* Construct ray from camera through cursor position */
+            /* Check intersection with enemies (other balls or items) */
+            /* For now, just play sound */
+        } else {
+            audio_play(AUD_BUMPM, 0.5f); /* Click */
+        }
+    }
+
+    /* Reload */
+    if (pl->ammo < 6) {
+        pl->reload_timer += dt;
+        if (pl->reload_timer > 1.0f) {
+            pl->ammo++;
+            pl->reload_timer = 0.0f;
+        }
+    }
+}
+
+static void game_boat_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+
+    /* Inputs: Rotate Left/Right act as paddles */
+    /* Wait, usually Monkey Boat uses L/R shoulder buttons or stick L/R? */
+    /* Let's map 'left' turn input to left paddle, 'right' to right paddle? */
+    /* Or specifically L1/R1 buttons if available. */
+    /* Current input struct has r, x, z, c, action, dash. */
+    /* Let's use 'x' (tilt x) and 'rot' (r) as paddles? No. */
+    /* Let's assume input_get_action is Paddle Both? No. */
+    /* We need new inputs or reuse existing. */
+    /* Reuse: Left/Right Tilt = Steering? */
+    /* Monkey Boat: Alternate L/R to accelerate. */
+
+    /* Simplified Model: */
+    /* Tap Left (Tilt X < -0.5) -> Paddle Left */
+    /* Tap Right (Tilt X > 0.5) -> Paddle Right */
+
+    float x = input_get_x(p);
+
+    if (x < -0.5f && pl->paddle_left_timer <= 0.0f) {
+        pl->paddle_left_timer = 0.5f; /* Cooldown */
+        pl->boat_speed += 2.0f;
+    }
+    if (x > 0.5f && pl->paddle_right_timer <= 0.0f) {
+        pl->paddle_right_timer = 0.5f;
+        pl->boat_speed += 2.0f;
+    }
+
+    pl->paddle_left_timer -= dt;
+    pl->paddle_right_timer -= dt;
+
+    /* Decay Speed */
+    pl->boat_speed -= dt * 1.0f;
+    if (pl->boat_speed < 0.0f) pl->boat_speed = 0.0f;
+    if (pl->boat_speed > 20.0f) pl->boat_speed = 20.0f;
+
+    /* Apply Velocity in Camera Direction */
+    float dir[3];
+    v_cpy(dir, pl->view.e[2]);
+    v_scl(dir, dir, -1.0f);
+    dir[1] = 0.0f;
+    v_nrm(dir, dir);
+
+    v_scl(b->v, dir, pl->boat_speed);
+
+    /* Steering based on paddle imbalance? Or just stick? */
+    /* If strictly paddling: Left paddle pushes Right. Right pushes Left. */
+    /* For now, just forward movement. */
+}
+
+static void game_golf_step(int p, float dt)
+{
+    if (p < 0 || p >= MAX_PLAYERS) return;
+    struct server_player *pl = &players[p];
+    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+    int action = input_get_action(p);
+
+    if (pl->shot_state == 0) /* Aim */
+    {
+        /* Rotate view */
+        pl->tilt.rx = 0;
+        pl->tilt.rz = 0;
+
+        float r = input_get_r(p);
+        if (r != 0.0f)
+        {
+            /* Rotate view vector */
+            /* This requires game_server to manage view rotation state for golf */
+            /* Currently we rely on client sending inputs that map to camera rotation? */
+            /* Actually game_update_view in client handles view. */
+            /* But aim vector is derived from view. */
+        }
+
+        if (action) {
+            pl->shot_state = 1;
+            pl->shot_power = 0.0f;
+        }
+    }
+    else if (pl->shot_state == 1) /* Power */
+    {
+        pl->shot_power += dt * 1.5f;
+        if (pl->shot_power > 1.0f) pl->shot_power = 1.0f; /* Ping pong? */
+
+        if (!action) {
+            /* Shoot */
+            pl->shot_state = 2;
+            pl->golf_strokes++;
+
+            float fwd[3];
+            v_cpy(fwd, pl->view.e[2]);
+            v_scl(fwd, fwd, -1.0f);
+            /* Flatten Y */
+            fwd[1] = 0.0f;
+            v_nrm(fwd, fwd);
+
+            float force = pl->shot_power * 60.0f; /* Stronger than billiards */
+            v_mad(b->v, b->v, fwd, force);
+
+            audio_play(AUD_BUMPL, pl->shot_power);
+        }
+    }
+    else if (pl->shot_state == 2) /* Rolling */
+    {
+        /* High Friction */
+        if (v_len(b->v) > 0.0f) {
+             v_scl(b->v, b->v, 0.98f); /* Grass friction */
+             if (v_len(b->v) < 0.1f) {
+                 v_zero(b->v);
+                 pl->shot_state = 0;
+                 pl->shot_power = 0.0f;
+             }
+        }
+
+        /* Sink Detection */
+        if (pl->sim_state->base->zc > 0) {
+            struct b_goal *goal = &pl->sim_state->base->zv[0];
+            float dist_vec[3];
+            v_sub(dist_vec, b->p, goal->p);
+            /* Flatten Y for cylinder hit check, or use 3D dist */
+            dist_vec[1] = 0.0f;
+            float dist = v_len(dist_vec);
+
+            if (dist < goal->r && v_len(b->v) < 5.0f && b->p[1] >= goal->p[1]) {
+                /* Ball is over the hole and moving slow enough to drop in */
+                /* Apply strong artificial gravity towards hole center */
+                b->v[0] += (goal->p[0] - b->p[0]) * dt * 10.0f;
+                b->v[2] += (goal->p[2] - b->p[2]) * dt * 10.0f;
+
+                /* Once it falls deep enough, consider it sunk */
+                if (b->p[1] < goal->p[1] - b->r) {
+                    if (pl->status == GAME_NONE) {
+                        v_zero(b->v);
+                        b->p[1] = -1000.0f; /* Remove */
+                        pl->status = GAME_GOAL;
+                        game_cmd_status(p);
+                        audio_play(AUD_GOAL, 1.0f);
+                        hud_show_toast("Hole in One!");
+                    }
+                }
+            }
+        }
+    }
+}
+
 static void game_bowling_step(int p, float dt)
 {
     struct server_player *pl = &players[p];
@@ -2035,6 +2391,118 @@ static void game_bowling_step(int p, float dt)
     }
 }
 
+static void game_hammer_step(int p, float dt)
+{
+    if (p < 0 || p >= MAX_PLAYERS) return;
+    struct server_player *pl = &players[p];
+    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+
+    if (!pl->hammer_thrown) {
+        /* Player spins the stick (or uses Left/Right tilt) to build speed */
+        float spin_input = input_get_x(p); /* Simplified: tilt X left/right to spin */
+
+        pl->hammer_spin_speed += fabsf(spin_input) * dt;
+        if (pl->hammer_spin_speed > 20.0f) pl->hammer_spin_speed = 20.0f;
+
+        /* If no input, decay spin */
+        if (fabsf(spin_input) < 0.1f) {
+            pl->hammer_spin_speed -= dt * 2.0f;
+            if (pl->hammer_spin_speed < 0.0f) pl->hammer_spin_speed = 0.0f;
+        }
+
+        pl->hammer_angle += pl->hammer_spin_speed * dt;
+
+        /* Sync visual HUD metric using dash charge meter */
+        game_cmd_dash_charge(p, pl->hammer_spin_speed / 20.0f);
+
+        if (input_get_action(p) && !pl->action_prev) {
+            /* Throw! */
+            pl->hammer_thrown = 1;
+            game_cmd_dash_charge(p, 0.0f);
+
+            /* Release angle determines direction, but for simplicity let's aim forward and use speed */
+            float fwd[3];
+            v_cpy(fwd, pl->view.e[2]);
+            v_scl(fwd, fwd, -1.0f);
+
+            /* Add arc */
+            fwd[1] += 0.5f;
+            v_nrm(fwd, fwd);
+
+            v_scl(b->v, fwd, pl->hammer_spin_speed * 5.0f);
+            audio_play(AUD_JUMP, 2.0f);
+        }
+    } else {
+        /* Wait for ball to land/stop to score */
+        if (v_len(b->v) < 0.1f && b->p[1] < 1.0f) {
+            /* Calculate distance from origin */
+            float dist = sqrtf(b->p[0]*b->p[0] + b->p[2]*b->p[2]);
+            if (pl->status == GAME_NONE) {
+                pl->coins = (int)dist;
+                game_cmd_coins(p);
+                hud_show_toast("Throw Complete!");
+                pl->status = GAME_GOAL;
+                game_cmd_status(p);
+            }
+        }
+    }
+}
+
+static void game_mole_step(int p, float dt)
+{
+    if (p < 0 || p >= MAX_PLAYERS) return;
+    struct server_player *pl = &players[p];
+
+    if (pl->sim_owner) {
+        int mi, j;
+        for (mi = 0; mi < 16; mi++) {
+            struct v_ball *mole = &pl->sim_state->uv[player_count + mi];
+
+            pl->mole_timers[mi] -= dt;
+
+            if (pl->mole_grid[mi] == 0) {
+                /* Down */
+                if (mole->p[1] > -2.0f) mole->p[1] -= dt * 5.0f;
+                if (pl->mole_timers[mi] <= 0.0f) {
+                    if ((rand() % 100) < 2) { /* Random chance to pop up */
+                        pl->mole_grid[mi] = 1;
+                        pl->mole_timers[mi] = 2.0f + (rand() % 200) / 100.0f; /* Stay up for 2-4 seconds */
+                        audio_play(AUD_BUMPS, 1.0f);
+                    }
+                }
+            } else {
+                /* Up */
+                if (mole->p[1] < 1.0f) mole->p[1] += dt * 10.0f;
+
+                /* Check collision with players */
+                for (j = 0; j < player_count; j++) {
+                    struct v_ball *player_ball = &pl->sim_state->uv[j];
+                    float dist_vec[3];
+                    v_sub(dist_vec, player_ball->p, mole->p);
+                    if (v_len(dist_vec) < (player_ball->r + mole->r + 0.5f)) {
+                        /* Whacked! */
+                        pl->mole_grid[mi] = 0;
+                        pl->mole_timers[mi] = 1.0f; /* Cooldown before popping up again */
+
+                        /* Give points to player j */
+                        players[j].coins += 10;
+                        game_cmd_coins(j);
+
+                        /* Bounce player slightly */
+                        player_ball->v[1] += 5.0f;
+                        audio_play(AUD_COIN, 1.0f);
+                    }
+                }
+
+                if (pl->mole_timers[mi] <= 0.0f) {
+                    pl->mole_grid[mi] = 0; /* Go back down */
+                    pl->mole_timers[mi] = 1.0f;
+                }
+            }
+        }
+    }
+}
+
 static void game_hub_step(int p, float dt)
 {
     struct server_player *pl = &players[p];
@@ -2058,13 +2526,107 @@ static void game_hub_step(int p, float dt)
     }
 }
 
+static void game_grav_test(int p)
+{
+    struct server_player *pl = &players[p];
+    struct s_vary *vary = pl->sim_state;
+    struct v_ball *b = &vary->uv[pl->ball_index];
+    int ji;
+
+    /* Iterate all Jumps to find Gravity Zones */
+    for (ji = 0; ji < vary->base->jc; ji++)
+    {
+        struct b_jump *jp = vary->base->jv + ji;
+        float d, r[3];
+        float ball_p[3];
+
+        /* Transform ball position into jump space (assuming local space logic same as sol_jump_test) */
+        sol_entity_local(ball_p, vary, vary->jv[ji].mi, vary->jv[ji].mj, b->p);
+
+        r[0] = ball_p[0] - jp->p[0];
+        r[1] = ball_p[2] - jp->p[2];
+        r[2] = 0;
+
+        d = v_len(r) + b->r - jp->r;
+
+        /* Check collision */
+        if (d <= b->r &&
+            ball_p[1] > jp->p[1] &&
+            ball_p[1] < jp->p[1] + JUMP_HEIGHT / 2)
+        {
+            /* Inside Trigger */
+
+            /* Heuristic: If target vector magnitude is small, it's a gravity vector */
+            float q_len = v_len(jp->q);
+            if (q_len > 0.1f && q_len < 20.0f)
+            {
+                /* Apply Gravity */
+                float new_g[3];
+                v_nrm(new_g, jp->q);
+                v_scl(new_g, new_g, -9.8f); /* Assuming standard gravity magnitude */
+
+                v_cpy(pl->gravity_dir, new_g);
+
+                /* Auto-Rotate Camera to Match Gravity (Wall Walking) */
+                /* If gravity changes significantly, align view Up vector */
+                /* Currently view.e[1] is Up. Gravity is Down (-Up). */
+                /* We want view.e[1] ~= -gravity_dir. */
+                /* Full 6DOF camera logic requires more math in game_update_view. */
+                /* For now, just setting gravity affects physics (sol_step). */
+            }
+        }
+    }
+}
+
 static int game_step(int p, const float g[3], float dt, int bt)
 {
+    if (p < 0 || p >= MAX_PLAYERS) return GAME_NONE;
     struct server_player *pl = &players[p];
     if (server_state)
     {
         float h[3];
         int i;
+
+        /* Spin Dash */
+        int dash = input_get_dash(p);
+
+        if (dash)
+        {
+            /* Charging */
+            if (pl->spin_charge < 1.0f)
+            {
+                pl->spin_charge += dt * 1.5f; /* Charge rate */
+                if (pl->spin_charge > 1.0f) pl->spin_charge = 1.0f;
+
+                game_cmd_dash_charge(p, pl->spin_charge);
+            }
+        }
+        else
+        {
+            /* Release */
+            if (pl->spin_charge > 0.0f)
+            {
+                /* Apply Impulse */
+                struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+                float dash_force = 25.0f * pl->spin_charge;
+
+                /* Direction: Camera Forward */
+                float dir[3];
+                v_cpy(dir, pl->view.e[2]);
+                v_scl(dir, dir, -1.0f);
+
+                /* Flatten Y to ensure horizontal dash */
+                dir[1] = 0.0f;
+                v_nrm(dir, dir);
+
+                v_mad(b->v, b->v, dir, dash_force);
+
+                audio_play(AUD_JUMP, 1.5f + pl->spin_charge);
+
+                pl->spin_charge = 0.0f;
+                game_cmd_dash_charge(p, 0.0f);
+            }
+        }
 
         /* Toggle Flight */
         int action = input_get_action(p);
@@ -2110,12 +2672,63 @@ static int game_step(int p, const float g[3], float dt, int bt)
         {
             game_bowling_step(p, dt);
         }
+        else if (game_mode == MODE_GOLF)
+        {
+            game_golf_step(p, dt);
+        }
+        else if (game_mode == MODE_BOAT)
+        {
+            game_boat_step(p, dt);
+        }
+        else if (game_mode == MODE_SHOT)
+        {
+            game_shot_step(p, dt);
+        }
+        else if (game_mode == MODE_SOCCER)
+        {
+            game_soccer_step(p, dt);
+        }
+        else if (game_mode == MODE_TENNIS)
+        {
+            game_tennis_step(p, dt);
+        }
+        else if (game_mode == MODE_BASEBALL)
+        {
+            game_baseball_step(p, dt);
+        }
         else if (game_mode == MODE_HUB)
         {
             game_hub_step(p, dt);
         }
+        else if (game_mode == MODE_MOLE)
+        {
+            game_mole_step(p, dt);
+        }
+        else if (game_mode == MODE_HAMMER)
+        {
+            game_hammer_step(p, dt);
+        }
+
+        if (game_mode == MODE_BATTLE || game_mode == MODE_TARGET) /* Allow items in Target? Sure. */
+        {
+            game_race_item_step(p, dt);
+        }
+
+        if (pl->sim_owner && game_mode != MODE_EDITOR)
+        {
+            game_grav_test(p);
+        }
 
         pl->action_prev = action;
+
+        /* Reload logic for Dogfight */
+        if (game_mode == MODE_DOGFIGHT && pl->ammo < 20) {
+            pl->reload_timer += dt;
+            if (pl->reload_timer > 0.5f) {
+                pl->ammo++;
+                pl->reload_timer = 0.0f;
+            }
+        }
 
         if (pl->fly_active)
         {
@@ -2201,7 +2814,50 @@ static int game_step(int p, const float g[3], float dt, int bt)
 
         grow_step(p, dt);
 
-        game_tilt_grav(h, g, &pl->tilt);
+        if (pl->gyro_active)
+        {
+            pl->gyro_timer -= dt;
+            if (pl->gyro_timer <= 0.0f)
+            {
+                pl->gyro_active = 0;
+                game_cmd_gyro_state(p, 0, 0.0f);
+            }
+            else
+            {
+                /* Slow Fall Physics */
+                struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+                if (b->v[1] < -2.0f)
+                {
+                    b->v[1] += ((-2.0f - b->v[1]) * 2.0f * dt);
+                }
+                game_cmd_gyro_state(p, 1, pl->gyro_timer);
+            }
+        }
+
+        if (pl->shock_active)
+        {
+            pl->shock_timer -= dt;
+            if (pl->shock_timer <= 0.0f) pl->shock_active = 0;
+        }
+
+        if (pl->speed_active)
+        {
+            pl->speed_timer -= dt;
+            if (pl->speed_timer <= 0.0f) pl->speed_active = 0;
+            else {
+                /* Boost speed limit/accel? */
+                /* For now, just increase tilt angle slightly */
+                pl->tilt.rx *= 1.5f;
+                pl->tilt.rz *= 1.5f;
+            }
+        }
+
+        if (game_mode == MODE_EDITOR) {
+            /* Zero gravity in editor */
+            v_zero(h);
+        } else {
+            game_tilt_grav(h, g, &pl->tilt);
+        }
 
         if (pl->jump_b > 0)
         {
@@ -2227,6 +2883,18 @@ static int game_step(int p, const float g[3], float dt, int bt)
         }
         else
         {
+        /* Track Distance */
+        if (!pl->is_cpu)
+        {
+            float speed = v_len(pl->sim_state->uv[pl->ball_index].v);
+            pl->dist_accumulator += speed * dt;
+            if (pl->dist_accumulator >= 1.0f) {
+                int d = (int)pl->dist_accumulator;
+                profile_add_stat(STAT_DISTANCE, d);
+                pl->dist_accumulator -= d;
+            }
+        }
+
             /* Run the sim */
             if (pl->sim_owner)
             {
@@ -2257,80 +2925,20 @@ static int game_step(int p, const float g[3], float dt, int bt)
         game_update_time(p, dt, bt);
 
         return game_update_state(p, bt);
-=======
-static int game_step(const float g[3], float dt, int bt)
-{
-    if (server_state)
-    {
-        float h[3];
-
-        /* Smooth jittery or discontinuous input. */
-
-        tilt.rx += (input_get_x() - tilt.rx) * dt / RESPONSE;
-        tilt.rz += (input_get_z() - tilt.rz) * dt / RESPONSE;
-
-        game_tilt_axes(&tilt, view.e);
-
-        game_cmd_tiltaxes();
-        game_cmd_tiltangles();
-
-        grow_step(&vary, dt);
-
-        game_tilt_grav(h, g, &tilt);
-
-        if (jump_b)
-        {
-            jump_dt += dt;
-
-            /* Handle a jump. */
-
-            if (0.5f < jump_dt)
-            {
-                v_cpy(vary.uv->p, jump_p);
-                v_cpy(view.p,      jump_w);
-            }
-            if (1.0f < jump_dt)
-                jump_b = 0;
-        }
-        else
-        {
-            /* Run the sim. */
-
-            float b = sol_step(&vary, h, dt, 0, NULL);
-
-            /* Mix the sound of a ball bounce. */
-
-            if (b > 0.5f)
-            {
-                float k = (b - 0.5f) * 2.0f;
-
-                if (got_orig)
-                {
-                    if      (vary.uv->r > grow_orig) audio_play(AUD_BUMPL, k);
-                    else if (vary.uv->r < grow_orig) audio_play(AUD_BUMPS, k);
-                    else                             audio_play(AUD_BUMPM, k);
-                }
-                else audio_play(AUD_BUMPM, k);
-            }
-        }
-
-        game_cmd_updball();
-
-        game_update_view(dt);
-        game_update_time(dt, bt);
-
-        return game_update_state(bt);
->>>>>>> origin/csy-extras
     }
     return GAME_NONE;
 }
 
 static void game_server_iter(float dt)
 {
-<<<<<<< HEAD
     int p;
     for (p = 0; p < player_count; p++)
     {
+        if (p < 0 || p >= MAX_PLAYERS) continue;
+
+        if (players[p].is_cpu)
+            game_ai_step(p, dt);
+
         switch (players[p].status)
         {
         case GAME_GOAL: game_step(p, GRAVITY_UP, dt, 0); break;
@@ -2341,21 +2949,10 @@ static void game_server_iter(float dt)
             break;
 
         case GAME_NONE:
-            if ((players[p].status = game_step(p, GRAVITY_DN, dt, 1)) != GAME_NONE)
+            if ((players[p].status = game_step(p, players[p].gravity_dir, dt, 1)) != GAME_NONE)
                 game_cmd_status(p);
             break;
         }
-=======
-    switch (status)
-    {
-    case GAME_GOAL: game_step(GRAVITY_UP, dt, 0); break;
-    case GAME_FALL: game_step(GRAVITY_DN, dt, 0); break;
-
-    case GAME_NONE:
-        if ((status = game_step(GRAVITY_DN, dt, 1)) != GAME_NONE)
-            game_cmd_status();
-        break;
->>>>>>> origin/csy-extras
     }
 
     game_cmd_eou();
@@ -2375,7 +2972,6 @@ float game_server_blend(void)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 void game_set_goal(int p)
 {
     audio_play(AUD_SWITCH, 1.0f);
@@ -2413,19 +3009,10 @@ void game_respawn(int p)
         game_cmd_updball(p);
         game_cmd_updview(p);
     }
-=======
-void game_set_goal(void)
-{
-    audio_play(AUD_SWITCH, 1.0f);
-    goal_e = 1;
-
-    game_cmd_goalopen();
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 void game_set_x(float k, int p)
 {
     input_set_x(p, -get_angle_bound(p) * k);
@@ -2469,6 +3056,11 @@ void game_set_action(int a, int p)
     input_set_action(p, a);
 }
 
+void game_set_dash(int d, int p)
+{
+    input_set_dash(p, d);
+}
+
 /*---------------------------------------------------------------------------*/
 
 float curr_time_elapsed(int p)
@@ -2500,45 +3092,143 @@ float curr_altitude(int p)
 
 /*---------------------------------------------------------------------------*/
 
+void game_ai_step(int p, float dt)
+{
+    struct server_player *pl = &players[p];
+    struct v_ball *b = &pl->sim_state->uv[pl->ball_index];
+
+    /* Reset Inputs */
+    input_set_x(p, 0.0f);
+    input_set_z(p, 0.0f);
+    input_set_action(p, 0);
+
+    /* Very Basic Steering */
+    /* Seek Center (0,0) by default to stay on board */
+    float target[3] = {0.0f, 0.0f, 0.0f};
+
+    /* If Target/Race Mode, seek next waypoint/goal */
+    if (game_mode == MODE_BATTLE || game_mode == MODE_TARGET) {
+        if (pl->sim_state->base->zc > 0) {
+            v_cpy(target, pl->sim_state->base->zv[0].p);
+        }
+    }
+
+    if (game_mode == MODE_SOCCER || game_mode == MODE_TENNIS) {
+        /* Seek Ball (Index 0) */
+        v_cpy(target, pl->sim_state->uv[0].p);
+
+        if (game_mode == MODE_TENNIS) {
+            float diff[3];
+            v_sub(diff, target, b->p);
+            float dist = v_len(diff);
+            if (dist < 2.0f) {
+                input_set_action(p, 1);
+            }
+        }
+    }
+
+    /* If Fight Mode, seek nearest opponent */
+    if (game_mode == MODE_FIGHT) {
+        int i;
+        float best_dist = 1000.0f;
+        int target_idx = -1;
+
+        for (i=0; i<player_count; i++) {
+            if (i==p) continue;
+            struct v_ball *other = &pl->sim_state->uv[players[i].ball_index];
+            float d[3];
+            v_sub(d, other->p, b->p);
+            float dist = v_len(d);
+            if (dist < best_dist) {
+                best_dist = dist;
+                target_idx = i;
+            }
+        }
+
+        if (target_idx != -1) {
+            v_cpy(target, pl->sim_state->uv[players[target_idx].ball_index].p);
+
+            /* Attack logic */
+            if (best_dist < 5.0f) {
+                input_set_action(p, 1);
+            }
+        }
+    }
+
+    /* Calculate Steering */
+    /* Desired vector from self to target */
+    float desired[3];
+    v_sub(desired, target, b->p);
+
+    /* Transform to Camera Space (View Basis) */
+    /* AI "Camera" usually faces velocity or target */
+    /* Let's assume input x/z are relative to world X/Z for simplicity? */
+    /* No, game_step uses game_tilt_grav which uses tilt.x/z derived from view. */
+    /* We need to set input_x/z such that they produce world tilt towards target. */
+
+    /* Transform desired (world) into View Space */
+    /* dx = dot(desired, view.e[0]) */
+    /* dz = dot(desired, view.e[2]) */
+
+    float dx = v_dot(desired, pl->view.e[0]);
+    float dz = v_dot(desired, pl->view.e[2]);
+
+    /* Normalize */
+    float len = sqrtf(dx*dx + dz*dz);
+    if (len > 0.01f) {
+        dx /= len;
+        dz /= len;
+
+        /* Apply to Input (Tilt) */
+        /* Tilt X is Left/Right (e[0]) */
+        /* Tilt Z is Fwd/Back (e[2]) */
+
+        /* Neverball Inputs: */
+        /* +Z input tilts forward (ball rolls forward -Z in view space?) */
+        /* Actually: +Z input -> Tilt Rz + -> Rotates world around Z axis? */
+        /* Let's look at game_step: tilt.rx += input_x... */
+        /* game_tilt_grav rotates G by Rz then Rx. */
+
+        /* Let's just use simple feedback. */
+        /* If target is to the right (+X view), tilt board right (-Z world? No). */
+
+        /* Mapping: */
+        /* Input Z+ -> Tilt Rz+ -> Rolls View -X? */
+        /* Let's assume standard controls: Stick Up (Z+) moves ball Fwd (View -Z??) */
+
+        /* Trial and error or copy from player code: */
+        /* player input z maps to tilt.rz. */
+        /* player input x maps to tilt.rx. */
+
+        /* We want to roll towards 'desired'. */
+        /* To roll along view X (Right), we need to tilt around view Z axis? No. */
+
+        /* Simplified: */
+        /* Input Z controls movement along View Z. */
+        /* Input X controls movement along View X. */
+
+        input_set_x(p, dx * ANGLE_BOUND);
+        input_set_z(p, dz * ANGLE_BOUND);
+    }
+}
+
 int curr_warp_id(int p)
 {
     if (p >= 0 && p < MAX_PLAYERS)
         return players[p].warp_id;
     return -1;
-=======
-void game_set_x(float k)
-{
-    input_set_x(-ANGLE_BOUND * k);
 }
 
-void game_set_z(float k)
-{
-    input_set_z(+ANGLE_BOUND * k);
-}
+void game_ai_step(int p, float dt);
 
-void game_set_ang(float x, float z)
+void game_set_gravity(int p, float x, float y, float z)
 {
-    input_set_x(x);
-    input_set_z(z);
-}
-
-void game_set_pos(int x, int y)
-{
-    const float range = ANGLE_BOUND * 2;
-
-    input_set_x(input_get_x() + range * y / config_get_d(CONFIG_MOUSE_SENSE));
-    input_set_z(input_get_z() + range * x / config_get_d(CONFIG_MOUSE_SENSE));
-}
-
-void game_set_cam(int c)
-{
-    input_set_c(c);
-}
-
-void game_set_rot(float r)
-{
-    input_set_r(r);
->>>>>>> origin/csy-extras
+    if (p >= 0 && p < MAX_PLAYERS)
+    {
+        players[p].gravity_dir[0] = x;
+        players[p].gravity_dir[1] = y;
+        players[p].gravity_dir[2] = z;
+    }
 }
 
 /*---------------------------------------------------------------------------*/

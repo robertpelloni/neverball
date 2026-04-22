@@ -20,7 +20,6 @@
 
 void geom_init(void);
 void geom_free(void);
-<<<<<<< HEAD
 void geom_step(float);
 
 void beam_draw(struct s_rend *, const GLfloat *, const GLfloat *, GLfloat, GLfloat);
@@ -33,16 +32,6 @@ void back_draw(struct s_rend *);
 
 void item_color(const struct v_item *, float *);
 void item_draw(struct s_rend *, const struct v_item *, const GLfloat *, float);
-=======
-
-void goal_draw(struct s_rend *, float);
-void jump_draw(struct s_rend *, float, int);
-void swch_draw(struct s_rend *, int, int);
-void flag_draw(struct s_rend *);
-void mark_draw(struct s_rend *);
-void vect_draw(struct s_rend *);
-void back_draw(struct s_rend *);
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -92,14 +81,10 @@ int  tex_env_stage(int);
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 void light_reset(void);
 void light_conf(void);
 void light_load(void);
 
 /*---------------------------------------------------------------------------*/
-=======
-void fade_draw(float);
->>>>>>> origin/csy-extras
 
 #endif

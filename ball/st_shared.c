@@ -24,11 +24,7 @@
 
 #include "st_shared.h"
 
-<<<<<<< HEAD
 int shared_leave(struct state *st, struct state *next, int id, int intent)
-=======
-void shared_leave(struct state *st, struct state *next, int id)
->>>>>>> origin/csy-extras
 {
     return transition_slide(id, 0, intent);
 }
@@ -59,11 +55,7 @@ void shared_point(int id, int x, int y, int dx, int dy)
     shared_point_basic(id, x, y);
 }
 
-<<<<<<< HEAD
 int shared_stick_basic(int id, int a, float v, int bump, int device_id)
-=======
-int shared_stick_basic(int id, int a, float v, int bump)
->>>>>>> origin/csy-extras
 {
     int jd;
 
@@ -73,24 +65,14 @@ int shared_stick_basic(int id, int a, float v, int bump)
     return jd;
 }
 
-<<<<<<< HEAD
 void shared_stick(int id, int a, float v, int bump, int device_id)
 {
     shared_stick_basic(id, a, v, bump, device_id);
-=======
-void shared_stick(int id, int a, float v, int bump)
-{
-    shared_stick_basic(id, a, v, bump);
->>>>>>> origin/csy-extras
 }
 
 void shared_angle(int id, float x, float z)
 {
-<<<<<<< HEAD
     game_set_ang(x, z, 0);
-=======
-    game_set_ang(x, z);
->>>>>>> origin/csy-extras
 }
 
 int shared_click_basic(int b, int d)
@@ -98,11 +80,7 @@ int shared_click_basic(int b, int d)
     /* Activate on left click. */
 
     if (b == SDL_BUTTON_LEFT && d)
-<<<<<<< HEAD
         return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
-=======
-        return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
->>>>>>> origin/csy-extras
     else
         return 1;
 }
@@ -112,11 +90,7 @@ int shared_click(int b, int d)
     /* Activate based on GUI state. */
 
     if (gui_click(b, d))
-<<<<<<< HEAD
         return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1, 0);
-=======
-        return st_buttn(config_get_d(CONFIG_JOYSTICK_BUTTON_A), 1);
->>>>>>> origin/csy-extras
     else
         return 1;
 }

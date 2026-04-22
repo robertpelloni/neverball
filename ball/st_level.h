@@ -7,10 +7,7 @@ extern struct state st_level;
 extern struct state st_exit;
 extern struct state st_poser;
 extern struct state st_nodemo;
-<<<<<<< HEAD
 
 int goto_exit(void);
-=======
->>>>>>> origin/csy-extras
 
 #endif

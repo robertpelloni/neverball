@@ -9,11 +9,7 @@ void progress_init(int);
 
 int  progress_play(struct level *);
 void progress_step(void);
-<<<<<<< HEAD
 void progress_stat(int status, int p);
-=======
-void progress_stat(int status);
->>>>>>> origin/csy-extras
 void progress_stop(void);
 void progress_exit(void);
 
@@ -25,6 +21,8 @@ int  progress_same(void);
 void progress_rename(int);
 
 int  progress_replay(const char *);
+int  progress_race(const char *replay_path);
+int  progress_hub(void);
 
 int  progress_dead(void);
 int  progress_done(void);
@@ -35,13 +33,8 @@ int  progress_set_high(void);
 
 struct level *curr_level(void);
 
-<<<<<<< HEAD
 int  curr_balls(int);
 int  curr_score(int);
-=======
-int  curr_balls(void);
-int  curr_score(void);
->>>>>>> origin/csy-extras
 int  curr_mode (void);
 int  curr_goal (void);
 
@@ -63,15 +56,18 @@ enum
     MODE_CHALLENGE,
     MODE_NORMAL,
     MODE_STANDALONE,
-<<<<<<< HEAD
     MODE_BATTLE,
     MODE_TARGET,
     MODE_FIGHT,
     MODE_BILLIARDS,
     MODE_BOWLING,
+    MODE_GOLF,
+    MODE_BOAT,
+    MODE_SHOT,
+    MODE_SOCCER,
+    MODE_TENNIS,
+    MODE_BASEBALL,
     MODE_HUB,
-=======
->>>>>>> origin/csy-extras
 
     MODE_MAX
 };

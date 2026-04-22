@@ -33,7 +33,6 @@
 #endif /* ENABLE_NLS */
 
 /* No-op, useful for marking up strings for extraction-only. */
-<<<<<<< HEAD
 #define N_(s) s
 
 /* Disambiguate strings with a caret-separated prefix. */
@@ -44,13 +43,6 @@ const char *gt_prefix(const char *);
 #include "common.h"
 #include "array.h"
 #include "dir.h"
-=======
-#define N_(String)   String
-
-/*---------------------------------------------------------------------------*/
-
-void lang_init(const char *domain);
->>>>>>> origin/csy-extras
 
 struct lang_desc
 {

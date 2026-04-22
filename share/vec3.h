@@ -22,7 +22,6 @@
 #define V_RAD(d) (d * V_PI / 180.f)
 #define V_DEG(r) (r * 180.f / V_PI)
 
-<<<<<<< HEAD
 #define fsinf(a)      ((float) sin((double) (a)))
 #define fcosf(a)      ((float) cos((double) (a)))
 #define ftanf(a)      ((float) tan((double) (a)))
@@ -35,18 +34,6 @@
 #define fatan2f(x, y) ((float) atan2((double) (x), (double) (y)))
 
 #define flerp(f0, f1, a) ((f0) + ((f1) - (f0)) * (a))
-=======
-#define fsinf(a)      ((float) sin((double) a))
-#define fcosf(a)      ((float) cos((double) a))
-#define ftanf(a)      ((float) tan((double) a))
-#define fabsf(a)      ((float) fabs((double) a))
-#define fsqrtf(a)     ((float) sqrt((double) a))
-#define fpowf(x,y)    ((float) pow((double) x, (double) y))
-#define fasinf(a)     ((float) asin((double) a))
-#define facosf(a)     ((float) acos((double) a))
-#define fmodf(x,y)    ((float) fmod((double) x, (double) y))
-#define fatan2f(x, y) ((float) atan2((double) x, (double) y))
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -59,7 +46,6 @@
     (u)[2] = (v)[2];     \
 } while (0)
 
-<<<<<<< HEAD
 #define v_zero(u) do { \
     (u)[0] = 0.0f;     \
     (u)[1] = 0.0f;     \
@@ -78,20 +64,6 @@
     (u)[2] = (v)[2] * (k);  \
 } while (0)
 
-=======
-#define v_inv(u, v) do { \
-    (u)[0] = -(v)[0];    \
-    (u)[1] = -(v)[1];    \
-    (u)[2] = -(v)[2];    \
-} while (0)
-
-#define v_scl(u, v, k) do { \
-    (u)[0] = (v)[0] * (k);  \
-    (u)[1] = (v)[1] * (k);  \
-    (u)[2] = (v)[2] * (k);  \
-} while (0)
-
->>>>>>> origin/csy-extras
 #define v_add(u, v, w) do {   \
     (u)[0] = (v)[0] + (w)[0]; \
     (u)[1] = (v)[1] + (w)[1]; \
@@ -116,17 +88,10 @@
     (u)[2] = (p)[2] + (v)[2] * (t); \
 } while (0)
 
-<<<<<<< HEAD
 #define v_lerp(u, v, w, a) do {    \
     (u)[0] = flerp((v)[0], (w)[0], a); \
     (u)[1] = flerp((v)[1], (w)[1], a); \
     (u)[2] = flerp((v)[2], (w)[2], a); \
-=======
-#define v_lerp(u, v, w, a) do {                    \
-    (u)[0] = (v)[0] * (1.0f - (a)) + (w)[0] * (a); \
-    (u)[1] = (v)[1] * (1.0f - (a)) + (w)[1] * (a); \
-    (u)[2] = (v)[2] * (1.0f - (a)) + (w)[2] * (a); \
->>>>>>> origin/csy-extras
 } while (0)
 
 #define e_cpy(d, e) do {   \
@@ -160,15 +125,9 @@ void   m_xps(float *, const float *);
 int    m_inv(float *, const float *);
 
 void   m_ident(float *);
-<<<<<<< HEAD
 void   m_basis(float *, const float e0[3],
                         const float e1[3],
                         const float e2[3]);
-=======
-void   m_basis(float *, const float *,
-                        const float *,
-                        const float *);
->>>>>>> origin/csy-extras
 void   m_xlt(float *, const float *);
 void   m_scl(float *, const float *);
 void   m_rot(float *, const float *, float);
@@ -177,13 +136,6 @@ void   m_mult(float *, const float *, const float *);
 void   m_pxfm(float *, const float *, const float *);
 void   m_vxfm(float *, const float *, const float *);
 
-<<<<<<< HEAD
-=======
-void   m_view(float *, const float *,
-                       const float *,
-                       const float *);
-
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 #define q_dot(q, r) ((q)[0] * (r)[0] + v_dot((q) + 1, (r) + 1))
@@ -213,7 +165,6 @@ void q_rot(float v[3], const float r[4], const float w[3]);
 void q_euler(float v[3], const float q[4]);
 void q_slerp(float q[4], const float a[4], const float b[4], float t);
 
-<<<<<<< HEAD
 /*---------------------------------------------------------------------------*/
 
 struct vec3
@@ -228,6 +179,4 @@ struct vec4
 
 /*---------------------------------------------------------------------------*/
 
-=======
->>>>>>> origin/csy-extras
 #endif

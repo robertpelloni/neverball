@@ -12,7 +12,6 @@
  * General Public License for more details.
  */
 
-<<<<<<< HEAD
 #ifdef __EMSCRIPTEN__
 #include <gl4esinit.h>
 #endif
@@ -192,39 +191,10 @@ int video_display(void)
 
 int video_init(void)
 {
-=======
-#include "video.h"
-#include "vec3.h"
-#include "glext.h"
-#include "config.h"
-#include "syswm.h"
-#include "sync.h"
-
-/*---------------------------------------------------------------------------*/
-
-int video_init(const char *title, const char *icon)
-{
-    if (SDL_WasInit(SDL_INIT_VIDEO))
-        SDL_QuitSubSystem(SDL_INIT_VIDEO);
-
-    if (SDL_InitSubSystem(SDL_INIT_VIDEO) == -1)
-    {
-        fprintf(stderr, "%s\n", SDL_GetError());
-        return 0;
-    }
-
-    /* This has to happen before mode setting... */
-
-    set_SDL_icon(icon);
-
-    /* Initialize the video. */
-
->>>>>>> origin/csy-extras
     if (!video_mode(config_get_d(CONFIG_FULLSCREEN),
                     config_get_d(CONFIG_WIDTH),
                     config_get_d(CONFIG_HEIGHT)))
     {
-<<<<<<< HEAD
         log_printf("Failure to create window (%s)\n", SDL_GetError());
         return 0;
     }
@@ -248,22 +218,6 @@ void video_quit(void)
 
     hmd_free();
 }
-=======
-        fprintf(stderr, "%s\n", SDL_GetError());
-        return 0;
-    }
-
-    /* ...and this has to happen after it. */
-
-    set_EWMH_icon(icon);
-
-    SDL_WM_SetCaption(title, title);
-
-    return 1;
-}
-
-/*---------------------------------------------------------------------------*/
->>>>>>> origin/csy-extras
 
 int video_mode(int f, int w, int h)
 {
@@ -272,7 +226,6 @@ int video_mode(int f, int w, int h)
     int buffers = config_get_d(CONFIG_MULTISAMPLE) ? 1 : 0;
     int samples = config_get_d(CONFIG_MULTISAMPLE);
     int vsync   = config_get_d(CONFIG_VSYNC)       ? 1 : 0;
-<<<<<<< HEAD
     int hmd     = config_get_d(CONFIG_HMD)         ? 1 : 0;
     int highdpi = config_get_d(CONFIG_HIGHDPI)     ? 1 : 0;
 
@@ -290,17 +243,11 @@ int video_mode(int f, int w, int h)
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 #endif
-=======
->>>>>>> origin/csy-extras
 
     SDL_GL_SetAttribute(SDL_GL_STEREO,             stereo);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE,       stencil);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, buffers);
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, samples);
-<<<<<<< HEAD
-=======
-    SDL_GL_SetAttribute(SDL_GL_SWAP_CONTROL,       vsync);
->>>>>>> origin/csy-extras
 
     /* Require 16-bit double buffer with 16-bit depth buffer. */
 
@@ -312,7 +259,6 @@ int video_mode(int f, int w, int h)
 
     /* Try to set the currently specified mode. */
 
-<<<<<<< HEAD
     log_printf("Creating a window (%dx%d, %s)\n",
                w, h, (f ? "fullscreen" : "windowed"));
 
@@ -368,33 +314,18 @@ int video_mode(int f, int w, int h)
         config_set_d(CONFIG_FULLSCREEN, f);
 
         SDL_GL_SetSwapInterval(vsync);
-=======
-    if (SDL_SetVideoMode(w, h, 0, SDL_OPENGL | (f ? SDL_FULLSCREEN : 0)))
-    {
-        config_set_d(CONFIG_FULLSCREEN, f);
-        config_set_d(CONFIG_WIDTH,      w);
-        config_set_d(CONFIG_HEIGHT,     h);
->>>>>>> origin/csy-extras
 
         if (!glext_init())
             return 0;
 
-<<<<<<< HEAD
         video_resize(w, h);
 
-=======
-        glViewport(0, 0, w, h);
->>>>>>> origin/csy-extras
         glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
         glEnable(GL_NORMALIZE);
         glEnable(GL_CULL_FACE);
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
-<<<<<<< HEAD
-=======
-        glEnable(GL_LIGHTING);
->>>>>>> origin/csy-extras
         glEnable(GL_BLEND);
 
 #if !ENABLE_OPENGLES
@@ -416,7 +347,6 @@ int video_mode(int f, int w, int h)
             if (buffers) glEnable(GL_MULTISAMPLE);
         }
 
-<<<<<<< HEAD
         /* Set up HMD display if requested. */
 
         if (hmd)
@@ -432,12 +362,6 @@ int video_mode(int f, int w, int h)
 
         if (hmd_stat())
             SDL_SetWindowGrab(window, SDL_TRUE);
-=======
-        /* Attempt manual swap control if SDL's is broken. */
-
-        if (vsync && SDL_GL_GetAttribute(SDL_GL_SWAP_CONTROL, &vsync) == -1)
-            sync_init();
->>>>>>> origin/csy-extras
 
         return 1;
     }
@@ -488,7 +412,6 @@ void video_swap(void)
 {
     int dt;
 
-<<<<<<< HEAD
     if (hmd_stat())
         hmd_swap();
 
@@ -497,9 +420,6 @@ void video_swap(void)
     snapshot_take();
 
     SDL_GL_SwapWindow(window);
-=======
-    SDL_GL_SwapBuffers();
->>>>>>> origin/csy-extras
 
     /* Accumulate time passed and frames rendered. */
 
@@ -532,11 +452,7 @@ void video_swap(void)
         /* Output statistics if configured. */
 
         if (config_get_d(CONFIG_STATS))
-<<<<<<< HEAD
             fprintf(stdout, "%4d %8.4f\n", fps, (double) ms);
-=======
-            fprintf(stdout, "%4d %8.4f\n", fps, ms);
->>>>>>> origin/csy-extras
     }
 }
 
@@ -550,33 +466,22 @@ void video_set_grab(int w)
     {
         SDL_EventState(SDL_MOUSEMOTION, SDL_IGNORE);
 
-<<<<<<< HEAD
         SDL_WarpMouseInWindow(window,
                               video.window_w / 2,
                               video.window_h / 2);
-=======
-        SDL_WarpMouse(config_get_d(CONFIG_WIDTH)  / 2,
-                      config_get_d(CONFIG_HEIGHT) / 2);
->>>>>>> origin/csy-extras
 
         SDL_EventState(SDL_MOUSEMOTION, SDL_ENABLE);
     }
 
-<<<<<<< HEAD
     SDL_SetRelativeMouseMode(SDL_TRUE);
     SDL_SetWindowGrab(window, SDL_TRUE);
     video_hide_cursor();
-=======
-    SDL_WM_GrabInput(SDL_GRAB_ON);
-    SDL_ShowCursor(SDL_DISABLE);
->>>>>>> origin/csy-extras
 
     grabbed = 1;
 }
 
 void video_clr_grab(void)
 {
-<<<<<<< HEAD
     SDL_SetRelativeMouseMode(SDL_FALSE);
 
     /* Never release the grab in HMD mode. */
@@ -585,10 +490,6 @@ void video_clr_grab(void)
         SDL_SetWindowGrab(window, SDL_FALSE);
 
     video_show_cursor();
-=======
-    SDL_WM_GrabInput(SDL_GRAB_OFF);
-    SDL_ShowCursor(SDL_ENABLE);
->>>>>>> origin/csy-extras
     grabbed = 0;
 }
 
@@ -599,7 +500,6 @@ int  video_get_grab(void)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 void video_calc_view(float *M, const float *c,
                                const float *p,
                                const float *u)
@@ -666,49 +566,10 @@ void video_push_persp_ex(float fov, float n, float f, int x, int y, int w, int h
 void video_push_persp(float fov, float n, float f)
 {
     video_push_persp_ex(fov, n, f, 0, 0, video.device_w, video.device_h);
-=======
-void video_push_persp(float fov, float n, float f)
-{
-    GLfloat m[4][4];
-
-    GLfloat r = fov / 2 * V_PI / 180;
-    GLfloat s = sin(r);
-    GLfloat c = cos(r) / s;
-
-    GLfloat a = ((GLfloat) config_get_d(CONFIG_WIDTH) /
-                 (GLfloat) config_get_d(CONFIG_HEIGHT));
-
-    glMatrixMode(GL_PROJECTION);
-    {
-        glPushMatrix();
-        glLoadIdentity();
-
-        m[0][0] = c / a;
-        m[0][1] =  0.0f;
-        m[0][2] =  0.0f;
-        m[0][3] =  0.0f;
-        m[1][0] =  0.0f;
-        m[1][1] =     c;
-        m[1][2] =  0.0f;
-        m[1][3] =  0.0f;
-        m[2][0] =  0.0f;
-        m[2][1] =  0.0f;
-        m[2][2] = -(f + n) / (f - n);
-        m[2][3] = -1.0f;
-        m[3][0] =  0.0f;
-        m[3][1] =  0.0f;
-        m[3][2] = -2.0f * n * f / (f - n);
-        m[3][3] =  0.0f;
-
-        glMultMatrixf(&m[0][0]);
-    }
-    glMatrixMode(GL_MODELVIEW);
->>>>>>> origin/csy-extras
 }
 
 void video_push_ortho(void)
 {
-<<<<<<< HEAD
     if (hmd_stat())
         hmd_ortho();
     else
@@ -726,30 +587,10 @@ void video_push_ortho(void)
             glLoadIdentity();
         }
     }
-=======
-    GLfloat w = (GLfloat) config_get_d(CONFIG_WIDTH);
-    GLfloat h = (GLfloat) config_get_d(CONFIG_HEIGHT);
-
-    glMatrixMode(GL_PROJECTION);
-    {
-        glPushMatrix();
-        glLoadIdentity();
-        glOrtho_(0.0, w, 0.0, h, -1.0, +1.0);
-    }
-    glMatrixMode(GL_MODELVIEW);
->>>>>>> origin/csy-extras
 }
 
 void video_pop_matrix(void)
 {
-<<<<<<< HEAD
-=======
-    glMatrixMode(GL_PROJECTION);
-    {
-        glPopMatrix();
-    }
-    glMatrixMode(GL_MODELVIEW);
->>>>>>> origin/csy-extras
 }
 
 void video_clear(void)

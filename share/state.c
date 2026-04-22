@@ -18,7 +18,6 @@
 #include "config.h"
 #include "video.h"
 #include "common.h"
-<<<<<<< HEAD
 #include "hmd.h"
 #include "geom.h"
 #include "gui.h"
@@ -108,11 +107,6 @@ static int bump_stick(int a, int device_id)
 
 /*---------------------------------------------------------------------------*/
 
-=======
-
-/*---------------------------------------------------------------------------*/
-
->>>>>>> origin/csy-extras
 static float         state_time;
 static int           state_drawn;
 static struct state *state;
@@ -137,27 +131,17 @@ static int goto_state_intent(struct state *st, int intent)
     struct state *prev = state;
 
     if (state && state->leave)
-<<<<<<< HEAD
         state->leave(state, st, state->gui_id, intent);
-=======
-        state->leave(state, st, state->gui_id);
->>>>>>> origin/csy-extras
 
     state       = st;
     state_time  = 0;
     state_drawn = 0;
-<<<<<<< HEAD
 
     memset(&stick_cache, 0, sizeof (stick_cache));
     stick_count = 0;
 
     if (state && state->enter)
         state->gui_id = state->enter(state, prev, intent);
-=======
-
-    if (state && state->enter)
-        state->gui_id = state->enter(state, prev);
->>>>>>> origin/csy-extras
 
     return 1;
 }
@@ -180,7 +164,6 @@ void st_paint(float t)
 
     if (state && state->paint)
     {
-<<<<<<< HEAD
         video_clear();
 
         if (hmd_stat())
@@ -196,38 +179,19 @@ void st_paint(float t)
             state->paint(state->gui_id, t);
 
             transition_paint();
-=======
-        /* TODO: reimplement stereo using LR instead of quad-buffer.
-
-        if (config_get_d(CONFIG_STEREO))
-        {
-            glDrawBuffer(GL_BACK_LEFT);
-            video_clear();
-            state->paint(state->gui_id, t);
-
-            glDrawBuffer(GL_BACK_RIGHT);
-            video_clear();
-            state->paint(state->gui_id, t);
->>>>>>> origin/csy-extras
         }
         else
         */
         {
-<<<<<<< HEAD
             state->paint(state->gui_id, t);
 
             transition_paint();
-=======
-            video_clear();
-            state->paint(state->gui_id, t);
->>>>>>> origin/csy-extras
         }
     }
 }
 
 void st_timer(float dt)
 {
-<<<<<<< HEAD
     int i;
 
     if (!state_drawn)
@@ -235,11 +199,6 @@ void st_timer(float dt)
 
     transition_timer(dt);
 
-=======
-    if (!state_drawn)
-        return;
-
->>>>>>> origin/csy-extras
     state_time += dt;
 
     if (state && state->timer)
@@ -272,17 +231,12 @@ void st_point(int x, int y, int dx, int dy)
     }
 }
 
-<<<<<<< HEAD
 void st_stick(int a, float v, int device_id)
-=======
-void st_stick(int a, float v)
->>>>>>> origin/csy-extras
 {
     static struct
     {
         const int *num;
         const int *inv;
-<<<<<<< HEAD
     } axes[] = {
         { &CONFIG_JOYSTICK_AXIS_X0, &CONFIG_JOYSTICK_AXIS_X0_INVERT },
         { &CONFIG_JOYSTICK_AXIS_Y0, &CONFIG_JOYSTICK_AXIS_Y0_INVERT },
@@ -310,45 +264,12 @@ void st_stick(int a, float v)
 
         state->stick(state->gui_id, a, v, bump_stick(a, device_id), device_id);
     }
-=======
-
-        float prev;
-    } axes[] = {
-        { &CONFIG_JOYSTICK_AXIS_X, &CONFIG_JOYSTICK_AXIS_X_INVERT },
-        { &CONFIG_JOYSTICK_AXIS_Y, &CONFIG_JOYSTICK_AXIS_Y_INVERT },
-        { &CONFIG_JOYSTICK_AXIS_U, &CONFIG_JOYSTICK_AXIS_U_INVERT }
-    };
-
-    int i, bump = 0;
-
-    for (i = 0; i < ARRAYSIZE(axes); i++)
-        if (config_tst_d(*axes[i].num, a))
-        {
-            float p = axes[i].prev;
-
-            /* Note the transition from centered to leaned position. */
-
-            bump = ((-0.5f <= p && p <= +0.5f) &&
-                    (v < -0.5f || +0.5f < v));
-
-            axes[i].prev = v;
-
-            if (config_get_d(*axes[i].inv))
-                v = -v;
-
-            break;
-        }
-
-    if (state && state->stick)
-        state->stick(state->gui_id, a, v, bump);
->>>>>>> origin/csy-extras
 }
 
 void st_angle(float x, float z)
 {
     if (state && state->angle)
         state->angle(state->gui_id, x, z);
-<<<<<<< HEAD
 }
 
 
@@ -356,8 +277,6 @@ void st_wheel(int x, int y)
 {
     if (state && state->wheel)
         state->wheel(x, y);
-=======
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/

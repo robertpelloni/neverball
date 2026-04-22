@@ -3,10 +3,7 @@
 
 #include "base_config.h"
 #include "level.h"
-<<<<<<< HEAD
 #include "package.h"
-=======
->>>>>>> origin/csy-extras
 
 #define SET_FILE "sets.txt"
 #define SET_MISC "set-misc.txt"
@@ -22,28 +19,19 @@ void set_quit(void);
 
 int  set_exists(int);
 void set_goto(int);
-<<<<<<< HEAD
 int  set_find(const char *);
-=======
->>>>>>> origin/csy-extras
 
 int  curr_set(void);
 
 const char         *set_id(int);
 const char         *set_name(int);
-<<<<<<< HEAD
 const char         *set_file(int);
-=======
->>>>>>> origin/csy-extras
 const char         *set_desc(int);
 const char         *set_shot(int);
 const struct score *set_score(int, int);
 
-<<<<<<< HEAD
 struct level *set_find_level(const char *basename);
 
-=======
->>>>>>> origin/csy-extras
 int  set_score_update (int, int, int *, int *);
 void set_rename_player(int, int, const char *);
 

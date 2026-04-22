@@ -19,11 +19,7 @@ enum
 
 struct score
 {
-<<<<<<< HEAD
     char player[RANK_MAX][MAXSTR];
-=======
-    char player[RANK_MAX][MAXNAM];
->>>>>>> origin/csy-extras
 
     int  timer[RANK_MAX];               /* Time elapsed                      */
     int  coins[RANK_MAX];               /* Coins collected                   */

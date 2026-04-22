@@ -22,10 +22,7 @@
 #include "progress.h"
 #include "audio.h"
 #include "config.h"
-<<<<<<< HEAD
 #include "key.h"
-=======
->>>>>>> origin/csy-extras
 
 #include "game_common.h"
 
@@ -36,31 +33,16 @@
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 static int resume;
 
-=======
-enum
-{
-    DONE_OK = GUI_LAST
-};
-
-static int resume;
-
->>>>>>> origin/csy-extras
 static int done_action(int tok, int val)
 {
     audio_play(AUD_MENU, 1.0f);
 
     switch (tok)
     {
-<<<<<<< HEAD
     case GUI_BACK:
         return goto_state(&st_start);
-=======
-    case DONE_OK:
-        return goto_state(&st_exit);
->>>>>>> origin/csy-extras
 
     case GUI_NAME:
         return goto_name(&st_done, &st_done, 0);
@@ -94,11 +76,7 @@ static int done_gui(void)
         gui_score_board(id, GUI_SCORE_COIN | GUI_SCORE_TIME, 1, high);
         gui_space(id);
 
-<<<<<<< HEAD
         gui_start(id, _("Select Level"), GUI_SML, GUI_BACK, 0);
-=======
-        gui_start(id, _("Select Level"), GUI_SML, DONE_OK, 0);
->>>>>>> origin/csy-extras
 
         if (!resume)
             gui_pulse(gid, 1.2f);
@@ -113,18 +91,13 @@ static int done_gui(void)
     return id;
 }
 
-<<<<<<< HEAD
 static int done_enter(struct state *st, struct state *prev, int intent)
-=======
-static int done_enter(struct state *st, struct state *prev)
->>>>>>> origin/csy-extras
 {
     if (prev == &st_name)
         progress_rename(1);
 
     resume = (prev == &st_done);
 
-<<<<<<< HEAD
     return transition_slide(done_gui(), 1, intent);
 }
 
@@ -145,34 +118,12 @@ static int done_buttn(int b, int d, int device_id)
 {
     if (d)
     {
-=======
-    return done_gui();
-}
-
-static int done_keybd(int c, int d)
-{
-    if (d && config_tst_d(CONFIG_KEY_SCORE_NEXT, c))
-        return done_action(GUI_SCORE, GUI_SCORE_NEXT(gui_score_get()));
-
-    return 1;
-}
-
-static int done_buttn(int b, int d)
-{
-    if (d)
-    {
->>>>>>> origin/csy-extras
         int active = gui_active();
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return done_action(gui_token(active), gui_value(active));
-<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
             return done_action(GUI_BACK, 0);
-=======
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
-            return done_action(DONE_OK, 0);
->>>>>>> origin/csy-extras
     }
     return 1;
 }

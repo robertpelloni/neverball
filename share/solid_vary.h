@@ -17,22 +17,16 @@
 
 #include "base_config.h"
 #include "solid_base.h"
-<<<<<<< HEAD
 #include "vec3.h"
-=======
->>>>>>> origin/csy-extras
 
 /*
  * Varying solid data.
  */
 
-<<<<<<< HEAD
 #define GROW_TIME  0.5f                 /* sec for the ball to get to size.  */
 #define GROW_BIG   1.5f                 /* large factor                      */
 #define GROW_SMALL 0.5f                 /* small factor                      */
 
-=======
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 struct v_path
@@ -40,12 +34,9 @@ struct v_path
     const struct b_path *base;
 
     int f;                                     /* enable flag                */
-<<<<<<< HEAD
 
     int mi;
     int mj;
-=======
->>>>>>> origin/csy-extras
 };
 
 struct v_body
@@ -62,14 +53,11 @@ struct v_move
     int   tm;                                  /* milliseconds               */
 
     int pi;
-<<<<<<< HEAD
 
     struct vec3 pos;                           /* cached position            */
     struct vec4 rot;                           /* cached orientation         */
 
     unsigned int dirty:1;
-=======
->>>>>>> origin/csy-extras
 };
 
 struct v_item
@@ -77,12 +65,9 @@ struct v_item
     float p[3];                                /* position                   */
     int   t;                                   /* type                       */
     int   n;                                   /* value                      */
-<<<<<<< HEAD
 
     int mi;
     int mj;
-=======
->>>>>>> origin/csy-extras
 };
 
 struct v_swch
@@ -93,7 +78,6 @@ struct v_swch
     int   tm;                                  /* milliseconds               */
     int   f;                                   /* current state              */
     int   e;                                   /* is a ball inside it?       */
-<<<<<<< HEAD
 
     int mi;
     int mj;
@@ -115,8 +99,6 @@ struct v_bill
 {
     int mi;
     int mj;
-=======
->>>>>>> origin/csy-extras
 };
 
 struct v_ball
@@ -127,44 +109,31 @@ struct v_ball
     float w[3];                                /* angular velocity vector    */
     float E[3][3];                             /* basis of pendulum          */
     float W[3];                                /* angular pendulum velocity  */
-<<<<<<< HEAD
     float r;                                   /* current radius             */
     float r_vel;                               /* radius velocity            */
     float sizes[3];                            /* sizes (small, base, big)   */
     short size;                                /* current size (0, 1, 2)     */
     float mass;                                /* mass                       */
-=======
-    float r;                                   /* radius                     */
->>>>>>> origin/csy-extras
 };
 
 struct s_vary
 {
-<<<<<<< HEAD
     struct s_base *base;
-=======
-    const struct s_base *base;
->>>>>>> origin/csy-extras
 
     int pc;
     int bc;
     int mc;
     int hc;
-<<<<<<< HEAD
     int zc;
     int jc;
     int xc;
     int rc;
-=======
-    int xc;
->>>>>>> origin/csy-extras
     int uc;
 
     struct v_path *pv;
     struct v_body *bv;
     struct v_move *mv;
     struct v_item *hv;
-<<<<<<< HEAD
     struct v_goal *zv;
     struct v_jump *jv;
     struct v_swch *xv;
@@ -174,26 +143,16 @@ struct s_vary
     /* Accumulator for tracking time in integer milliseconds. */
 
     float ms_accum;
-=======
-    struct v_swch *xv;
-    struct v_ball *uv;
->>>>>>> origin/csy-extras
 };
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 int  sol_load_vary(struct s_vary *, struct s_base *);
 void sol_free_vary(struct s_vary *);
 
 int  is_move_dirty (const struct s_vary *vary, int mi);
 void set_move_dirty(const struct s_vary *vary, int mi, unsigned int dirty);
 
-=======
-int  sol_load_vary(struct s_vary *, const struct s_base *);
-void sol_free_vary(struct s_vary *);
-
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 /*

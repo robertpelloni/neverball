@@ -35,7 +35,6 @@
 #include "game_client.h"
 #include "game_proxy.h"
 #include "game_common.h"
-<<<<<<< HEAD
 
 #define DEMO_MAGIC (0xAF | 'N' << 8 | 'B' << 16 | 'R' << 24)
 #define DEMO_VERSION 9
@@ -43,6 +42,7 @@
 #define DATELEN sizeof ("YYYY-MM-DDTHH:MM:SS")
 
 fs_file demo_fp;
+fs_file ghost_fp; /* Ghost recording file pointer */
 
 /*---------------------------------------------------------------------------*/
 
@@ -59,17 +59,6 @@ static const char *demo_name(const char *path)
     SAFECPY(name, base_name_sans(path, ".nbr"));
     return name;
 }
-=======
-
-/*---------------------------------------------------------------------------*/
-
-#define DEMO_MAGIC (0xAF | 'N' << 8 | 'B' << 16 | 'R' << 24)
-#define DEMO_VERSION 9
-
-#define DATELEN sizeof ("YYYY-MM-DDTHH:MM:SS")
-
-fs_file demo_fp;
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -128,6 +117,40 @@ static int demo_header_read(fs_file fp, struct demo *d)
     return 0;
 }
 
+int demo_ghost_open(const char *path)
+{
+    if ((ghost_fp = fs_open_read(path)))
+    {
+        struct demo d;
+        if (demo_header_read(ghost_fp, &d))
+        {
+            return 1;
+        }
+        fs_close(ghost_fp);
+        ghost_fp = NULL;
+    }
+    return 0;
+}
+
+int demo_ghost_load(const char *name)
+{
+    char path[MAXSTR];
+    sprintf(path, "Replays/%s.gho", name);
+
+    if ((ghost_fp = fs_open_read(path)))
+    {
+        /* Skip Header */
+        struct demo d;
+        if (demo_header_read(ghost_fp, &d))
+        {
+            return 1;
+        }
+        fs_close(ghost_fp);
+        ghost_fp = NULL;
+    }
+    return 0;
+}
+
 static void demo_header_write(fs_file fp, struct demo *d)
 {
     char datestr[DATELEN];
@@ -157,7 +180,6 @@ static void demo_header_write(fs_file fp, struct demo *d)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 int demo_load(struct demo *d, const char *path)
 {
     int rc = 0;
@@ -181,51 +203,10 @@ int demo_load(struct demo *d, const char *path)
     }
 
     return rc;
-=======
-struct demo *demo_load(const char *path)
-{
-    fs_file fp;
-    struct demo *d;
-
-    d = NULL;
-
-    if ((fp = fs_open(path, "r")))
-    {
-        d = calloc(1, sizeof (struct demo));
-
-        if (demo_header_read(fp, d))
-        {
-            SAFECPY(d->filename, path);
-            SAFECPY(d->name, base_name_sans(d->filename, ".nbr"));
-        }
-        else
-        {
-            free(d);
-            d = NULL;
-        }
-
-        fs_close(fp);
-    }
-
-    return d;
->>>>>>> origin/csy-extras
 }
 
 void demo_free(struct demo *d)
 {
-<<<<<<< HEAD
-=======
-    free(d);
-}
-
-/*---------------------------------------------------------------------------*/
-
-static const char *demo_path(const char *name)
-{
-    static char path[MAXSTR];
-    sprintf(path, "Replays/%s.nbr", name);
-    return path;
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -233,7 +214,6 @@ static const char *demo_path(const char *name)
 int demo_exists(const char *name)
 {
     return fs_exists(demo_path(name));
-<<<<<<< HEAD
 }
 
 const char *demo_format_name(const char *fmt,
@@ -356,128 +336,11 @@ int demo_play_init(const char *name, const struct level *level,
     return 0;
 }
 
-=======
-}
-
-const char *demo_format_name(const char *fmt,
-                             const char *set,
-                             const char *level)
-{
-    static char name[MAXSTR];
-    int space_left;
-    char *numpart;
-    int i;
-
-    if (!fmt)
-        return NULL;
-
-    if (!set)
-        set = "none";
-
-    if (!level)
-        level = "00";
-
-    memset(name, 0, sizeof (name));
-    space_left = MAXSTRLEN(name);
-
-    /* Construct name, replacing each format sequence as appropriate. */
-
-    while (*fmt && space_left > 0)
-    {
-        if (*fmt == '%')
-        {
-            fmt++;
-
-            switch (*fmt)
-            {
-            case 's':
-                strncat(name, set, space_left);
-                space_left -= strlen(set);
-                break;
-
-            case 'l':
-                strncat(name, level, space_left);
-                space_left -= strlen(level);
-                break;
-
-            case '%':
-                strncat(name, "%", space_left);
-                space_left--;
-                break;
-
-            case '\0':
-                fputs(L_("Missing format character in replay name\n"), stderr);
-                fmt--;
-                break;
-
-            default:
-                fprintf(stderr, L_("Invalid format character in "
-                                   "replay name: \"%%%c\"\n"), *fmt);
-                break;
-            }
-        }
-        else
-        {
-            strncat(name, fmt, 1);
-            space_left--;
-        }
-
-        fmt++;
-    }
-
-    /*
-     * Append a unique 2-digit number preceded by an underscore to the
-     * file name, discarding characters if there's not enough space
-     * left in the buffer.
-     */
-
-    if (space_left < strlen("_23"))
-        numpart = name + MAXSTRLEN(name) - strlen("_23");
-    else
-        numpart = name + MAXSTRLEN(name) - space_left;
-
-    for (i = 1; i < 100; i++)
-    {
-        sprintf(numpart, "_%02d", i);
-
-        if (!demo_exists(name))
-            break;
-    }
-
-    return name;
-}
-
-/*---------------------------------------------------------------------------*/
-
-int demo_play_init(const char *name, const struct level *level,
-                   int mode, int scores, int balls, int times)
-{
-    struct demo demo;
-
-    memset(&demo, 0, sizeof (demo));
-
-    SAFECPY(demo.filename, demo_path(name));
-    SAFECPY(demo.player, config_get_s(CONFIG_PLAYER));
-    SAFECPY(demo.shot, level_shot(level));
-    SAFECPY(demo.file, level_file(level));
-
-    demo.mode  = mode;
-    demo.date  = time(NULL);
-    demo.time  = level_time(level);
-    demo.goal  = level_goal(level);
-    demo.score = scores;
-    demo.balls = balls;
-    demo.times = times;
-
-    if ((demo_fp = fs_open(demo.filename, "w")))
-    {
-        demo_header_write(demo_fp, &demo);
         return 1;
     }
     return 0;
 }
 
->>>>>>> origin/csy-extras
 void demo_play_stat(int status, int coins, int timer)
 {
     if (demo_fp)
@@ -492,6 +355,8 @@ void demo_play_stat(int status, int coins, int timer)
 
         fs_seek(demo_fp, pos, SEEK_SET);
     }
+
+    /* Ghost Stat Update? Usually not needed if we just record frames */
 }
 
 static void demo_refresh(void)
@@ -515,6 +380,12 @@ void demo_play_stop(int d)
 
         demo_refresh();
     }
+
+    if (ghost_fp)
+    {
+        fs_close(ghost_fp);
+        ghost_fp = NULL;
+    }
 }
 
 int demo_saved(void)
@@ -528,7 +399,6 @@ void demo_rename(const char *name)
 
     if (name && *name)
     {
-<<<<<<< HEAD
         SAFECPY(path, demo_path(name));
 
         if (strcmp(demo_play.name, name) != 0 && fs_exists(demo_play.path))
@@ -536,12 +406,6 @@ void demo_rename(const char *name)
             fs_rename(demo_play.path, path);
             demo_refresh();
         }
-=======
-        SAFECPY(src, demo_path(USER_REPLAY_FILE));
-        SAFECPY(dst, demo_path(name));
-
-        fs_rename(src, dst);
->>>>>>> origin/csy-extras
     }
 }
 
@@ -591,7 +455,6 @@ static struct demo demo_replay;
 
 const char *curr_demo(void)
 {
-<<<<<<< HEAD
     return demo_replay.path;
 }
 
@@ -600,29 +463,13 @@ int demo_replay_init(const char *path, int *g, int *m, int *b, int *s, int *tt)
     lockstep_clr(&update_step);
 
     if ((demo_fp = fs_open_read(path)))
-=======
-    return demo_replay.filename;
-}
-
-int demo_replay_init(const char *name, int *g, int *m, int *b, int *s, int *tt)
-{
-    lockstep_clr(&update_step);
-
-    if ((demo_fp = fs_open(name, "r")))
->>>>>>> origin/csy-extras
     {
         if (demo_header_read(demo_fp, &demo_replay))
         {
             struct level level;
 
-<<<<<<< HEAD
             SAFECPY(demo_replay.path, path);
             SAFECPY(demo_replay.name, demo_name(path));
-=======
-            SAFECPY(demo_replay.filename, name);
-            SAFECPY(demo_replay.name,
-                    base_name_sans(demo_replay.filename, ".nbr"));
->>>>>>> origin/csy-extras
 
             if (level_load(demo_replay.file, &level))
             {
@@ -682,7 +529,6 @@ void demo_replay_stop(int d)
         fs_close(demo_fp);
         demo_fp = NULL;
 
-<<<<<<< HEAD
         if (d) fs_remove(demo_replay.path);
 
         demo_refresh();
@@ -690,13 +536,6 @@ void demo_replay_stop(int d)
 }
 
 void demo_replay_speed(int speed)
-=======
-        if (d) fs_remove(demo_replay.filename);
-    }
-}
-
-void demo_speed_set(int speed)
->>>>>>> origin/csy-extras
 {
     if (SPEED_NONE <= speed && speed < SPEED_MAX)
         lockstep_scl(&update_step, SPEED_FACTORS[speed]);

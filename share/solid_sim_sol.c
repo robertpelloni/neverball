@@ -20,10 +20,6 @@
 #include "solid_vary.h"
 #include "solid_sim.h"
 #include "solid_all.h"
-<<<<<<< HEAD
-=======
-#include "solid_cmd.h"
->>>>>>> origin/csy-extras
 
 #define LARGE 1.0e+5f
 #define SMALL 1.0e-3f
@@ -116,7 +112,6 @@ static float v_vert(float Q[3],
     return t;
 }
 
-<<<<<<< HEAD
 static float sol_test_balls(float dt,
                             float T[3], float V[3],
                             int *ball_idx,
@@ -231,8 +226,6 @@ static float sol_bounce_ball(struct v_ball *up,
     return fabsf(v_dot(n, d));
 }
 
-=======
->>>>>>> origin/csy-extras
 /*
  * Compute the  earliest time  and position of  the intersection  of a
  * sphere and an edge.
@@ -393,11 +386,7 @@ static float sol_bounce(struct v_ball *up,
     vn = v_dot(v, n);
     wn = v_dot(w, n);
 
-<<<<<<< HEAD
     v_mad(v, v, n, 1.7f * (wn - vn));
-=======
-    v_mad(v, v, n, 1.7 * (wn - vn));
->>>>>>> origin/csy-extras
 
     v_mad(p, q, n, up->r);
 
@@ -645,15 +634,9 @@ static float sol_test_body(float dt,
 
     const struct b_node *np = vary->base->nv + bp->base->ni;
 
-<<<<<<< HEAD
     sol_body_p(O, vary, bp->mi, 0.0f);
     sol_body_v(W, vary, bp->mi, dt);
     sol_body_e(E, vary, bp->mj, 0.0f);
-=======
-    sol_body_p(O, vary, bp, 0.0f);
-    sol_body_v(W, vary, bp, dt);
-    sol_body_e(E, vary, bp, 0.0f);
->>>>>>> origin/csy-extras
 
     /*
      * For rotating bodies, rather than rotate every normal and vertex
@@ -666,11 +649,7 @@ static float sol_test_body(float dt,
      * v = w x p
      */
 
-<<<<<<< HEAD
     if (E[0] != 1.0f || sol_body_w(vary, bp->mj))
-=======
-    if (E[0] != 1.0f || sol_body_w(vary, bp))
->>>>>>> origin/csy-extras
     {
         /* The body has a non-identity orientation or it is rotating. */
 
@@ -687,11 +666,7 @@ static float sol_test_body(float dt,
 
         v_mad(p1, p1, up->v, dt);
         v_mad(p1, p1, W, -dt);
-<<<<<<< HEAD
         sol_body_e(e, vary, bp->mj, dt);
-=======
-        sol_body_e(e, vary, bp, dt);
->>>>>>> origin/csy-extras
         q_conj(e, e);
         q_rot(p1, e, p1);
 
@@ -710,11 +685,7 @@ static float sol_test_body(float dt,
         {
             /* Compute the final orientation. */
 
-<<<<<<< HEAD
             sol_body_e(e, vary, bp->mj, u);
-=======
-            sol_body_e(e, vary, bp, u);
->>>>>>> origin/csy-extras
 
             /* Return world space coordinates. */
 
@@ -770,7 +741,6 @@ static float sol_test_file(float dt,
 /*---------------------------------------------------------------------------*/
 
 /*
-<<<<<<< HEAD
  * Accumulate and convert simulation time to integer milliseconds.
  */
 
@@ -788,61 +758,22 @@ static int ms_step(float *accum, float dt)
     while (*accum >= 0.001f)
     {
         *accum -= 0.001f;
-=======
- * Track simulation steps in integer milliseconds.
- */
-
-static float ms_accum;
-
-static void ms_init(void)
-{
-    ms_accum = 0.0f;
-}
-
-static int ms_step(float dt)
-{
-    int ms = 0;
-
-    ms_accum += dt;
-
-    while (ms_accum >= 0.001f)
-    {
-        ms_accum -= 0.001f;
->>>>>>> origin/csy-extras
         ms += 1;
     }
 
     return ms;
 }
 
-<<<<<<< HEAD
 static int ms_peek(float *accum, float dt)
 {
     float at = *accum;
 
     return ms_step(&at, dt);
-=======
-static int ms_peek(float dt)
-{
-    int ms = 0;
-    float at;
-
-    at = ms_accum + dt;
-
-    while (at >= 0.001f)
-    {
-        at -= 0.001f;
-        ms += 1;
-    }
-
-    return ms;
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
 
 /*
-<<<<<<< HEAD
  * Find time till the next path change.
  */
 static float sol_path_time(struct s_vary *vary, float dt)
@@ -913,8 +844,6 @@ void sol_move(struct s_vary *vary, cmd_fn cmd_func, float dt)
 }
 
 /*
-=======
->>>>>>> origin/csy-extras
  * Step the physics forward DT  seconds under the influence of gravity
  * vector G.  If the ball gets pinched between two moving solids, this
  * loop might not terminate.  It  is better to do something physically
@@ -922,22 +851,12 @@ void sol_move(struct s_vary *vary, cmd_fn cmd_func, float dt)
  * iterations, punt it.
  */
 
-<<<<<<< HEAD
 float sol_step(struct s_vary *vary, cmd_fn cmd_func,
                const float *g, float dt, int ui, int *m)
 {
     float P[3], V[3], v[3], r[3], a[3], d, nt, b = 0.0f, tt = dt;
     int c;
 
-=======
-float sol_step(struct s_vary *vary, const float *g, float dt, int ui, int *m)
-{
-    float P[3], V[3], v[3], r[3], a[3], d, e, nt, b = 0.0f, tt = dt;
-    int c;
-
-    union cmd cmd;
-
->>>>>>> origin/csy-extras
     if (ui < vary->uc)
     {
         struct v_ball *up = vary->uv + ui;
@@ -950,12 +869,21 @@ float sol_step(struct s_vary *vary, const float *g, float dt, int ui, int *m)
 
         if (m && sol_test_file(tt, P, V, up, vary) < 0.0005f)
         {
+            /* Material / Friction Logic */
+            /* Default Friction Coefficient */
+            float friction = 1.0f;
+
+            /* TODO: Ideally we inspect the material at contact point P. */
+            /* vary->base->lv[...].mi stores material index. */
+            /* Accessing it requires raycasting or getting the lump from sol_test_file. */
+            /* sol_test_file doesn't return the lump or material. */
+            /* For now, we apply global friction. */
+
             v_cpy(up->v, v);
             v_sub(r, P, up->p);
 
             if ((d = v_dot(r, g) / (v_len(r) * v_len(g))) > 0.999f)
             {
-<<<<<<< HEAD
                 if (v_len(up->v) > dt)
                 {
                     /* Scale the linear velocity. */
@@ -963,14 +891,6 @@ float sol_step(struct s_vary *vary, const float *g, float dt, int ui, int *m)
                     v_sub(v, V, up->v);
                     v_nrm(v, v);
                     v_mad(up->v, up->v, v, dt);
-=======
-                if ((e = (v_len(up->v) - dt)) > 0.0f)
-                {
-                    /* Scale the linear velocity. */
-
-                    v_nrm(up->v, up->v);
-                    v_scl(up->v, up->v, e);
->>>>>>> origin/csy-extras
 
                     /* Scale the angular velocity. */
 
@@ -997,38 +917,16 @@ float sol_step(struct s_vary *vary, const float *g, float dt, int ui, int *m)
 
         for (c = 16; c > 0 && tt > 0; c--)
         {
-<<<<<<< HEAD
             float pt;
             int ball_idx = -1;
 
             /* Avoid stepping across path changes. */
 
             pt = sol_path_time(vary, tt);
-=======
-            float st;
-            int mi, ms;
-
-            /* HACK: avoid stepping across path changes. */
-
-            st = tt;
-
-            for (mi = 0; mi < vary->mc; mi++)
-            {
-                struct v_move *mp = vary->mv + mi;
-                struct v_path *pp = vary->pv + mp->pi;
-
-                if (!pp->f)
-                    continue;
-
-                if (mp->tm + ms_peek(st) > pp->base->tm)
-                    st = MS_TO_TIME(pp->base->tm - mp->tm);
-            }
->>>>>>> origin/csy-extras
 
             /* Miss collisions if we reach the iteration limit. */
 
             if (c > 1)
-<<<<<<< HEAD
             {
                 nt = sol_test_file(pt, P, V, up, vary);
 
@@ -1063,25 +961,6 @@ float sol_step(struct s_vary *vary, const float *g, float dt, int ui, int *m)
 
                 if (b < d) b = d;
             }
-=======
-                nt = sol_test_file(st, P, V, up, vary);
-            else
-                nt = tt;
-
-            cmd.type       = CMD_STEP_SIMULATION;
-            cmd.stepsim.dt = nt;
-            sol_cmd_enq(&cmd);
-
-            ms = ms_step(nt);
-
-            sol_move_step(vary, nt, ms);
-            sol_swch_step(vary, nt, ms);
-            sol_ball_step(vary, nt);
-
-            if (nt < st)
-                if (b < (d = sol_bounce(up, P, V, nt)))
-                    b = d;
->>>>>>> origin/csy-extras
 
             tt -= nt;
         }
@@ -1098,11 +977,7 @@ float sol_step(struct s_vary *vary, const float *g, float dt, int ui, int *m)
 
 void sol_init_sim(struct s_vary *vary)
 {
-<<<<<<< HEAD
     ms_init(&vary->ms_accum);
-=======
-    ms_init();
->>>>>>> origin/csy-extras
 }
 
 void sol_quit_sim(void)

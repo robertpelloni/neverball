@@ -48,11 +48,7 @@ void image_snap(const char *filename)
 
     /* Initialize all PNG export data structures. */
 
-<<<<<<< HEAD
     if (!(filep = fs_open_write(filename)))
-=======
-    if (!(filep = fs_open(filename, "w")))
->>>>>>> origin/csy-extras
         return;
     if (!(writep = png_create_write_struct(PNG_LIBPNG_VER_STRING, 0, 0, 0)))
         return;
@@ -233,12 +229,6 @@ GLuint make_image_from_font(int *W, int *H,
 
             if ((src = SDL_ConvertSurface(orig, &fmt, orig->flags)) == NULL)
             {
-<<<<<<< HEAD
-=======
-                fprintf(stderr, _("Failed to convert SDL_ttf surface: %s\n"),
-                        SDL_GetError());
-
->>>>>>> origin/csy-extras
                 /* Pretend everything's just fine. */
 
                 src = orig;
@@ -323,15 +313,10 @@ SDL_Surface *load_surface(const char *filename)
         void *q;
 
         if ((q = image_flip(p, w, h, b, 0, 1)))
-<<<<<<< HEAD
         {
             srf = SDL_CreateRGBSurfaceFrom(q, w, h, b * 8, w * b,
                                            RMASK, GMASK, BMASK, AMASK);
         }
-=======
-            srf = SDL_CreateRGBSurfaceFrom(q, w, h, b * 8, w * b,
-                                           RMASK, GMASK, BMASK, AMASK);
->>>>>>> origin/csy-extras
         free(p);
     }
     return srf;

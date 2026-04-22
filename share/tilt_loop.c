@@ -154,7 +154,6 @@ static int tilt_func(void *data)
     }
 
 
-<<<<<<< HEAD
     SDL_LockMutex(mutex);
     state.status = running;
     SDL_UnlockMutex(mutex);
@@ -164,17 +163,6 @@ static int tilt_func(void *data)
         SDL_LockMutex(mutex);
         running = state.status;
         SDL_UnlockMutex(mutex);
-=======
-    SDL_mutexP(mutex);
-    state.status = running;
-    SDL_mutexV(mutex);
-
-    while (mutex && running)
-    {
-        SDL_mutexP(mutex);
-        running = state.status;
-        SDL_mutexV(mutex);
->>>>>>> origin/csy-extras
 
         rc = freespace_read(deviceId, buffer, FREESPACE_MAX_INPUT_MESSAGE_SIZE, 100, &length);
         if (rc != FREESPACE_SUCCESS) {
@@ -196,11 +184,7 @@ static int tilt_func(void *data)
             /* This function does euler decomposition for rotate the object type (ZYX, aerospace) */
             q_euler(eulerAngles, quat);
 
-<<<<<<< HEAD
             SDL_LockMutex(mutex);
-=======
-            SDL_mutexP(mutex);
->>>>>>> origin/csy-extras
             {
                 /* Since the game expects "rotate the world type", conjugate by negating all angles & convert to degrees
                  * Z is yaw
@@ -217,11 +201,7 @@ static int tilt_func(void *data)
                 set_button(&state.U, userFrame.deltaWheel > 0);
                 set_button(&state.D, userFrame.deltaWheel < 0);
             }
-<<<<<<< HEAD
             SDL_UnlockMutex(mutex);
-=======
-            SDL_mutexV(mutex);
->>>>>>> origin/csy-extras
         }
 
     }
@@ -248,17 +228,10 @@ void tilt_free(void)
     {
         /* Get/set the status of the tilt sensor thread. */
 
-<<<<<<< HEAD
         SDL_LockMutex(mutex);
         b = state.status;
         state.status = 0;
         SDL_UnlockMutex(mutex);
-=======
-        SDL_mutexP(mutex);
-        b = state.status;
-        state.status = 0;
-        SDL_mutexV(mutex);
->>>>>>> origin/csy-extras
 
         /* Kill the thread and destroy the mutex. */
 
@@ -278,11 +251,7 @@ int tilt_get_button(int *b, int *s)
 
     if (mutex)
     {
-<<<<<<< HEAD
         SDL_LockMutex(mutex);
-=======
-        SDL_mutexP(mutex);
->>>>>>> origin/csy-extras
         {
             if      ((ch = get_button(&state.A)))
             {
@@ -310,11 +279,7 @@ int tilt_get_button(int *b, int *s)
                 *s = (ch == BUTTON_DN);
             }
         }
-<<<<<<< HEAD
         SDL_UnlockMutex(mutex);
-=======
-        SDL_mutexV(mutex);
->>>>>>> origin/csy-extras
     }
     return ch;
 }
@@ -325,15 +290,9 @@ float tilt_get_x(void)
 
     if (mutex)
     {
-<<<<<<< HEAD
         SDL_LockMutex(mutex);
         x = state.x;
         SDL_UnlockMutex(mutex);
-=======
-        SDL_mutexP(mutex);
-        x = state.x;
-        SDL_mutexV(mutex);
->>>>>>> origin/csy-extras
     }
 
     return x;
@@ -345,15 +304,9 @@ float tilt_get_z(void)
 
     if (mutex)
     {
-<<<<<<< HEAD
         SDL_LockMutex(mutex);
         z = state.z;
         SDL_UnlockMutex(mutex);
-=======
-        SDL_mutexP(mutex);
-        z = state.z;
-        SDL_mutexV(mutex);
->>>>>>> origin/csy-extras
     }
 
     return z;
@@ -365,15 +318,9 @@ int tilt_stat(void)
 
     if (mutex)
     {
-<<<<<<< HEAD
         SDL_LockMutex(mutex);
         b = state.status;
         SDL_UnlockMutex(mutex);
-=======
-        SDL_mutexP(mutex);
-        b = state.status;
-        SDL_mutexV(mutex);
->>>>>>> origin/csy-extras
     }
     return b;
 }

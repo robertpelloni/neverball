@@ -14,21 +14,15 @@
 
 #include <SDL.h>
 #include <stdio.h>
-<<<<<<< HEAD
 #include <string.h>
 
 #include "glext.h"
 #include "log.h"
-=======
-
-#include "glext.h"
->>>>>>> origin/csy-extras
 
 struct gl_info gli;
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 #if !ENABLE_OPENGLES && !defined(__EMSCRIPTEN__)
 
 PFNGLCLIENTACTIVETEXTURE_PROC    glClientActiveTexture_;
@@ -70,23 +64,6 @@ PFNGLFRAMEBUFFERTEXTURE2D_PROC   glFramebufferTexture2D_;
 PFNGLCHECKFRAMEBUFFERSTATUS_PROC glCheckFramebufferStatus_;
 
 PFNGLSTRINGMARKERGREMEDY_PROC    glStringMarkerGREMEDY_;
-=======
-#if !ENABLE_OPENGLES
-
-PFNGLCLIENTACTIVETEXTURE_PROC glClientActiveTexture_;
-PFNGLACTIVETEXTURE_PROC       glActiveTexture_;
-
-PFNGLGENBUFFERS_PROC          glGenBuffers_;
-PFNGLBINDBUFFER_PROC          glBindBuffer_;
-PFNGLBUFFERDATA_PROC          glBufferData_;
-PFNGLBUFFERSUBDATA_PROC       glBufferSubData_;
-PFNGLDELETEBUFFERS_PROC       glDeleteBuffers_;
-PFNGLISBUFFER_PROC            glIsBuffer_;
-
-PFNGLPOINTPARAMETERFV_PROC    glPointParameterfv_;
-
-PFNGLSTRINGMARKERGREMEDY_PROC glStringMarkerGREMEDY_;
->>>>>>> origin/csy-extras
 
 #endif
 
@@ -98,11 +75,7 @@ int glext_check(const char *needle)
 
     /* Search for the given string in the OpenGL extension strings. */
 
-<<<<<<< HEAD
     for (haystack = glGetString(GL_EXTENSIONS); haystack && *haystack; haystack++)
-=======
-    for (haystack = glGetString(GL_EXTENSIONS); *haystack; haystack++)
->>>>>>> origin/csy-extras
     {
         for (c = (const GLubyte *) needle; *c && *haystack; c++, haystack++)
             if (*c != *haystack)
@@ -119,11 +92,7 @@ int glext_assert(const char *ext)
 {
     if (!glext_check(ext))
     {
-<<<<<<< HEAD
         log_printf("Missing required OpenGL extension (%s)\n", ext);
-=======
-        fprintf(stderr, "Missing required OpenGL extension (%s)\n", ext);
->>>>>>> origin/csy-extras
         return 0;
     }
     return 1;
@@ -131,22 +100,15 @@ int glext_assert(const char *ext)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 #define SDL_GL_GFPA(fun, str) do {                       \
     ptr = SDL_GL_GetProcAddress(str);                    \
     if (!ptr)                                            \
         log_printf("Missing OpenGL function %s\n", str); \
     memcpy(&fun, &ptr, sizeof (void *));                 \
-=======
-#define SDL_GL_GFPA(fun, str) do {       \
-    ptr = SDL_GL_GetProcAddress(str);    \
-    memcpy(&fun, &ptr, sizeof (void *)); \
->>>>>>> origin/csy-extras
 } while(0)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 static void log_opengl(void)
 {
     log_printf("GL vendor: %s\n"
@@ -167,17 +129,10 @@ int glext_fail(const char *title, const char *message)
 
 int glext_init(void)
 {
-=======
-int glext_init(void)
-{
-    void *ptr = 0;
-
->>>>>>> origin/csy-extras
     memset(&gli, 0, sizeof (struct gl_info));
 
     /* Common init. */
 
-<<<<<<< HEAD
     glGetIntegerv(GL_MAX_TEXTURE_SIZE,  &gli.max_texture_size);
     glGetIntegerv(GL_MAX_TEXTURE_UNITS, &gli.max_texture_units);
 
@@ -193,22 +148,6 @@ int glext_init(void)
     {
         SDL_GL_GFPA(glClientActiveTexture_, "glClientActiveTextureARB");
         SDL_GL_GFPA(glActiveTexture_,       "glActiveTextureARB");
-=======
-    gli.max_texture_units = 1;
-    glGetIntegerv(GL_MAX_TEXTURE_SIZE, &gli.max_texture_size);
-
-#if !ENABLE_OPENGLES
-    /* Desktop init. */
-
-    if (glext_assert("ARB_multitexture"))
-    {
-        glGetIntegerv(GL_MAX_TEXTURE_UNITS, &gli.max_texture_units);
-
-        SDL_GL_GFPA(glClientActiveTexture_, "glClientActiveTextureARB");
-        SDL_GL_GFPA(glActiveTexture_,       "glActiveTextureARB");
-
-        gli.multitexture = 1;
->>>>>>> origin/csy-extras
     }
 
     if (glext_assert("ARB_vertex_buffer_object"))
@@ -219,16 +158,10 @@ int glext_init(void)
         SDL_GL_GFPA(glBufferSubData_,       "glBufferSubDataARB");
         SDL_GL_GFPA(glDeleteBuffers_,       "glDeleteBuffersARB");
         SDL_GL_GFPA(glIsBuffer_,            "glIsBufferARB");
-<<<<<<< HEAD
-=======
-
-        gli.vertex_buffer_object = 1;
->>>>>>> origin/csy-extras
     }
 
     if (glext_assert("ARB_point_parameters"))
     {
-<<<<<<< HEAD
         SDL_GL_GFPA(glPointParameterf_,    "glPointParameterfARB");
         SDL_GL_GFPA(glPointParameterfv_,   "glPointParameterfvARB");
     }
@@ -266,38 +199,16 @@ int glext_init(void)
         SDL_GL_GFPA(glCheckFramebufferStatus_, "glCheckFramebufferStatus");
 
         gli.framebuffer_object = 1;
-=======
-        SDL_GL_GFPA(glPointParameterfv_,   "glPointParameterfvARB");
-
-        gli.point_parameters = 1;
->>>>>>> origin/csy-extras
     }
 
     if (glext_check("GREMEDY_string_marker"))
         SDL_GL_GFPA(glStringMarkerGREMEDY_, "glStringMarkerGREMEDY");
 
-<<<<<<< HEAD
 #endif
 
     log_opengl();
 
     return 1;
-=======
-    return (gli.multitexture &&
-            gli.vertex_buffer_object &&
-            gli.point_parameters);
-#else
-    /* GLES init. */
-
-    glGetIntegerv(GL_MAX_TEXTURE_UNITS, &gli.max_texture_units);
-
-    gli.multitexture = 1;
-    gli.vertex_buffer_object = 1;
-    gli.point_parameters = 1;
-
-    return 1;
-#endif
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -329,7 +240,6 @@ void glClipPlane4f_(GLenum p, GLfloat a, GLfloat b, GLfloat c, GLfloat d)
 #endif
 }
 
-<<<<<<< HEAD
 void glBindTexture_(GLenum target, GLuint texture)
 {
     if (gli.wireframe)
@@ -350,6 +260,4 @@ void glToggleWireframe_(void)
 #endif
 }
 
-=======
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/

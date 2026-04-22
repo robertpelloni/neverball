@@ -120,11 +120,7 @@ fill_input_buffer (j_decompress_ptr cinfo)
   my_src_ptr src = (my_src_ptr) cinfo->src;
   size_t nbytes;
 
-<<<<<<< HEAD
   nbytes = fs_read(src->buffer, INPUT_BUF_SIZE, src->infile);
-=======
-  nbytes = fs_read(src->buffer, 1, INPUT_BUF_SIZE, src->infile);
->>>>>>> origin/csy-extras
 
   if (nbytes <= 0) {
     if (src->start_of_file)	/* Treat empty input file as fatal error */

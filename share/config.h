@@ -20,10 +20,7 @@
 /* Integer options. */
 
 extern int CONFIG_FULLSCREEN;
-<<<<<<< HEAD
 extern int CONFIG_DISPLAY;
-=======
->>>>>>> origin/csy-extras
 extern int CONFIG_WIDTH;
 extern int CONFIG_HEIGHT;
 extern int CONFIG_STEREO;
@@ -37,16 +34,11 @@ extern int CONFIG_BACKGROUND;
 extern int CONFIG_SHADOW;
 extern int CONFIG_AUDIO_BUFF;
 extern int CONFIG_MOUSE_SENSE;
-<<<<<<< HEAD
 extern int CONFIG_MOUSE_RESPONSE;
 extern int CONFIG_MOUSE_INVERT;
 extern int CONFIG_VSYNC;
 extern int CONFIG_HMD;
 extern int CONFIG_HIGHDPI;
-=======
-extern int CONFIG_MOUSE_INVERT;
-extern int CONFIG_VSYNC;
->>>>>>> origin/csy-extras
 extern int CONFIG_MOUSE_CAMERA_1;
 extern int CONFIG_MOUSE_CAMERA_2;
 extern int CONFIG_MOUSE_CAMERA_3;
@@ -58,7 +50,6 @@ extern int CONFIG_FPS;
 extern int CONFIG_SOUND_VOLUME;
 extern int CONFIG_MUSIC_VOLUME;
 extern int CONFIG_JOYSTICK;
-<<<<<<< HEAD
 extern int CONFIG_JOYSTICK_RESPONSE;
 extern int CONFIG_JOYSTICK_AXIS_X0;
 extern int CONFIG_JOYSTICK_AXIS_Y0;
@@ -104,6 +95,7 @@ extern int CONFIG_KEY_RIGHT;
 extern int CONFIG_KEY_RESTART;
 extern int CONFIG_KEY_SCORE_NEXT;
 extern int CONFIG_KEY_ROTATE_FAST;
+extern int CONFIG_KEY_DASH;
 extern int CONFIG_VIEW_FOV;
 extern int CONFIG_VIEW_DP;
 extern int CONFIG_VIEW_DC;
@@ -127,65 +119,12 @@ extern int CONFIG_PHYSICS;
 
 /* String options. */
 
-=======
-extern int CONFIG_JOYSTICK_DEVICE;
-extern int CONFIG_JOYSTICK_AXIS_X;
-extern int CONFIG_JOYSTICK_AXIS_Y;
-extern int CONFIG_JOYSTICK_AXIS_U;
-extern int CONFIG_JOYSTICK_AXIS_X_INVERT;
-extern int CONFIG_JOYSTICK_AXIS_Y_INVERT;
-extern int CONFIG_JOYSTICK_AXIS_U_INVERT;
-extern int CONFIG_JOYSTICK_BUTTON_A;
-extern int CONFIG_JOYSTICK_BUTTON_B;
-extern int CONFIG_JOYSTICK_BUTTON_R;
-extern int CONFIG_JOYSTICK_BUTTON_L;
-extern int CONFIG_JOYSTICK_BUTTON_EXIT;
-extern int CONFIG_JOYSTICK_CAMERA_1;
-extern int CONFIG_JOYSTICK_CAMERA_2;
-extern int CONFIG_JOYSTICK_CAMERA_3;
-extern int CONFIG_JOYSTICK_DPAD_L;
-extern int CONFIG_JOYSTICK_DPAD_R;
-extern int CONFIG_JOYSTICK_DPAD_U;
-extern int CONFIG_JOYSTICK_DPAD_D;
-extern int CONFIG_JOYSTICK_CAMERA_TOGGLE;
-extern int CONFIG_JOYSTICK_ROTATE_FAST;
-extern int CONFIG_KEY_CAMERA_1;
-extern int CONFIG_KEY_CAMERA_2;
-extern int CONFIG_KEY_CAMERA_3;
-extern int CONFIG_KEY_CAMERA_TOGGLE;
-extern int CONFIG_KEY_CAMERA_R;
-extern int CONFIG_KEY_CAMERA_L;
-extern int CONFIG_KEY_FORWARD;
-extern int CONFIG_KEY_BACKWARD;
-extern int CONFIG_KEY_LEFT;
-extern int CONFIG_KEY_RIGHT;
-extern int CONFIG_KEY_PAUSE;
-extern int CONFIG_KEY_RESTART;
-extern int CONFIG_KEY_SCORE_NEXT;
-extern int CONFIG_KEY_ROTATE_FAST;
-extern int CONFIG_VIEW_FOV;
-extern int CONFIG_VIEW_DP;
-extern int CONFIG_VIEW_DC;
-extern int CONFIG_VIEW_DZ;
-extern int CONFIG_ROTATE_FAST;
-extern int CONFIG_ROTATE_SLOW;
-extern int CONFIG_CHEAT;
-extern int CONFIG_STATS;
-extern int CONFIG_SCREENSHOT;
-extern int CONFIG_LOCK_GOALS;
-
-/* String options. */
-
->>>>>>> origin/csy-extras
 extern int CONFIG_PLAYER;
 extern int CONFIG_BALL_FILE;
 extern int CONFIG_WIIMOTE_ADDR;
 extern int CONFIG_REPLAY_NAME;
-<<<<<<< HEAD
 extern int CONFIG_LANGUAGE;
 extern int CONFIG_THEME;
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -203,11 +142,8 @@ int  config_get_d(int);
 
 void        config_set_s(int, const char *);
 const char *config_get_s(int);
-<<<<<<< HEAD
 
 void config_set(const char *key, const char *val);
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 

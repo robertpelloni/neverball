@@ -24,15 +24,14 @@
 void ball_init(void);
 void ball_free(void);
 
-<<<<<<< HEAD
 void ball_step(float);
 
-=======
->>>>>>> origin/csy-extras
 void ball_draw(struct s_rend *,
                const float *,
                const float *,
                const float *, float);
+
+void ball_draw_geom(void);
 
 /*---------------------------------------------------------------------------*/
 

@@ -520,12 +520,22 @@ BALL_OBJS := \
 <<<<<<< HEAD
 	ball/st_party.o     \
 	ball/st_story.o     \
+<<<<<<< HEAD
 	ball/profile.o      \
 	ball/stats.o        \
 	ball/char.o         \
 	ball/st_char.o      \
 =======
 >>>>>>> origin/csy-extras
+=======
+	ball/st_shop.o      \
+	ball/st_edit.o      \
+	ball/profile.o      \
+	ball/achieve.o      \
+	ball/stats.o        \
+	ball/char.o         \
+	ball/st_char.o      \
+>>>>>>> origin/party-games-ui-docs-8101435436098214570
 	ball/st_ball.o      \
 	ball/main.o
 PUTT_OBJS := \

@@ -39,11 +39,8 @@
 #include <GL/glext.h>
 #endif
 
-<<<<<<< HEAD
 #endif  /* ENABLE_OPENGLES */
 
-=======
->>>>>>> origin/csy-extras
 /* Windows calling convention cruft. */
 
 #ifndef APIENTRY
@@ -63,17 +60,9 @@
 #ifndef GL_TEXTURE0
 #define GL_TEXTURE0                   0x84C0
 #endif
-<<<<<<< HEAD
 #ifndef GL_TEXTURE1
 #define GL_TEXTURE1                   0x84C1
 #endif
-=======
-
-#ifndef GL_TEXTURE1
-#define GL_TEXTURE1                   0x84C1
-#endif
-
->>>>>>> origin/csy-extras
 #ifndef GL_TEXTURE2
 #define GL_TEXTURE2                   0x84C2
 #endif
@@ -81,10 +70,6 @@
 #ifndef GL_ARRAY_BUFFER
 #define GL_ARRAY_BUFFER               0x8892
 #endif
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/csy-extras
 #ifndef GL_ELEMENT_ARRAY_BUFFER
 #define GL_ELEMENT_ARRAY_BUFFER       0x8893
 #endif
@@ -92,10 +77,6 @@
 #ifndef GL_STATIC_DRAW
 #define GL_STATIC_DRAW                0x88E4
 #endif
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/csy-extras
 #ifndef GL_DYNAMIC_DRAW
 #define GL_DYNAMIC_DRAW               0x88E8
 #endif
@@ -103,7 +84,6 @@
 #ifndef GL_POINT_SPRITE
 #define GL_POINT_SPRITE               0x8861
 #endif
-<<<<<<< HEAD
 #ifndef GL_COORD_REPLACE
 #define GL_COORD_REPLACE              0x8862
 #endif
@@ -113,18 +93,10 @@
 #ifndef GL_POINT_SIZE_MAX
 #define GL_POINT_SIZE_MAX             0x8127
 #endif
-=======
-
-#ifndef GL_COORD_REPLACE
-#define GL_COORD_REPLACE              0x8862
-#endif
-
->>>>>>> origin/csy-extras
 #ifndef GL_POINT_DISTANCE_ATTENUATION
 #define GL_POINT_DISTANCE_ATTENUATION 0x8129
 #endif
 
-<<<<<<< HEAD
 #ifndef GL_SRC0_RGB
 #define GL_SRC0_RGB                   0x8580
 #endif
@@ -179,8 +151,6 @@
 #define GL_INFO_LOG_LENGTH            0x8B84
 #endif
 
-=======
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 int glext_check(const char *);
@@ -193,15 +163,7 @@ int glext_init(void);
 /* of the extensions we use. Otherwise, GetProc them regardless of whether   */
 /* they need it or not.                                                      */
 
-<<<<<<< HEAD
 #if ENABLE_OPENGLES || defined(__EMSCRIPTEN__)
-=======
-#if defined(GL_VERSION_ES_CM_1_0) || \
-    defined(GL_VERSION_ES_CM_1_1) || \
-    defined(GL_OES_VERSION_1_0)
-
-#define ENABLE_OPENGLES 1
->>>>>>> origin/csy-extras
 
 #define glClientActiveTexture_ glClientActiveTexture
 #define glActiveTexture_       glActiveTexture
@@ -212,7 +174,6 @@ int glext_init(void);
 #define glDeleteBuffers_       glDeleteBuffers
 #define glIsBuffer_            glIsBuffer
 #define glPointParameterfv_    glPointParameterfv
-<<<<<<< HEAD
 #define glPointParameterf_     glPointParameterf
 
 #ifdef __EMSCRIPTEN__
@@ -220,10 +181,6 @@ int glext_init(void);
 #else
 #define glOrtho_               glOrthof
 #endif
-=======
-
-#define glOrtho_               glOrthof
->>>>>>> origin/csy-extras
 
 #define glStringMarker_(s) ((void) (s))
 
@@ -245,13 +202,8 @@ extern PFNGLACTIVETEXTURE_PROC       glActiveTexture_;
 
 typedef void      (APIENTRYP PFNGLGENBUFFERS_PROC)(GLsizei, GLuint *);
 typedef void      (APIENTRYP PFNGLBINDBUFFER_PROC)(GLenum, GLuint);
-<<<<<<< HEAD
 typedef void      (APIENTRYP PFNGLBUFFERDATA_PROC)(GLenum, long, const GLvoid *, GLenum);
 typedef void      (APIENTRYP PFNGLBUFFERSUBDATA_PROC)(GLenum, long, long, const GLvoid *);
-=======
-typedef void      (APIENTRYP PFNGLBUFFERDATA_PROC)(GLenum, GLsizeiptr, const GLvoid *, GLenum);
-typedef void      (APIENTRYP PFNGLBUFFERSUBDATA_PROC)(GLenum, GLintptr, GLsizeiptr, const GLvoid *);
->>>>>>> origin/csy-extras
 typedef void      (APIENTRYP PFNGLDELETEBUFFERS_PROC)(GLsizei, const GLuint *);
 typedef GLboolean (APIENTRYP PFNGLISBUFFER_PROC)(GLuint);
 
@@ -266,7 +218,6 @@ extern PFNGLISBUFFER_PROC      glIsBuffer_;
 /* ARB_point_parameters                                                      */
 
 typedef void (APIENTRYP PFNGLPOINTPARAMETERFV_PROC)(GLenum, const GLfloat *);
-<<<<<<< HEAD
 typedef void (APIENTRYP PFNGLPOINTPARAMETERF_PROC) (GLenum, const GLfloat);
 
 extern PFNGLPOINTPARAMETERFV_PROC glPointParameterfv_;
@@ -327,10 +278,6 @@ extern PFNGLDELETEFRAMEBUFFERS_PROC     glDeleteFramebuffers_;
 extern PFNGLGENFRAMEBUFFERS_PROC        glGenFramebuffers_;
 extern PFNGLFRAMEBUFFERTEXTURE2D_PROC   glFramebufferTexture2D_;
 extern PFNGLCHECKFRAMEBUFFERSTATUS_PROC glCheckFramebufferStatus_;
-=======
-
-extern PFNGLPOINTPARAMETERFV_PROC glPointParameterfv_;
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 /* GREMEDY_string_marker                                                     */
@@ -344,17 +291,11 @@ extern PFNGLSTRINGMARKERGREMEDY_PROC glStringMarkerGREMEDY_;
         glStringMarkerGREMEDY_(0, (s))
 
 /*---------------------------------------------------------------------------*/
-<<<<<<< HEAD
 #endif /* ENABLE_OPENGLES || defined(__EMSCRIPTEN__) */
 
 void glClipPlane4f_(GLenum, GLfloat, GLfloat, GLfloat, GLfloat);
 void glBindTexture_(GLenum target, GLuint texture);
 void glToggleWireframe_(void);
-=======
-#endif /* !ENABLE_OPENGLES */
-
-void glClipPlane4f_(GLenum, GLfloat, GLfloat, GLfloat, GLfloat);
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -363,17 +304,11 @@ struct gl_info
     GLint max_texture_units;
     GLint max_texture_size;
 
-<<<<<<< HEAD
     unsigned int texture_filter_anisotropic : 1;
     unsigned int shader_objects             : 1;
     unsigned int framebuffer_object         : 1;
 
     unsigned int wireframe:1;
-=======
-    unsigned int multitexture:1;
-    unsigned int vertex_buffer_object:1;
-    unsigned int point_parameters:1;
->>>>>>> origin/csy-extras
 };
 
 extern struct gl_info gli;

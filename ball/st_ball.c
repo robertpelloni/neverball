@@ -13,10 +13,7 @@
  */
 
 #include "gui.h"
-<<<<<<< HEAD
 #include "transition.h"
-=======
->>>>>>> origin/csy-extras
 #include "state.h"
 #include "array.h"
 #include "dir.h"
@@ -29,10 +26,7 @@
 #include "geom.h"
 #include "video.h"
 #include "demo.h"
-<<<<<<< HEAD
 #include "key.h"
-=======
->>>>>>> origin/csy-extras
 
 #include "game_server.h"
 #include "game_proxy.h"
@@ -43,16 +37,6 @@
 #include "st_conf.h"
 #include "st_shared.h"
 
-<<<<<<< HEAD
-=======
-enum
-{
-    BALL_NEXT = GUI_LAST,
-    BALL_PREV,
-    BALL_BACK
-};
-
->>>>>>> origin/csy-extras
 static Array balls;
 static int   curr_ball;
 static char  ball_file[64];
@@ -89,15 +73,12 @@ static int has_ball_sols(struct dir_item *item)
     return yes;
 }
 
-<<<<<<< HEAD
 static int cmp_dir_items(const void *A, const void *B)
 {
     const struct dir_item *a = A, *b = B;
     return strcmp(a->path, b->path);
 }
 
-=======
->>>>>>> origin/csy-extras
 static void scan_balls(void)
 {
     int i;
@@ -106,11 +87,8 @@ static void scan_balls(void)
 
     if ((balls = fs_dir_scan("ball", has_ball_sols)))
     {
-<<<<<<< HEAD
         array_sort(balls, cmp_dir_items);
 
-=======
->>>>>>> origin/csy-extras
         for (i = 0; i < array_len(balls); i++)
         {
             const char *path = DIR_ITEM_GET(balls, i)->path;
@@ -130,19 +108,11 @@ static void free_balls(void)
     balls = NULL;
 }
 
-<<<<<<< HEAD
 static void set_curr_ball(int ball_index)
 {
     sprintf(ball_file, "%s/%s",
             DIR_ITEM_GET(balls, ball_index)->path,
             base_name(DIR_ITEM_GET(balls, ball_index)->path));
-=======
-static void set_curr_ball(void)
-{
-    sprintf(ball_file, "%s/%s",
-            DIR_ITEM_GET(balls, curr_ball)->path,
-            base_name(DIR_ITEM_GET(balls, curr_ball)->path));
->>>>>>> origin/csy-extras
 
     config_set_s(CONFIG_BALL_FILE, ball_file);
 
@@ -158,7 +128,6 @@ static int ball_action(int tok, int val)
 
     switch (tok)
     {
-<<<<<<< HEAD
     case GUI_NEXT:
         if (++curr_ball == array_len(balls))
             curr_ball = 0;
@@ -177,26 +146,6 @@ static int ball_action(int tok, int val)
 
     case GUI_BACK:
         exit_state(&st_conf);
-=======
-    case BALL_NEXT:
-        if (++curr_ball == array_len(balls))
-            curr_ball = 0;
-
-        set_curr_ball();
-
-        break;
-
-    case BALL_PREV:
-        if (--curr_ball == -1)
-            curr_ball = array_len(balls) - 1;
-
-        set_curr_ball();
-
-        break;
-
-    case BALL_BACK:
-        goto_state(&st_conf);
->>>>>>> origin/csy-extras
         break;
     }
 
@@ -211,11 +160,7 @@ static void load_ball_demo(void)
 
     if (!demo_replay_init("gui/ball.nbr", &g, NULL, NULL, NULL, NULL))
     {
-<<<<<<< HEAD
         ball_action(GUI_BACK, 0);
-=======
-        ball_action(BALL_BACK, 0);
->>>>>>> origin/csy-extras
         return;
     }
 
@@ -236,22 +181,14 @@ static int ball_gui(void)
         {
             gui_label(jd, _("Ball Model"), GUI_SML, 0, 0);
             gui_space(jd);
-<<<<<<< HEAD
             gui_start(jd, _("Back"), GUI_SML, GUI_BACK, 0);
-=======
-            gui_start(jd, _("Back"), GUI_SML, BALL_BACK, 0);
->>>>>>> origin/csy-extras
         }
 
         gui_space(id);
 
         if ((jd = gui_hstack(id)))
         {
-<<<<<<< HEAD
             gui_state(jd, " " GUI_TRIANGLE_RIGHT " ", GUI_SML, GUI_NEXT, 0);
-=======
-            gui_state(jd, " > ", GUI_SML, BALL_NEXT, 0);
->>>>>>> origin/csy-extras
 
             name_id = gui_label(jd, "very-long-ball-name", GUI_SML,
                                 gui_wht, gui_wht);
@@ -259,11 +196,7 @@ static int ball_gui(void)
             gui_set_trunc(name_id, TRUNC_TAIL);
             gui_set_fill(name_id);
 
-<<<<<<< HEAD
             gui_state(jd, " " GUI_TRIANGLE_LEFT " ", GUI_SML, GUI_PREV, 0);
-=======
-            gui_state(jd, " < ", GUI_SML, BALL_PREV, 0);
->>>>>>> origin/csy-extras
         }
 
         for (i = 0; i < 12; i++)
@@ -277,16 +210,11 @@ static int ball_gui(void)
     return id;
 }
 
-<<<<<<< HEAD
 static int ball_enter(struct state *st, struct state *prev, int intent)
-=======
-static int ball_enter(struct state *st, struct state *prev)
->>>>>>> origin/csy-extras
 {
     scan_balls();
     load_ball_demo();
 
-<<<<<<< HEAD
     return transition_slide(ball_gui(), 1, intent);
 }
 
@@ -296,17 +224,6 @@ static int ball_leave(struct state *st, struct state *next, int id, int intent)
     demo_replay_stop(0);
     free_balls();
     return transition_slide(id, 0, intent);
-=======
-    return ball_gui();
-}
-
-static void ball_leave(struct state *st, struct state *next, int id)
-{
-    gui_delete(id);
-    back_free();
-    demo_replay_stop(0);
-    free_balls();
->>>>>>> origin/csy-extras
 }
 
 static void ball_paint(int id, float t)
@@ -334,7 +251,6 @@ static void ball_timer(int id, float dt)
     game_client_blend(demo_replay_blend());
 }
 
-<<<<<<< HEAD
 static int ball_keybd(int c, int d)
 {
     int initial_fov = config_get_d(CONFIG_VIEW_FOV);
@@ -405,9 +321,6 @@ static int ball_keybd(int c, int d)
 }
 
 static int ball_buttn(int b, int d, int device_id)
-=======
-static int ball_buttn(int b, int d)
->>>>>>> origin/csy-extras
 {
     if (d)
     {
@@ -416,7 +329,6 @@ static int ball_buttn(int b, int d)
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return ball_action(gui_token(active), gui_value(active));
 
-<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
             return ball_action(GUI_BACK, 0);
 
@@ -424,10 +336,6 @@ static int ball_buttn(int b, int d)
             return ball_action(GUI_PREV, 0);
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_R1, b))
             return ball_action(GUI_NEXT, 0);
-=======
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
-            return ball_action(BALL_BACK, 0);
->>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -441,10 +349,6 @@ struct state st_ball = {
     shared_stick,
     NULL,
     shared_click,
-<<<<<<< HEAD
     ball_keybd,
-=======
-    NULL,
->>>>>>> origin/csy-extras
     ball_buttn
 };

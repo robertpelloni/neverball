@@ -20,7 +20,6 @@
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 /*
  * Find an existing mover for the given path index or allocate a new one.
  */
@@ -67,21 +66,14 @@ static void setup_mover(struct alloc *alloc, const struct s_vary *fp, int pi, in
 int sol_load_vary(struct s_vary *fp, struct s_base *base)
 {
     struct alloc mover_alloc;
-=======
-int sol_load_vary(struct s_vary *fp, const struct s_base *base)
-{
->>>>>>> origin/csy-extras
     int i;
 
     memset(fp, 0, sizeof (*fp));
 
     fp->base = base;
 
-<<<<<<< HEAD
     alloc_new(&mover_alloc, sizeof (*fp->mv), (void **) &fp->mv, &fp->mc);
 
-=======
->>>>>>> origin/csy-extras
     if (fp->base->pc)
     {
         fp->pv = calloc(fp->base->pc, sizeof (*fp->pv));
@@ -94,18 +86,14 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
 
             pp->base = pq;
             pp->f    = pq->f;
-<<<<<<< HEAD
 
             setup_mover(&mover_alloc, fp, pq->p0, &pp->mi);
             setup_mover(&mover_alloc, fp, pq->p1, &pp->mj);
-=======
->>>>>>> origin/csy-extras
         }
     }
 
     if (fp->base->bc)
     {
-<<<<<<< HEAD
         fp->bv = calloc(fp->base->bc, sizeof (*fp->bv));
         fp->bc = fp->base->bc;
 
@@ -118,45 +106,6 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
 
             setup_mover(&mover_alloc, fp, bq->p0, &bp->mi);
             setup_mover(&mover_alloc, fp, bq->p1, &bp->mj);
-=======
-        struct alloc mv;
-
-        fp->bv = calloc(fp->base->bc, sizeof (*fp->bv));
-        fp->bc = fp->base->bc;
-
-        alloc_new(&mv, sizeof (*fp->mv), (void **) &fp->mv, &fp->mc);
-
-        for (i = 0; i < fp->base->bc; i++)
-        {
-            struct b_body *bbody = fp->base->bv + i;
-            struct v_body *vbody = fp->bv + i;
-            struct v_move *vmove;
-
-            vbody->base = bbody;
-
-            vbody->mi = -1;
-            vbody->mj = -1;
-
-            if (bbody->pi >= 0 && (vmove = alloc_add(&mv)))
-            {
-                memset(vmove, 0, sizeof (*vmove));
-
-                vbody->mi = fp->mc - 1;
-                vmove->pi = bbody->pi;
-            }
-
-            if (bbody->pj == bbody->pi)
-            {
-                vbody->mj = vbody->mi;
-            }
-            else if (bbody->pj >= 0 && (vmove = alloc_add(&mv)))
-            {
-                memset(vmove, 0, sizeof (*vmove));
-
-                vbody->mj = fp->mc - 1;
-                vmove->pi = bbody->pj;
-            }
->>>>>>> origin/csy-extras
         }
     }
 
@@ -174,7 +123,6 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
 
             hp->t = hq->t;
             hp->n = hq->n;
-<<<<<<< HEAD
 
             setup_mover(&mover_alloc, fp, hq->p0, &hp->mi);
             setup_mover(&mover_alloc, fp, hq->p1, &hp->mj);
@@ -208,8 +156,6 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
 
             setup_mover(&mover_alloc, fp, jq->p0, &jp->mi);
             setup_mover(&mover_alloc, fp, jq->p1, &jp->mj);
-=======
->>>>>>> origin/csy-extras
         }
     }
 
@@ -227,7 +173,6 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
             xp->t    = xq->t;
             xp->tm   = xq->tm;
             xp->f    = xq->f;
-<<<<<<< HEAD
 
             setup_mover(&mover_alloc, fp, xq->p0, &xp->mi);
             setup_mover(&mover_alloc, fp, xq->p1, &xp->mj);
@@ -246,8 +191,6 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
 
             setup_mover(&mover_alloc, fp, rq->p0, &rp->mi);
             setup_mover(&mover_alloc, fp, rq->p1, &rp->mj);
-=======
->>>>>>> origin/csy-extras
         }
     }
 
@@ -264,7 +207,6 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
             v_cpy(up->p, uq->p);
 
             up->r = uq->r;
-<<<<<<< HEAD
             up->r_vel = 0.0f;
 
             up->sizes[0] = uq->r * GROW_SMALL;
@@ -272,8 +214,6 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
             up->sizes[2] = uq->r * GROW_BIG;
 
             up->size = 1;
-=======
->>>>>>> origin/csy-extras
 
             up->E[0][0] = up->e[0][0] = 1.0f;
             up->E[0][1] = up->e[0][1] = 0.0f;
@@ -286,11 +226,8 @@ int sol_load_vary(struct s_vary *fp, const struct s_base *base)
             up->E[2][0] = up->e[2][0] = 0.0f;
             up->E[2][1] = up->e[2][1] = 0.0f;
             up->E[2][2] = up->e[2][2] = 1.0f;
-<<<<<<< HEAD
 
             up->mass = 1.0f;
-=======
->>>>>>> origin/csy-extras
         }
     }
 
@@ -304,10 +241,7 @@ void sol_free_vary(struct s_vary *fp)
     free(fp->mv);
     free(fp->hv);
     free(fp->xv);
-<<<<<<< HEAD
     free(fp->zv);
-=======
->>>>>>> origin/csy-extras
     free(fp->uv);
 
     memset(fp, 0, sizeof (*fp));
@@ -315,7 +249,6 @@ void sol_free_vary(struct s_vary *fp)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 /*
  * Check if path movers need their transforms recalculated.
  *
@@ -381,8 +314,6 @@ int sol_vary_cmd(struct s_vary *fp, struct cmd_state *cs, const union cmd *cmd)
 
 /*---------------------------------------------------------------------------*/
 
-=======
->>>>>>> origin/csy-extras
 #define CURR 0
 #define PREV 1
 
@@ -391,19 +322,14 @@ int sol_lerp_cmd(struct s_lerp *fp, struct cmd_state *cs, const union cmd *cmd)
     struct l_ball (*uv)[2];
     struct l_ball *up;
 
-<<<<<<< HEAD
     int idx, mi, i;
     int rc = 0;
-=======
-    int i, rc = 0;
->>>>>>> origin/csy-extras
 
     switch (cmd->type)
     {
     case CMD_MAKE_BALL:
         if ((uv = realloc(fp->uv, sizeof (*uv) * (fp->uc + 1))))
         {
-<<<<<<< HEAD
             fp->uv = uv;
 
             /* Update varying state. */
@@ -411,27 +337,11 @@ int sol_lerp_cmd(struct s_lerp *fp, struct cmd_state *cs, const union cmd *cmd)
             if (sol_vary_cmd(fp->vary, cs, cmd))
             {
                 fp->uc++;
-=======
-            struct v_ball *up;
-
-            fp->uv = uv;
-            fp->uc++;
-
-            /* Sync the main structure. */
-
-            if ((up = realloc(fp->vary->uv, sizeof (*up) * fp->uc)))
-            {
-                fp->vary->uv = up;
-                fp->vary->uc = fp->uc;
-
-                cs->curr_ball = fp->uc - 1;
->>>>>>> origin/csy-extras
                 rc = 1;
             }
         }
         break;
 
-<<<<<<< HEAD
     case CMD_MOVE_PATH:
         if ((mi = cmd->movepath.mi) >= 0 && mi < fp->mc)
         {
@@ -470,34 +380,6 @@ int sol_lerp_cmd(struct s_lerp *fp, struct cmd_state *cs, const union cmd *cmd)
         {
             fp->mv[mi][CURR].t = cmd->bodytime.t;
         }
-=======
-    case CMD_BODY_PATH:
-    case CMD_BODY_TIME:
-        /* Backward compatibility: update linear mover only. */
-
-        if (cmd->type == CMD_BODY_PATH)
-        {
-            int mi;
-
-            if ((mi = fp->vary->bv[cmd->bodypath.bi].mi) >= 0)
-                fp->mv[mi][CURR].pi = cmd->bodypath.pi;
-        }
-        if (cmd->type == CMD_BODY_TIME)
-        {
-            int mi;
-
-            if ((mi = fp->vary->bv[cmd->bodytime.bi].mi) >= 0)
-                fp->mv[mi][CURR].t = cmd->bodytime.t;
-        }
-        break;
-
-    case CMD_MOVE_PATH:
-        fp->mv[cmd->movepath.mi][CURR].pi = cmd->movepath.pi;
-        break;
-
-    case CMD_MOVE_TIME:
-        fp->mv[cmd->movepath.mi][CURR].t = cmd->movetime.t;
->>>>>>> origin/csy-extras
         break;
 
     case CMD_BALL_RADIUS:
@@ -509,14 +391,8 @@ int sol_lerp_cmd(struct s_lerp *fp, struct cmd_state *cs, const union cmd *cmd)
         fp->uv = NULL;
         fp->uc = 0;
 
-<<<<<<< HEAD
         sol_vary_cmd(fp->vary, cs, cmd);
 
-=======
-        free(fp->vary->uv);
-        fp->vary->uv = NULL;
-        fp->vary->uc = 0;
->>>>>>> origin/csy-extras
         break;
 
     case CMD_BALL_POSITION:
@@ -578,22 +454,15 @@ void sol_lerp_apply(struct s_lerp *fp, float a)
 
     for (i = 0; i < fp->mc; i++)
     {
-<<<<<<< HEAD
         const float old_t = fp->vary->mv[i].t;
         const int old_pi = fp->vary->mv[i].pi;
 
         if (fp->mv[i][PREV].pi == fp->mv[i][CURR].pi)
             fp->vary->mv[i].t = flerp(fp->mv[i][PREV].t, fp->mv[i][CURR].t, a);
-=======
-        if (fp->mv[i][PREV].pi == fp->mv[i][CURR].pi)
-            fp->vary->mv[i].t = (fp->mv[i][PREV].t * (1.0f - a) +
-                                 fp->mv[i][CURR].t * a);
->>>>>>> origin/csy-extras
         else
             fp->vary->mv[i].t = fp->mv[i][CURR].t * a;
 
         fp->vary->mv[i].pi = fp->mv[i][CURR].pi;
-<<<<<<< HEAD
 
         if (!(fp->vary->mv[i].t == old_t && fp->vary->mv[i].pi == old_pi))
         {
@@ -601,8 +470,6 @@ void sol_lerp_apply(struct s_lerp *fp, float a)
 
             set_move_dirty(fp->vary, i, 1u);
         }
-=======
->>>>>>> origin/csy-extras
     }
 
     for (i = 0; i < fp->uc; i++)
@@ -611,12 +478,7 @@ void sol_lerp_apply(struct s_lerp *fp, float a)
         v_lerp(fp->vary->uv[i].p, fp->uv[i][PREV].p, fp->uv[i][CURR].p, a);
         e_lerp(fp->vary->uv[i].E, fp->uv[i][PREV].E, fp->uv[i][CURR].E, a);
 
-<<<<<<< HEAD
         fp->vary->uv[i].r = flerp(fp->uv[i][PREV].r, fp->uv[i][CURR].r, a);
-=======
-        fp->vary->uv[i].r = (fp->uv[i][PREV].r * (1.0f - a) +
-                             fp->uv[i][CURR].r * a);
->>>>>>> origin/csy-extras
     }
 }
 

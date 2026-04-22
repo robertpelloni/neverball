@@ -15,20 +15,24 @@
 #include "st_play.h"
 #include "st_shared.h"
 #include "game_common.h"
+#include "game_server.h"
 
 enum {
     PARTY_MODE = GUI_LAST,
     PARTY_PLAYERS,
+    PARTY_CPU,
     PARTY_PHYSICS,
     PARTY_START
 };
 
 static int party_mode = MODE_TARGET;
 static int party_players = 1;
+static int party_cpu = 0;
 static int party_physics = 0;
 
 static int mode_id;
 static int player_id;
+static int cpu_id;
 static int physics_id;
 static int desc_id;
 
@@ -76,6 +80,9 @@ static void update_labels(void) {
     sprintf(buf, "Players: %d", party_players);
     gui_set_label(player_id, buf);
 
+    sprintf(buf, "CPUs: %d", party_cpu);
+    gui_set_label(cpu_id, buf);
+
     gui_set_label(physics_id, party_physics ? "Physics: Arcade" : "Physics: Normal");
 }
 
@@ -96,6 +103,14 @@ static int party_action(int tok, int val) {
         case PARTY_PLAYERS:
             party_players++;
             if (party_players > 4) party_players = 1;
+            /* Clamp CPUs if total > 4 */
+            if (party_players + party_cpu > 4) party_cpu = 4 - party_players;
+            update_labels();
+            break;
+
+        case PARTY_CPU:
+            party_cpu++;
+            if (party_players + party_cpu > 4) party_cpu = 0;
             update_labels();
             break;
 
@@ -105,7 +120,17 @@ static int party_action(int tok, int val) {
             break;
 
         case PARTY_START:
-            config_set_d(CONFIG_MULTIBALL, party_players);
+            config_set_d(CONFIG_MULTIBALL, party_players + party_cpu);
+            /* HACK: We need to pass CPU count to game_server. */
+            /* We can store it in a config variable or global. */
+            /* Let's reuse CONFIG_MULTIBALL for total and add logic to set CPU flags */
+            /* Actually, we need to pass this info to game_server_init */
+            /* But progress_init -> init_level -> game_server_init flow doesn't take CPU args easily without global state or config. */
+            /* Let's use a new temporary config or just a global in game_common.c */
+            /* Better: config_set_d(CONFIG_CPU_COUNT, party_cpu); */
+            /* We don't have CONFIG_CPU_COUNT. Let's use a static variable in game_server.c exposed via function? */
+            game_set_cpu_count(party_cpu);
+
             config_set_d(CONFIG_PHYSICS, party_physics);
             progress_init(party_mode);
 
@@ -133,6 +158,7 @@ static int party_gui(void) {
         desc_id = gui_multi(root, get_mode_desc(party_mode), GUI_SML, gui_wht, gui_wht);
 
         player_id = gui_state(root, "Players: 1", GUI_MED, PARTY_PLAYERS, 0);
+        cpu_id    = gui_state(root, "CPUs: 0",    GUI_MED, PARTY_CPU,     0);
         physics_id = gui_state(root, "Physics: Normal", GUI_MED, PARTY_PHYSICS, 0);
 
         gui_space(root);

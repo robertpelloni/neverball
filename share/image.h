@@ -11,7 +11,6 @@
 
 #define IF_MIPMAP 0x01
 
-<<<<<<< HEAD
 #if SDL_BYTEORDER == SDL_BIG_ENDIAN
 #define RMASK 0xFF000000
 #define GMASK 0x00FF0000
@@ -24,18 +23,13 @@
 #define AMASK 0xFF000000
 #endif
 
-=======
->>>>>>> origin/csy-extras
 void   image_snap(const char *);
 
 GLuint make_image_from_file(const char *, int);
 GLuint make_image_from_font(int *, int *,
                             int *, int *, const char *, TTF_Font *, int);
-<<<<<<< HEAD
 void   size_image_from_font(int *, int *,
                             int *, int *, const char *, TTF_Font *);
-=======
->>>>>>> origin/csy-extras
 GLuint make_texture(const void *, int, int, int, int);
 
 SDL_Surface *load_surface(const char *);

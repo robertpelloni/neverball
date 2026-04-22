@@ -24,7 +24,6 @@
 #include "vec3.h"
 #include "gui.h"
 #include "common.h"
-<<<<<<< HEAD
 #include "font.h"
 #include "theme.h"
 #include "log.h"
@@ -33,11 +32,6 @@
 #include "transition.h"
 
 #include "fs.h"
-=======
-
-#include "fs.h"
-#include "fs_rwops.h"
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -52,11 +46,8 @@ const GLubyte gui_blk[4] = { 0x00, 0x00, 0x00, 0xFF };  /* Black  */
 const GLubyte gui_gry[4] = { 0x55, 0x55, 0x55, 0xFF };  /* Gray   */
 const GLubyte gui_shd[4] = { 0x00, 0x00, 0x00, 0x80 };  /* Shadow */
 
-<<<<<<< HEAD
 const GLubyte gui_wht2[4] = { 0xFF, 0xFF, 0xFF, 0x60 };  /* Transparent white */
 
-=======
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 #define WIDGET_MAX 256
@@ -73,21 +64,15 @@ const GLubyte gui_wht2[4] = { 0xFF, 0xFF, 0xFF, 0x60 };  /* Transparent white */
 #define GUI_CLOCK  9
 #define GUI_SPACE  10
 #define GUI_BUTTON 11
-<<<<<<< HEAD
 #define GUI_ROOT   12
-=======
->>>>>>> origin/csy-extras
 
 #define GUI_STATE  1
 #define GUI_FILL   2
 #define GUI_HILITE 4
 #define GUI_RECT   8
-<<<<<<< HEAD
 #define GUI_LAYOUT 16
 #define GUI_CLIP   32
 #define GUI_OFFSET 64
-=======
->>>>>>> origin/csy-extras
 
 #define GUI_LINES 8
 
@@ -103,7 +88,6 @@ struct widget
     int     size;
     int     rect;
 
-<<<<<<< HEAD
     char   *text;
 
     int     init_value;
@@ -112,8 +96,6 @@ struct widget
     int     layout_xd;
     int     layout_yd;
 
-=======
->>>>>>> origin/csy-extras
     const GLubyte *color0;
     const GLubyte *color1;
 
@@ -129,7 +111,6 @@ struct widget
     int     text_h;
 
     enum trunc trunc;
-<<<<<<< HEAD
 
     float offset_init_x;
     float offset_init_y;
@@ -143,8 +124,6 @@ struct widget
     float slide_time;
 
     unsigned int hidden:1;
-=======
->>>>>>> origin/csy-extras
 };
 
 /*---------------------------------------------------------------------------*/
@@ -153,7 +132,6 @@ struct widget
 
 static struct widget widget[WIDGET_MAX];
 static int           active;
-<<<<<<< HEAD
 static int           hovered;
 static int           clicked;
 static int           padding;
@@ -171,32 +149,12 @@ static int cursor_st = 0;
 /* GUI theme. */
 
 static struct theme curr_theme;
-=======
-static int           sticky;
-static int           padding;
-static int           borders[4];
-static TTF_Font     *font[3] = { NULL, NULL, NULL };
-
-/* Digit widgets for the HUD. */
-
-static int digit_id[3][11];
-
-/* Font data access. */
-
-static void      *fontdata;
-static int        fontdatalen;
-static SDL_RWops *fontrwops;
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
 static int gui_hot(int id)
 {
-<<<<<<< HEAD
     return (widget[id].flags & GUI_STATE) && !widget[id].hidden;
-=======
-    return (widget[id].flags & GUI_STATE);
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -228,19 +186,6 @@ static struct vert vert_buf[WIDGET_MAX * WIDGET_VERT];
 static GLuint      vert_vbo = 0;
 static GLuint      vert_ebo = 0;
 
-<<<<<<< HEAD
-=======
-static GLuint      rect_tex[4] = {
-    0,             /* off and inactive    */
-    0,             /* off and   active    */
-    0,             /* on  and inactive    */
-    0              /* on  and   active    */
-};
-
-static float rect_t[4];
-static float rect_s[4];
-
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/
 
 static void set_vert(struct vert *v, int x, int y,
@@ -351,11 +296,7 @@ static void gui_geom_rect(int id, int x, int y, int w, int h, int f)
 
     for (i = 0; i < 4; i++)
         for (j = 0; j < 4; j++)
-<<<<<<< HEAD
             set_vert(p++, X[i], Y[j], curr_theme.s[i], curr_theme.t[j], gui_wht);
-=======
-            set_vert(p++, X[i], Y[j], rect_s[i], rect_t[j], gui_wht);
->>>>>>> origin/csy-extras
 
     for (i = 0; i < RECT_ELEM; i++)
         rect_elem[i] = id * WIDGET_VERT + rect_elem_base[i];
@@ -399,7 +340,6 @@ static void gui_geom_text(int id, int x, int y, int w, int h,
         const GLfloat s1 = 1.0f - s0;
         const GLfloat t1 = 1.0f - t0;
 
-<<<<<<< HEAD
         GLubyte color[4];
 
         color[0] = gui_shd[0];
@@ -413,14 +353,6 @@ static void gui_geom_text(int id, int x, int y, int w, int h,
         set_vert(v + 1, x      + d, y      - d, s0, t1, color);
         set_vert(v + 2, x + ww + d, y + hh - d, s1, t0, color);
         set_vert(v + 3, x + ww + d, y      - d, s1, t1, color);
-=======
-        /* Generate vertex data for the colored text and its shadow. */
-
-        set_vert(v + 0, x      + d, y + hh - d, s0, t0, gui_shd);
-        set_vert(v + 1, x      + d, y      - d, s0, t1, gui_shd);
-        set_vert(v + 2, x + ww + d, y + hh - d, s1, t0, gui_shd);
-        set_vert(v + 3, x + ww + d, y      - d, s1, t1, gui_shd);
->>>>>>> origin/csy-extras
 
         set_vert(v + 4, x,          y + hh,     s0, t0, c1);
         set_vert(v + 5, x,          y,          s0, t1, c0);
@@ -475,11 +407,6 @@ static void gui_geom_widget(int id, int flags)
     int w = widget[id].w;
     int h = widget[id].h;
 
-<<<<<<< HEAD
-=======
-    /* Recall stored width and height for text rendering. */
-
->>>>>>> origin/csy-extras
     int W = widget[id].text_w;
     int H = widget[id].text_h;
     int R = widget[id].rect;
@@ -513,14 +440,11 @@ static void gui_geom_widget(int id, int flags)
         gui_geom_image(id, -w / 2, -h / 2, w, h, R);
         break;
 
-<<<<<<< HEAD
     case GUI_BUTTON:
     case GUI_LABEL:
         // Handled by gui_render_text().
         break;
 
-=======
->>>>>>> origin/csy-extras
     default:
         gui_geom_text(id, -W / 2, -H / 2, W, H, c0, c1);
         break;
@@ -529,7 +453,6 @@ static void gui_geom_widget(int id, int flags)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 #define FONT_MAX 4
 
 static struct font fonts[FONT_MAX];
@@ -554,63 +477,15 @@ static int gui_font_load(const char *path)
     for (i = 0; i < fontc; i++)
         if (strcmp(fonts[i].path, path) == 0)
             return i;
-=======
-static const char *gui_font_path(void)
-{
-    const char *path;
-
-    path = _(GUI_FACE);
-
-    if (!fs_exists(path))
-    {
-        fprintf(stderr, L_("Font '%s' doesn't exist, trying default font.\n"),
-                path);
-
-        path = GUI_FACE;
-    }
-
-    return path;
-}
-
-static int gui_font_init(const char *path)
-{
-    int w = config_get_d(CONFIG_WIDTH);
-    int h = config_get_d(CONFIG_HEIGHT);
-    int s = (h < w) ? h : w;
->>>>>>> origin/csy-extras
 
     /* Load a new font. */
 
     if (fontc < FONT_MAX)
     {
-<<<<<<< HEAD
         if (font_load(&fonts[fontc], path, font_sizes))
         {
             fontc++;
             return fontc - 1;
-=======
-        int s0 = s / 26;
-        int s1 = s / 13;
-        int s2 = s /  7;
-
-        /* Load the font. */
-
-        if ((fontdata = fs_load(path, &fontdatalen)))
-        {
-            fontrwops = SDL_RWFromConstMem(fontdata, fontdatalen);
-
-            /* Load small, medium, and large typefaces. */
-
-            font[GUI_SML] = TTF_OpenFontRW(fontrwops, 0, s0);
-
-            SDL_RWseek(fontrwops, 0, SEEK_SET);
-            font[GUI_MED] = TTF_OpenFontRW(fontrwops, 0, s1);
-
-            SDL_RWseek(fontrwops, 0, SEEK_SET);
-            font[GUI_LRG] = TTF_OpenFontRW(fontrwops, 0, s2);
-
-            /* fontrwops remains open. */
->>>>>>> origin/csy-extras
         }
         else
         {
@@ -1008,7 +883,6 @@ void gui_free(void)
 
     for (id = 1; id < WIDGET_MAX; id++)
     {
-<<<<<<< HEAD
         if (widget[id].image)
             glDeleteTextures(1, &widget[id].image);
 
@@ -1024,10 +898,6 @@ void gui_free(void)
             widget[id].text = NULL;
         }
 
-=======
-        glDeleteTextures(1, &widget[id].image);
-
->>>>>>> origin/csy-extras
         widget[id].type  = GUI_FREE;
         widget[id].flags = 0;
         widget[id].image = 0;
@@ -1039,15 +909,9 @@ void gui_free(void)
 
     gui_font_quit();
 
-<<<<<<< HEAD
     /* Release theme resources. */
 
     gui_theme_quit();
-=======
-    /* Release rectangle resources. */
-
-    gui_rect_quit();
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1065,7 +929,6 @@ static int gui_widget(int pd, int type)
 
             widget[id].type   = type;
             widget[id].flags  = 0;
-<<<<<<< HEAD
             widget[id].hidden = 0;
             widget[id].token  = 0;
             widget[id].value  = 0;
@@ -1075,12 +938,6 @@ static int gui_widget(int pd, int type)
             widget[id].rect   = GUI_ALL;
             widget[id].x      = 0;
             widget[id].y      = 0;
-=======
-            widget[id].token  = 0;
-            widget[id].value  = 0;
-            widget[id].size   = 0;
-            widget[id].rect   = GUI_ALL;
->>>>>>> origin/csy-extras
             widget[id].w      = 0;
             widget[id].h      = 0;
             widget[id].image  = 0;
@@ -1090,7 +947,6 @@ static int gui_widget(int pd, int type)
             widget[id].trunc  = TRUNC_NONE;
             widget[id].text_w = 0;
             widget[id].text_h = 0;
-<<<<<<< HEAD
 
             widget[id].init_text = NULL;
             widget[id].init_value = 0;
@@ -1108,8 +964,6 @@ static int gui_widget(int pd, int type)
             widget[id].slide_delay = 0.0f;
             widget[id].slide_dur = 0.0f;
             widget[id].slide_time = 0.0f;
-=======
->>>>>>> origin/csy-extras
 
             /* Insert the new widget into the parent's widget list. */
 
@@ -1362,7 +1216,6 @@ void gui_set_image(int id, const char *file)
 
 void gui_set_label(int id, const char *text)
 {
-<<<<<<< HEAD
     TTF_Font *ttf = fonts[widget[id].font].ttf[widget[id].size];
 
     int w = 0;
@@ -1403,35 +1256,14 @@ void gui_set_label(int id, const char *text)
 
     w = widget[id].text_w;
     h = widget[id].text_h;
-=======
-    int w = 0;
-    int h = 0;
-
-    char *str;
-
-    glDeleteTextures(1, &widget[id].image);
-
-    str = gui_truncate(text, widget[id].w - padding,
-                       font[widget[id].size],
-                       widget[id].trunc);
-
-    widget[id].image = make_image_from_font(NULL, NULL, &w, &h,
-                                            str, font[widget[id].size], 0);
-    widget[id].text_w = w;
-    widget[id].text_h = h;
->>>>>>> origin/csy-extras
 
     gui_geom_text(id, -w / 2, -h / 2, w, h,
                   widget[id].color0,
                   widget[id].color1);
 
-<<<<<<< HEAD
     /* Last but not least. */
 
     free(trunc_str);
-=======
-    free(str);
->>>>>>> origin/csy-extras
 }
 
 void gui_set_count(int id, int value)
@@ -1482,12 +1314,7 @@ void gui_set_multi(int id, const char *text)
 
     for (p = text, sc = 0; *p && sc < lc; sc++)
     {
-<<<<<<< HEAD
         /* Support both '\\' and '\n' as delimiters. */
-=======
-        strncpy(s[sc], p, (n = strcspn(p, "\\")));
-        s[sc][n] = 0;
->>>>>>> origin/csy-extras
 
         strncpy(s[sc], p, (n = strcspn(p, "\\\n")));
         s[sc][n] = 0;
@@ -1511,14 +1338,11 @@ void gui_set_trunc(int id, enum trunc trunc)
     widget[id].trunc = trunc;
 }
 
-<<<<<<< HEAD
 void gui_set_font(int id, const char *path)
 {
     widget[id].font = gui_font_load(path);
 }
 
-=======
->>>>>>> origin/csy-extras
 void gui_set_fill(int id)
 {
     widget[id].flags |= GUI_FILL;
@@ -1550,7 +1374,6 @@ void gui_set_rect(int id, int rect)
 {
     widget[id].rect   = rect;
     widget[id].flags |= GUI_RECT;
-<<<<<<< HEAD
 }
 
 void gui_clr_rect(int id)
@@ -1572,8 +1395,6 @@ void gui_set_hidden(int id, int hidden)
 {
     if (id)
         widget[id].hidden = hidden ? 1u : 0;
-=======
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/
@@ -1634,7 +1455,6 @@ int gui_image(int pd, const char *file, int w, int h)
     if ((id = gui_widget(pd, GUI_IMAGE)))
     {
         widget[id].image  = make_image_from_file(file, IF_MIPMAP);
-<<<<<<< HEAD
 
         /* Convert window pixels to integer-encoded fractions. */
 
@@ -1644,11 +1464,6 @@ int gui_image(int pd, const char *file, int w, int h)
         widget[id].flags |= GUI_RECT;
 
         gui_widget_size(id);
-=======
-        widget[id].w      = w;
-        widget[id].h      = h;
-        widget[id].flags |= GUI_RECT;
->>>>>>> origin/csy-extras
     }
     return id;
 }
@@ -1669,7 +1484,6 @@ int gui_state(int pd, const char *text, int size, int token, int value)
 
     if ((id = gui_widget(pd, GUI_BUTTON)))
     {
-<<<<<<< HEAD
         TTF_Font *ttf = fonts[widget[id].font].ttf[size];
 
         widget[id].flags |= (GUI_STATE | GUI_RECT);
@@ -1683,14 +1497,6 @@ int gui_state(int pd, const char *text, int size, int token, int value)
                              &widget[id].text_h,
                              text, ttf);
 
-=======
-        widget[id].flags |= (GUI_STATE | GUI_RECT);
-
-        widget[id].image = make_image_from_font(NULL, NULL,
-                                                &widget[id].w,
-                                                &widget[id].h,
-                                                text, font[size], 0);
->>>>>>> origin/csy-extras
         widget[id].size  = size;
         widget[id].token = token;
         widget[id].value = value;
@@ -1707,7 +1513,6 @@ int gui_label(int pd, const char *text, int size, const GLubyte *c0,
 
     if ((id = gui_widget(pd, GUI_LABEL)))
     {
-<<<<<<< HEAD
         TTF_Font *ttf = fonts[widget[id].font].ttf[size];
 
         widget[id].init_text = strdup(text);
@@ -1718,21 +1523,12 @@ int gui_label(int pd, const char *text, int size, const GLubyte *c0,
                              &widget[id].text_w,
                              &widget[id].text_h,
                              text, ttf);
-=======
-        widget[id].image = make_image_from_font(NULL, NULL,
-                                                &widget[id].w,
-                                                &widget[id].h,
-                                                text, font[size], 0);
->>>>>>> origin/csy-extras
         widget[id].size   = size;
         widget[id].color0 = c0 ? c0 : gui_yel;
         widget[id].color1 = c1 ? c1 : gui_red;
         widget[id].flags |= GUI_RECT;
-<<<<<<< HEAD
 
         gui_widget_size(id);
-=======
->>>>>>> origin/csy-extras
     }
     return id;
 }
@@ -1743,25 +1539,15 @@ int gui_count(int pd, int value, int size)
 
     if ((id = gui_widget(pd, GUI_COUNT)))
     {
-<<<<<<< HEAD
         widget[id].init_value = value;
 
-=======
-        for (i = value; i; i /= 10)
-            widget[id].w += widget[digit_id[size][0]].text_w;
-
-        widget[id].h      = widget[digit_id[size][0]].text_h;
->>>>>>> origin/csy-extras
         widget[id].value  = value;
         widget[id].size   = size;
         widget[id].color0 = gui_yel;
         widget[id].color1 = gui_red;
         widget[id].flags |= GUI_RECT;
-<<<<<<< HEAD
 
         gui_widget_size(id);
-=======
->>>>>>> origin/csy-extras
     }
     return id;
 }
@@ -1772,23 +1558,15 @@ int gui_clock(int pd, int value, int size)
 
     if ((id = gui_widget(pd, GUI_CLOCK)))
     {
-<<<<<<< HEAD
         widget[id].init_value = value;
 
-=======
-        widget[id].w      = widget[digit_id[size][0]].text_w * 6;
-        widget[id].h      = widget[digit_id[size][0]].text_h;
->>>>>>> origin/csy-extras
         widget[id].value  = value;
         widget[id].size   = size;
         widget[id].color0 = gui_yel;
         widget[id].color1 = gui_red;
         widget[id].flags |= GUI_RECT;
-<<<<<<< HEAD
 
         gui_widget_size(id);
-=======
->>>>>>> origin/csy-extras
     }
     return id;
 }
@@ -1832,14 +1610,11 @@ int gui_multi(int pd, const char *text, int size, const GLubyte *c0,
             if (n > 0 && s[j][n - 1] == '\r')
                 s[j][n - 1] = 0;
 
-<<<<<<< HEAD
             p += n;
 
             if (*p == '\\' || *p == '\n') p++;
         }
 
-=======
->>>>>>> origin/csy-extras
         /* Create a label widget for each line. */
 
         for (i = 0; i < j; i++)
@@ -1848,10 +1623,7 @@ int gui_multi(int pd, const char *text, int size, const GLubyte *c0,
         /* Set rectangle on the container. */
 
         widget[id].flags |= GUI_RECT;
-<<<<<<< HEAD
         widget[id].flags |= GUI_CLIP;
-=======
->>>>>>> origin/csy-extras
     }
     return id;
 }
@@ -1948,28 +1720,14 @@ static void gui_vstack_up(int id)
 
 static void gui_button_up(int id)
 {
-<<<<<<< HEAD
-=======
-    /* Store width and height for later use in text rendering. */
-
-    widget[id].text_w = widget[id].w;
-    widget[id].text_h = widget[id].h;
-
->>>>>>> origin/csy-extras
     if (widget[id].w < widget[id].h && widget[id].w > 0)
         widget[id].w = widget[id].h;
 
     /* Padded text elements look a little nicer. */
 
-<<<<<<< HEAD
     if (widget[id].w < video.device_w)
         widget[id].w += padding;
     if (widget[id].h < video.device_h)
-=======
-    if (widget[id].w < config_get_d(CONFIG_WIDTH))
-        widget[id].w += padding;
-    if (widget[id].h < config_get_d(CONFIG_HEIGHT))
->>>>>>> origin/csy-extras
         widget[id].h += padding;
 
     /* A button should be at least wide enough to accomodate the borders. */
@@ -2083,15 +1841,9 @@ static void gui_hstack_dn(int id, int x, int y, int w, int h)
     for (jd = widget[id].car; jd; jd = widget[jd].cdr)
     {
         if (widget[jd].type == GUI_FILLER)
-<<<<<<< HEAD
             gui_widget_dn(jd, jx, y, dw, h);
         else if (widget[jd].flags & GUI_FILL)
             gui_widget_dn(jd, jx, y, widget[jd].w + dw, h);
-=======
-            gui_widget_dn(jd, jx, y, (w - jw) / c, h);
-        else if (widget[jd].flags & GUI_FILL)
-            gui_widget_dn(jd, jx, y, widget[jd].w + (w - jw) / c, h);
->>>>>>> origin/csy-extras
         else
             gui_widget_dn(jd, jx, y, widget[jd].w, h);
 
@@ -2331,22 +2083,16 @@ void gui_layout(int id, int xd, int yd)
 
     gui_widget_dn(id, x, y, w, h);
 
-<<<<<<< HEAD
     /* Initialize animation state. */
 
     gui_widget_offset(id, 0);
 
-=======
->>>>>>> origin/csy-extras
     /* Set up GUI rendering state. */
 
     gui_geom_widget(id, 0);
 
-<<<<<<< HEAD
     gui_render_text(id);
 
-=======
->>>>>>> origin/csy-extras
     /* Hilite the widget under the cursor, if any. */
 
     gui_point(id, -1, -1);
@@ -2373,7 +2119,6 @@ int gui_search(int id, int x, int y)
     return 0;
 }
 
-<<<<<<< HEAD
 int gui_child(int id, int index)
 {
     if (id)
@@ -2391,8 +2136,6 @@ int gui_child(int id, int index)
     return 0;
 }
 
-=======
->>>>>>> origin/csy-extras
 int gui_delete(int id)
 {
     if (id)
@@ -2416,12 +2159,8 @@ int gui_delete(int id)
 
         /* Release any GL resources held by this widget. */
 
-<<<<<<< HEAD
         if (widget[id].image)
             glDeleteTextures(1, &widget[id].image);
-=======
-        glDeleteTextures(1, &widget[id].image);
->>>>>>> origin/csy-extras
 
         /* Mark this widget unused. */
 
@@ -2430,14 +2169,11 @@ int gui_delete(int id)
         widget[id].image = 0;
         widget[id].cdr   = 0;
         widget[id].car   = 0;
-<<<<<<< HEAD
 
         /* Clear focus from this widget. */
 
         if (active == id)
             active = 0;
-=======
->>>>>>> origin/csy-extras
     }
     return 0;
 }
@@ -2507,7 +2243,6 @@ static void gui_paint_rect(int id, int st, int flags)
 
         glPushMatrix();
         {
-<<<<<<< HEAD
             glTranslatef((GLfloat) (widget[id].x + widget[id].w / 2 + widget[id].offset_x),
                          (GLfloat) (widget[id].y + widget[id].h / 2 + widget[id].offset_y), 0.f);
 
@@ -2515,30 +2250,6 @@ static void gui_paint_rect(int id, int st, int flags)
             draw_rect(id);
         }
         glPopMatrix();
-=======
-            glTranslatef((GLfloat) (widget[id].x + widget[id].w / 2),
-                         (GLfloat) (widget[id].y + widget[id].h / 2), 0.f);
-
-            glBindTexture(GL_TEXTURE_2D, rect_tex[i]);
-            draw_rect(id);
-        }
-        glPopMatrix();
-
-        flags |= GUI_RECT;
-    }
-
-    switch (widget[id].type)
-    {
-    case GUI_HARRAY:
-    case GUI_VARRAY:
-    case GUI_HSTACK:
-    case GUI_VSTACK:
-
-        /* Recursively paint all subwidgets. */
-
-        for (jd = widget[id].car; jd; jd = widget[jd].cdr)
-            gui_paint_rect(jd, i, flags);
->>>>>>> origin/csy-extras
 
         flags |= GUI_RECT;
     }
@@ -2574,11 +2285,7 @@ static void gui_paint_array(int id)
         GLfloat cy = widget[id].y + widget[id].h / 2.0f + widget[id].offset_y;
         GLfloat ck = widget[id].scale;
 
-<<<<<<< HEAD
         if (1.0f < ck || ck < 1.0f)
-=======
-        if (1.0 < ck || ck < 1.0)
->>>>>>> origin/csy-extras
         {
             glTranslatef(+cx, +cy, 0.0f);
             glScalef(ck, ck, ck);
@@ -2622,11 +2329,7 @@ static void gui_paint_image(int id)
                  widget[id].scale,
                  widget[id].scale);
 
-<<<<<<< HEAD
         glBindTexture_(GL_TEXTURE_2D, widget[id].image);
-=======
-        glBindTexture(GL_TEXTURE_2D, widget[id].image);
->>>>>>> origin/csy-extras
         glColor4ub(gui_wht[0], gui_wht[1], gui_wht[2], gui_wht[3]);
         draw_image(id);
     }
@@ -2663,30 +2366,18 @@ static void gui_paint_count(int id)
 
             for (j = widget[id].value; j; j /= 10)
             {
-<<<<<<< HEAD
                 int jd = digit_id[i][j % 10];
 
                 glBindTexture_(GL_TEXTURE_2D, widget[jd].image);
                 draw_text(jd);
                 glTranslatef((GLfloat) -widget[jd].text_w, 0.0f, 0.0f);
-=======
-                int id = digit_id[i][j % 10];
-
-                glBindTexture(GL_TEXTURE_2D, widget[id].image);
-                draw_text(id);
-                glTranslatef((GLfloat) -widget[id].text_w, 0.0f, 0.0f);
->>>>>>> origin/csy-extras
             }
         }
         else if (widget[id].value == 0)
         {
             /* If the value is zero, just display a zero in place. */
 
-<<<<<<< HEAD
             glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][0]].image);
-=======
-            glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][0]].image);
->>>>>>> origin/csy-extras
             draw_text(digit_id[i][0]);
         }
     }
@@ -2731,48 +2422,28 @@ static void gui_paint_clock(int id)
 
         if (mt > 0)
         {
-<<<<<<< HEAD
             glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][mt]].image);
-=======
-            glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][mt]].image);
->>>>>>> origin/csy-extras
             draw_text(digit_id[i][mt]);
             glTranslatef(dx_large, 0.0f, 0.0f);
         }
 
-<<<<<<< HEAD
         glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][mo]].image);
-=======
-        glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][mo]].image);
->>>>>>> origin/csy-extras
         draw_text(digit_id[i][mo]);
         glTranslatef(dx_small, 0.0f, 0.0f);
 
         /* Render the colon. */
 
-<<<<<<< HEAD
         glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][10]].image);
-=======
-        glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][10]].image);
->>>>>>> origin/csy-extras
         draw_text(digit_id[i][10]);
         glTranslatef(dx_small, 0.0f, 0.0f);
 
         /* Render the seconds counter. */
 
-<<<<<<< HEAD
         glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][st]].image);
         draw_text(digit_id[i][st]);
         glTranslatef(dx_large, 0.0f, 0.0f);
 
         glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][so]].image);
-=======
-        glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][st]].image);
-        draw_text(digit_id[i][st]);
-        glTranslatef(dx_large, 0.0f, 0.0f);
-
-        glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][so]].image);
->>>>>>> origin/csy-extras
         draw_text(digit_id[i][so]);
         glTranslatef(dx_small, 0.0f, 0.0f);
 
@@ -2780,19 +2451,11 @@ static void gui_paint_clock(int id)
 
         glScalef(0.5f, 0.5f, 1.0f);
 
-<<<<<<< HEAD
         glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][ht]].image);
         draw_text(digit_id[i][ht]);
         glTranslatef(dx_large, 0.0f, 0.0f);
 
         glBindTexture_(GL_TEXTURE_2D, widget[digit_id[i][ho]].image);
-=======
-        glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][ht]].image);
-        draw_text(digit_id[i][ht]);
-        glTranslatef(dx_large, 0.0f, 0.0f);
-
-        glBindTexture(GL_TEXTURE_2D, widget[digit_id[i][ho]].image);
->>>>>>> origin/csy-extras
         draw_text(digit_id[i][ho]);
     }
     glPopMatrix();
@@ -2816,11 +2479,7 @@ static void gui_paint_label(int id)
                  widget[id].scale,
                  widget[id].scale);
 
-<<<<<<< HEAD
         glBindTexture_(GL_TEXTURE_2D, widget[id].image);
-=======
-        glBindTexture(GL_TEXTURE_2D, widget[id].image);
->>>>>>> origin/csy-extras
         draw_text(id);
     }
     glPopMatrix();
@@ -2828,12 +2487,9 @@ static void gui_paint_label(int id)
 
 static void gui_paint_text(int id)
 {
-<<<<<<< HEAD
     if (widget[id].hidden)
         return;
 
-=======
->>>>>>> origin/csy-extras
     switch (widget[id].type)
     {
     case GUI_SPACE:  break;
@@ -2856,10 +2512,6 @@ void gui_paint(int id)
     {
         video_push_ortho();
         {
-<<<<<<< HEAD
-=======
-            glDisable(GL_LIGHTING);
->>>>>>> origin/csy-extras
             glDisable(GL_DEPTH_TEST);
             {
                 draw_enable(GL_FALSE, GL_TRUE, GL_TRUE);
@@ -2868,20 +2520,13 @@ void gui_paint(int id)
                 draw_enable(GL_TRUE, GL_TRUE, GL_TRUE);
                 gui_paint_text(id);
 
-<<<<<<< HEAD
                 if (cursor_st && cursor_id)
                     gui_paint_image(cursor_id);
 
-=======
->>>>>>> origin/csy-extras
                 draw_disable();
                 glColor4ub(gui_wht[0], gui_wht[1], gui_wht[2], gui_wht[3]);
             }
             glEnable(GL_DEPTH_TEST);
-<<<<<<< HEAD
-=======
-            glEnable(GL_LIGHTING);
->>>>>>> origin/csy-extras
         }
         video_pop_matrix();
     }
@@ -2909,11 +2554,8 @@ void gui_dump(int id, int d)
         case GUI_COUNT:  type = "count";  break;
         case GUI_CLOCK:  type = "clock";  break;
         case GUI_BUTTON: type = "button"; break;
-<<<<<<< HEAD
         case GUI_SPACE:  type = "space";  break;
         case GUI_ROOT:   type = "root";   break;
-=======
->>>>>>> origin/csy-extras
         }
 
         for (i = 0; i < d; i++)
@@ -3188,13 +2830,8 @@ static int gui_stick_R(int id, int dd)
         return id;
 
     hd = 0;
-<<<<<<< HEAD
     dmin = (widget[id].x + widget[id].w) - (widget[dd].x + widget[dd].w) + 1;
     omin = INT_MIN;
-=======
-    omin = (widget[id].x + widget[id].w) - (widget[dd].x + widget[dd].w) + 1;
-    dmin = (widget[dd].y + widget[dd].h) + (widget[id].y + widget[id].h);
->>>>>>> origin/csy-extras
 
     for (jd = widget[id].car; jd; jd = widget[jd].cdr)
     {
@@ -3263,13 +2900,8 @@ static int gui_stick_U(int id, int dd)
         return id;
 
     hd = 0;
-<<<<<<< HEAD
     dmin = (widget[id].y + widget[id].h) - (widget[dd].y + widget[dd].h) + 1;
     omin = INT_MIN;
-=======
-    omin = (widget[id].y + widget[id].h) - (widget[dd].y + widget[dd].h) + 1;
-    dmin = (widget[dd].x + widget[dd].w) + (widget[id].x + widget[id].w);
->>>>>>> origin/csy-extras
 
     for (jd = widget[id].car; jd; jd = widget[jd].cdr)
     {
@@ -3349,20 +2981,12 @@ int gui_stick(int id, int a, float v, int bump)
 
     /* Find a new active widget in the direction of joystick motion. */
 
-<<<<<<< HEAD
     if      (config_tst_d(CONFIG_JOYSTICK_AXIS_X0, a))
-=======
-    if (config_tst_d(CONFIG_JOYSTICK_AXIS_X, a))
->>>>>>> origin/csy-extras
     {
         if (v < 0) jd = gui_wrap_L(id, active);
         if (v > 0) jd = gui_wrap_R(id, active);
     }
-<<<<<<< HEAD
     else if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y0, a))
-=======
-    else if (config_tst_d(CONFIG_JOYSTICK_AXIS_Y, a))
->>>>>>> origin/csy-extras
     {
         if (v < 0) jd = gui_wrap_U(id, active);
         if (v > 0) jd = gui_wrap_D(id, active);
@@ -3382,29 +3006,19 @@ int gui_click(int b, int d)
     {
         if (d)
         {
-<<<<<<< HEAD
             clicked = hovered;
-=======
-            sticky = active;
->>>>>>> origin/csy-extras
             return 0;
         }
         else
         {
-<<<<<<< HEAD
             int c = (clicked && clicked == hovered);
             clicked = 0;
-=======
-            int c = (sticky && sticky == active);
-            sticky = 0;
->>>>>>> origin/csy-extras
             return c;
         }
     }
     return 0;
 }
 
-<<<<<<< HEAD
 /*---------------------------------------------------------------------------*/
 
 int gui_navig(int id, int total, int first, int step)
@@ -3455,6 +3069,4 @@ int gui_maybe(int id, const char *label, int etoken, int dtoken, int enabled)
     return bd;
 }
 
-=======
->>>>>>> origin/csy-extras
 /*---------------------------------------------------------------------------*/

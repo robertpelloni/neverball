@@ -13,19 +13,12 @@
  */
 
 #include "gui.h"
-<<<<<<< HEAD
 #include "transition.h"
 #include "audio.h"
 #include "config.h"
 #include "demo.h"
 #include "video.h"
 #include "key.h"
-=======
-#include "audio.h"
-#include "config.h"
-#include "demo.h"
-#include "keynames.h"
->>>>>>> origin/csy-extras
 
 #include "game_common.h"
 #include "game_server.h"
@@ -39,12 +32,7 @@
 
 enum
 {
-<<<<<<< HEAD
     HELP_PAGE = GUI_LAST,
-=======
-    HELP_BACK = GUI_LAST,
-    HELP_PAGE,
->>>>>>> origin/csy-extras
     HELP_DEMO
 };
 
@@ -71,15 +59,9 @@ static int help_action(int tok, int val)
 
     switch (tok)
     {
-<<<<<<< HEAD
     case GUI_BACK:
         page = PAGE_RULES;
         return exit_state(&st_title);
-=======
-    case HELP_BACK:
-        page = PAGE_RULES;
-        return goto_state(&st_title);
->>>>>>> origin/csy-extras
 
     case HELP_DEMO:
         if (demo_replay_init(demos[val], NULL, NULL, NULL, NULL, NULL))
@@ -87,7 +69,6 @@ static int help_action(int tok, int val)
         break;
 
     case HELP_PAGE:
-<<<<<<< HEAD
         if (val != page)
         {
             int old_page = page;
@@ -97,11 +78,6 @@ static int help_action(int tok, int val)
             return page < old_page ? exit_state(&st_help) : goto_state(&st_help);
         }
         break;
-=======
-        page = val;
-        return goto_state(&st_help);
-
->>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -135,11 +111,7 @@ static int help_menu(int id)
         help_button(jd, _("Modes"),    HELP_PAGE, PAGE_MODES);
         help_button(jd, _("Controls"), HELP_PAGE, PAGE_CONTROLS);
         help_button(jd, _("Rules"),    HELP_PAGE, PAGE_RULES);
-<<<<<<< HEAD
         help_button(jd, _("Back"),     GUI_BACK, 0);
-=======
-        help_button(jd, _("Back"),     HELP_BACK, 0);
->>>>>>> origin/csy-extras
     }
     return jd;
 }
@@ -214,7 +186,6 @@ static int page_rules(int id)
 
 static int page_controls(int id)
 {
-<<<<<<< HEAD
     const char *s_rotate  = _("Left and right mouse buttons rotate the view\n"
                               "Hold Shift for faster view rotation.");
     const char *s_exit    = _("Exit / Pause");
@@ -236,24 +207,6 @@ static int page_controls(int id)
     const SDL_Keycode k_restart = config_get_d(CONFIG_KEY_RESTART);
     const SDL_Keycode k_shot = KEY_SCREENSHOT;
 
-=======
-    const char *s_rotate  = _("Left and right mouse buttons rotate the view.\\"
-                              "Hold Shift for faster view rotation.");
-    const char *s_pause   = _("Pause / Release Pointer");
-    const char *s_exit    = _("Exit / Cancel Menu");
-    const char *s_camera1 = _("Chase View");
-    const char *s_camera2 = _("Lazy View");
-    const char *s_camera3 = _("Manual View");
-    const char *s_shot    = _("Screenshot");
-
-    const char *k_pause   = pretty_keyname(config_get_d(CONFIG_KEY_PAUSE));
-    const char *k_escape  = pretty_keyname((int) SDLK_ESCAPE);
-    const char *k_camera1 = pretty_keyname(config_get_d(CONFIG_KEY_CAMERA_1));
-    const char *k_camera2 = pretty_keyname(config_get_d(CONFIG_KEY_CAMERA_2));
-    const char *k_camera3 = pretty_keyname(config_get_d(CONFIG_KEY_CAMERA_3));
-    const char *k_shot    = pretty_keyname((int) SDLK_F10);
-
->>>>>>> origin/csy-extras
     int jd, kd;
 
     gui_space(id);
@@ -262,59 +215,33 @@ static int page_controls(int id)
     {
         if ((kd = gui_harray(jd)))
         {
-<<<<<<< HEAD
             gui_label(kd, s_exit,   GUI_SML, gui_wht, gui_wht);
             gui_label(kd, SDL_GetKeyName(k_exit), GUI_SML, gui_yel, gui_yel);
-=======
-            gui_label(kd, s_pause, GUI_SML, gui_wht, gui_wht);
-            gui_label(kd, k_pause, GUI_SML, gui_yel, gui_yel);
-        }
-        if ((kd = gui_harray(jd)))
-        {
-            gui_label(kd, s_exit,   GUI_SML, gui_wht, gui_wht);
-            gui_label(kd, k_escape, GUI_SML, gui_yel, gui_yel);
->>>>>>> origin/csy-extras
         }
         if ((kd = gui_harray(jd)))
         {
             gui_label(kd, s_camera1, GUI_SML, gui_wht, gui_wht);
-<<<<<<< HEAD
             gui_label(kd, SDL_GetKeyName(k_cam1), GUI_SML, gui_yel, gui_yel);
-=======
-            gui_label(kd, k_camera1, GUI_SML, gui_yel, gui_yel);
->>>>>>> origin/csy-extras
         }
         if ((kd = gui_harray(jd)))
         {
             gui_label(kd, s_camera2, GUI_SML, gui_wht, gui_wht);
-<<<<<<< HEAD
             gui_label(kd, SDL_GetKeyName(k_cam2), GUI_SML, gui_yel, gui_yel);
-=======
-            gui_label(kd, k_camera2, GUI_SML, gui_yel, gui_yel);
->>>>>>> origin/csy-extras
         }
         if ((kd = gui_harray(jd)))
         {
             gui_label(kd, s_camera3, GUI_SML, gui_wht, gui_wht);
-<<<<<<< HEAD
             gui_label(kd, SDL_GetKeyName(k_cam3), GUI_SML, gui_yel, gui_yel);
         }
         if ((kd = gui_harray(jd)))
         {
             gui_label(kd, s_restart, GUI_SML, gui_wht, gui_wht);
             gui_label(kd, SDL_GetKeyName(k_restart), GUI_SML, gui_yel, gui_yel);
-=======
-            gui_label(kd, k_camera3, GUI_SML, gui_yel, gui_yel);
->>>>>>> origin/csy-extras
         }
         if ((kd = gui_harray(jd)))
         {
             gui_label(kd, s_shot, GUI_SML, gui_wht, gui_wht);
-<<<<<<< HEAD
             gui_label(kd, SDL_GetKeyName(k_shot), GUI_SML, gui_yel, gui_yel);
-=======
-            gui_label(kd, k_shot, GUI_SML, gui_yel, gui_yel);
->>>>>>> origin/csy-extras
         }
 
         gui_set_rect(jd, GUI_ALL);
@@ -337,11 +264,7 @@ static int page_modes(int id)
     {
         gui_label(jd, _("Normal Mode"), GUI_SML, 0, 0);
         gui_multi(jd,
-<<<<<<< HEAD
                   _("Finish a level before the time runs out.\n"
-=======
-                  _("Finish a level before the time runs out.\\"
->>>>>>> origin/csy-extras
                     "You need to collect coins in order to open the goal."),
                   GUI_SML, gui_wht, gui_wht);
 
@@ -354,13 +277,8 @@ static int page_modes(int id)
     {
         gui_label(jd, _("Challenge Mode"), GUI_SML, 0, 0);
         gui_multi(jd,
-<<<<<<< HEAD
                   _("Start playing from the first level of the set.\n"
                     "You start with only three balls, do not lose them.\n"
-=======
-                  _("Start playing from the first level of the set.\\"
-                    "You start with only three balls, do not lose them.\\"
->>>>>>> origin/csy-extras
                     "Earn an extra ball for each 100 coins collected."),
                   GUI_SML, gui_wht, gui_wht);
 
@@ -466,7 +384,6 @@ static int help_gui(void)
     return id;
 }
 
-<<<<<<< HEAD
 static int help_enter(struct state *st, struct state *prev, int intent)
 {
     return transition_slide(help_gui(), 1, intent);
@@ -486,49 +403,25 @@ static int help_buttn(int b, int d, int device_id)
 {
     if (d)
     {
-=======
-static int help_enter(struct state *st, struct state *prev)
-{
-    return help_gui();
-}
-
-static int help_buttn(int b, int d)
-{
-    if (d)
-    {
->>>>>>> origin/csy-extras
         int active = gui_active();
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return help_action(gui_token(active), gui_value(active));
-<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
             return help_action(GUI_BACK, 0);
-=======
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
-            return help_action(HELP_BACK, 0);
->>>>>>> origin/csy-extras
     }
     return 1;
 }
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
 static int help_demo_enter(struct state *st, struct state *prev, int intent)
-=======
-static int help_demo_enter(struct state *st, struct state *prev)
->>>>>>> origin/csy-extras
 {
     game_client_fly(0.0f);
     return 0;
 }
 
-<<<<<<< HEAD
 static int help_demo_leave(struct state *st, struct state *next, int id, int intent)
-=======
-static void help_demo_leave(struct state *st, struct state *next, int id)
->>>>>>> origin/csy-extras
 {
     demo_replay_stop(0);
     return 0;
@@ -579,11 +472,7 @@ struct state st_help = {
     shared_stick,
     shared_angle,
     shared_click,
-<<<<<<< HEAD
     help_keybd,
-=======
-    NULL,
->>>>>>> origin/csy-extras
     help_buttn
 };
 
@@ -596,10 +485,6 @@ struct state st_help_demo = {
     NULL,
     NULL,
     NULL,
-<<<<<<< HEAD
     help_demo_keybd,
-=======
-    NULL,
->>>>>>> origin/csy-extras
     help_demo_buttn
 };

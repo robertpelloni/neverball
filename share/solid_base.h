@@ -84,14 +84,9 @@
 
 /* Material type flags */
 
-<<<<<<< HEAD
 #define M_LIT         (1 << 11)
 #define M_PARTICLE    (1 << 10)
 #define M_ALPHA_TEST  (1 <<  9)
-=======
-#define M_ALPHA_TEST  (1 << 10)
-#define M_SEMI_OPAQUE (1 <<  9)
->>>>>>> origin/csy-extras
 #define M_REFLECTIVE  (1 <<  8)
 #define M_TRANSPARENT (1 <<  7)
 #define M_SHADOWED    (1 <<  6)
@@ -106,12 +101,7 @@
 
 #define B_EDGE     1
 #define B_FLAT     2
-<<<<<<< HEAD
 #define B_NOFACE   4
-=======
-#define B_ADDITIVE 4
-#define B_NOFACE   8
->>>>>>> origin/csy-extras
 
 /* Lump flags. */
 
@@ -127,6 +117,10 @@
 #define ITEM_SPEED      5
 #define ITEM_MISSILE    6
 #define ITEM_BANANA     7
+#define ITEM_SUPER_JUMP 8
+#define ITEM_GYRO       9
+#define ITEM_SHOCK      10
+#define ITEM_SUPER_SPEED 11
 
 /* Path flags. */
 
@@ -152,17 +146,9 @@ struct b_mtrl
 
     char   f[PATHMAX];                         /* texture file name          */
 
-<<<<<<< HEAD
     /* M_ALPHA_TEST */
     int   alpha_func;                          /* comparison function        */
     float alpha_ref;                           /* reference value            */
-=======
-    /* M_SEMI_OPAQUE */
-    float semi_opaque;                         /* alpha threshold            */
-
-    /* M_ALPHA_TEST */
-    float alpha_test;                          /* reference value            */
->>>>>>> origin/csy-extras
 };
 
 struct b_vert
@@ -229,25 +215,16 @@ struct b_path
 
     int fl;                                    /* flags                      */
 
-<<<<<<< HEAD
     /* TODO: merge enable and smooth into flags, somehow. */
 
     int p0;
     int p1;
-=======
-    /* TODO: merge enable and smooth into flags. */
->>>>>>> origin/csy-extras
 };
 
 struct b_body
 {
-<<<<<<< HEAD
     int p0;                                    /* translation path           */
     int p1;                                    /* rotation path              */
-=======
-    int pi;
-    int pj;
->>>>>>> origin/csy-extras
 
     int ni;
     int l0;
@@ -285,12 +262,9 @@ struct b_swch
     int   tm;                                  /* milliseconds               */
     int   f;                                   /* default state              */
     int   i;                                   /* is invisible?              */
-<<<<<<< HEAD
 
     int p0;                                    /* translation path           */
     int p1;                                    /* rotation path              */
-=======
->>>>>>> origin/csy-extras
 };
 
 struct b_bill
@@ -416,13 +390,10 @@ struct path
 
 extern const struct path tex_paths[4];
 extern const struct path mtrl_paths[2];
-<<<<<<< HEAD
 
 /*---------------------------------------------------------------------------*/
 
 int mtrl_read(struct b_mtrl *, const char *);
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 

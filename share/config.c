@@ -29,10 +29,7 @@
 /* Integer options. */
 
 int CONFIG_FULLSCREEN;
-<<<<<<< HEAD
 int CONFIG_DISPLAY;
-=======
->>>>>>> origin/csy-extras
 int CONFIG_WIDTH;
 int CONFIG_HEIGHT;
 int CONFIG_STEREO;
@@ -46,16 +43,11 @@ int CONFIG_BACKGROUND;
 int CONFIG_SHADOW;
 int CONFIG_AUDIO_BUFF;
 int CONFIG_MOUSE_SENSE;
-<<<<<<< HEAD
 int CONFIG_MOUSE_RESPONSE;
 int CONFIG_MOUSE_INVERT;
 int CONFIG_VSYNC;
 int CONFIG_HMD;
 int CONFIG_HIGHDPI;
-=======
-int CONFIG_MOUSE_INVERT;
-int CONFIG_VSYNC;
->>>>>>> origin/csy-extras
 int CONFIG_MOUSE_CAMERA_1;
 int CONFIG_MOUSE_CAMERA_2;
 int CONFIG_MOUSE_CAMERA_3;
@@ -67,7 +59,6 @@ int CONFIG_FPS;
 int CONFIG_SOUND_VOLUME;
 int CONFIG_MUSIC_VOLUME;
 int CONFIG_JOYSTICK;
-<<<<<<< HEAD
 int CONFIG_JOYSTICK_RESPONSE;
 int CONFIG_JOYSTICK_AXIS_X0;
 int CONFIG_JOYSTICK_AXIS_Y0;
@@ -88,28 +79,10 @@ int CONFIG_JOYSTICK_BUTTON_L2;
 int CONFIG_JOYSTICK_BUTTON_R2;
 int CONFIG_JOYSTICK_BUTTON_SELECT;
 int CONFIG_JOYSTICK_BUTTON_START;
-=======
-int CONFIG_JOYSTICK_DEVICE;
-int CONFIG_JOYSTICK_AXIS_X;
-int CONFIG_JOYSTICK_AXIS_Y;
-int CONFIG_JOYSTICK_AXIS_U;
-int CONFIG_JOYSTICK_AXIS_X_INVERT;
-int CONFIG_JOYSTICK_AXIS_Y_INVERT;
-int CONFIG_JOYSTICK_AXIS_U_INVERT;
-int CONFIG_JOYSTICK_BUTTON_A;
-int CONFIG_JOYSTICK_BUTTON_B;
-int CONFIG_JOYSTICK_BUTTON_R;
-int CONFIG_JOYSTICK_BUTTON_L;
-int CONFIG_JOYSTICK_BUTTON_EXIT;
-int CONFIG_JOYSTICK_CAMERA_1;
-int CONFIG_JOYSTICK_CAMERA_2;
-int CONFIG_JOYSTICK_CAMERA_3;
->>>>>>> origin/csy-extras
 int CONFIG_JOYSTICK_DPAD_L;
 int CONFIG_JOYSTICK_DPAD_R;
 int CONFIG_JOYSTICK_DPAD_U;
 int CONFIG_JOYSTICK_DPAD_D;
-<<<<<<< HEAD
 
 int CONFIG_WIIMOTE_INVERT_PITCH;
 int CONFIG_WIIMOTE_INVERT_ROLL;
@@ -118,10 +91,6 @@ int CONFIG_WIIMOTE_ROLL_SENSITIVITY;
 int CONFIG_WIIMOTE_SMOOTH_ALPHA;
 int CONFIG_WIIMOTE_HOLD_SIDEWAYS;
 
-=======
-int CONFIG_JOYSTICK_CAMERA_TOGGLE;
-int CONFIG_JOYSTICK_ROTATE_FAST;
->>>>>>> origin/csy-extras
 int CONFIG_KEY_CAMERA_1;
 int CONFIG_KEY_CAMERA_2;
 int CONFIG_KEY_CAMERA_3;
@@ -132,17 +101,10 @@ int CONFIG_KEY_FORWARD;
 int CONFIG_KEY_BACKWARD;
 int CONFIG_KEY_LEFT;
 int CONFIG_KEY_RIGHT;
-<<<<<<< HEAD
 int CONFIG_KEY_RESTART;
 int CONFIG_KEY_SCORE_NEXT;
 int CONFIG_KEY_ROTATE_FAST;
 int CONFIG_KEY_DASH;
-=======
-int CONFIG_KEY_PAUSE;
-int CONFIG_KEY_RESTART;
-int CONFIG_KEY_SCORE_NEXT;
-int CONFIG_KEY_ROTATE_FAST;
->>>>>>> origin/csy-extras
 int CONFIG_VIEW_FOV;
 int CONFIG_VIEW_DP;
 int CONFIG_VIEW_DC;
@@ -153,7 +115,6 @@ int CONFIG_CHEAT;
 int CONFIG_STATS;
 int CONFIG_SCREENSHOT;
 int CONFIG_LOCK_GOALS;
-<<<<<<< HEAD
 int CONFIG_CAMERA_1_SPEED;
 int CONFIG_CAMERA_2_SPEED;
 int CONFIG_CAMERA_3_SPEED;
@@ -164,8 +125,6 @@ int CONFIG_ONLINE;
 
 int CONFIG_MULTIBALL;
 int CONFIG_PHYSICS;
-=======
->>>>>>> origin/csy-extras
 
 /* String options. */
 
@@ -173,11 +132,8 @@ int CONFIG_PLAYER;
 int CONFIG_BALL_FILE;
 int CONFIG_WIIMOTE_ADDR;
 int CONFIG_REPLAY_NAME;
-<<<<<<< HEAD
 int CONFIG_LANGUAGE;
 int CONFIG_THEME;
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -189,10 +145,7 @@ static struct
     int         cur;
 } option_d[] = {
     { &CONFIG_FULLSCREEN,   "fullscreen",   0 },
-<<<<<<< HEAD
     { &CONFIG_DISPLAY,      "display",      0 },
-=======
->>>>>>> origin/csy-extras
     { &CONFIG_WIDTH,        "width",        800 },
     { &CONFIG_HEIGHT,       "height",       600 },
     { &CONFIG_STEREO,       "stereo",       0 },
@@ -201,25 +154,16 @@ static struct
     { &CONFIG_REFLECTION,   "reflection",   1 },
     { &CONFIG_MULTISAMPLE,  "multisample",  0 },
     { &CONFIG_MIPMAP,       "mipmap",       1 },
-<<<<<<< HEAD
     { &CONFIG_ANISO,        "aniso",        8 },
-=======
-    { &CONFIG_ANISO,        "aniso",        0 },
->>>>>>> origin/csy-extras
     { &CONFIG_BACKGROUND,   "background",   1 },
     { &CONFIG_SHADOW,       "shadow",       1 },
     { &CONFIG_AUDIO_BUFF,   "audio_buff",   AUDIO_BUFF_HI },
     { &CONFIG_MOUSE_SENSE,  "mouse_sense",  300 },
-<<<<<<< HEAD
     { &CONFIG_MOUSE_RESPONSE, "mouse_response", 50 },
     { &CONFIG_MOUSE_INVERT, "mouse_invert", 0 },
     { &CONFIG_VSYNC,        "vsync",        1 },
     { &CONFIG_HMD,          "hmd",          0 },
     { &CONFIG_HIGHDPI,      "highdpi",      1 },
-=======
-    { &CONFIG_MOUSE_INVERT, "mouse_invert", 0 },
-    { &CONFIG_VSYNC,        "vsync",        1 },
->>>>>>> origin/csy-extras
 
     { &CONFIG_MOUSE_CAMERA_1,      "mouse_camera_1",      0 },
     { &CONFIG_MOUSE_CAMERA_2,      "mouse_camera_2",      0 },
@@ -233,7 +177,6 @@ static struct
     { &CONFIG_SOUND_VOLUME, "sound_volume", 10 },
     { &CONFIG_MUSIC_VOLUME, "music_volume", 6 },
 
-<<<<<<< HEAD
     { &CONFIG_JOYSTICK,                "joystick",                1 },
     { &CONFIG_JOYSTICK_RESPONSE,       "joystick_response",       250 },
     { &CONFIG_JOYSTICK_AXIS_X0,        "joystick_axis_x0",        0 },
@@ -270,34 +213,6 @@ static struct
     { &CONFIG_KEY_CAMERA_1,      "key_camera_1",      SDLK_1 },
     { &CONFIG_KEY_CAMERA_2,      "key_camera_2",      SDLK_2 },
     { &CONFIG_KEY_CAMERA_3,      "key_camera_3",      SDLK_3 },
-=======
-    { &CONFIG_JOYSTICK,               "joystick",               1 },
-    { &CONFIG_JOYSTICK_DEVICE,        "joystick_device",        0 },
-    { &CONFIG_JOYSTICK_AXIS_X,        "joystick_axis_x",        0 },
-    { &CONFIG_JOYSTICK_AXIS_Y,        "joystick_axis_y",        1 },
-    { &CONFIG_JOYSTICK_AXIS_U,        "joystick_axis_u",        2 },
-    { &CONFIG_JOYSTICK_AXIS_X_INVERT, "joystick_axis_x_invert", 0 },
-    { &CONFIG_JOYSTICK_AXIS_Y_INVERT, "joystick_axis_y_invert", 0 },
-    { &CONFIG_JOYSTICK_AXIS_U_INVERT, "joystick_axis_u_invert", 0 },
-    { &CONFIG_JOYSTICK_BUTTON_A,      "joystick_button_a",      0 },
-    { &CONFIG_JOYSTICK_BUTTON_B,      "joystick_button_b",      1 },
-    { &CONFIG_JOYSTICK_BUTTON_R,      "joystick_button_r",      2 },
-    { &CONFIG_JOYSTICK_BUTTON_L,      "joystick_button_l",      3 },
-    { &CONFIG_JOYSTICK_BUTTON_EXIT,   "joystick_button_exit",   4 },
-    { &CONFIG_JOYSTICK_CAMERA_1,      "joystick_camera_1",      5 },
-    { &CONFIG_JOYSTICK_CAMERA_2,      "joystick_camera_2",      6 },
-    { &CONFIG_JOYSTICK_CAMERA_3,      "joystick_camera_3",      7 },
-    { &CONFIG_JOYSTICK_DPAD_L,        "joystick_dpad_l",        8 },
-    { &CONFIG_JOYSTICK_DPAD_R,        "joystick_dpad_r",        9 },
-    { &CONFIG_JOYSTICK_DPAD_U,        "joystick_dpad_u",        10 },
-    { &CONFIG_JOYSTICK_DPAD_D,        "joystick_dpad_d",        11 },
-    { &CONFIG_JOYSTICK_CAMERA_TOGGLE, "joystick_camera_toggle", 12 },
-    { &CONFIG_JOYSTICK_ROTATE_FAST,   "joystick_rotate_fast",   13 },
-
-    { &CONFIG_KEY_CAMERA_1,      "key_camera_1",      SDLK_F1 },
-    { &CONFIG_KEY_CAMERA_2,      "key_camera_2",      SDLK_F2 },
-    { &CONFIG_KEY_CAMERA_3,      "key_camera_3",      SDLK_F3 },
->>>>>>> origin/csy-extras
     { &CONFIG_KEY_CAMERA_TOGGLE, "key_camera_toggle", SDLK_e },
     { &CONFIG_KEY_CAMERA_R,      "key_camera_r",      SDLK_d },
     { &CONFIG_KEY_CAMERA_L,      "key_camera_l",      SDLK_s },
@@ -305,17 +220,10 @@ static struct
     { &CONFIG_KEY_BACKWARD,      "key_backward",      SDLK_DOWN },
     { &CONFIG_KEY_LEFT,          "key_left",          SDLK_LEFT },
     { &CONFIG_KEY_RIGHT,         "key_right",         SDLK_RIGHT },
-<<<<<<< HEAD
     { &CONFIG_KEY_RESTART,       "key_restart",       SDLK_r },
     { &CONFIG_KEY_SCORE_NEXT,    "key_score_next",    SDLK_TAB },
     { &CONFIG_KEY_ROTATE_FAST,   "key_rotate_fast",   SDLK_LSHIFT },
     { &CONFIG_KEY_DASH,          "key_dash",          SDLK_z },
-=======
-    { &CONFIG_KEY_PAUSE,         "key_pause",         SDLK_ESCAPE },
-    { &CONFIG_KEY_RESTART,       "key_restart",       SDLK_r },
-    { &CONFIG_KEY_SCORE_NEXT,    "key_score_next",    SDLK_TAB },
-    { &CONFIG_KEY_ROTATE_FAST,   "key_rotate_fast",   SDLK_LSHIFT },
->>>>>>> origin/csy-extras
 
     { &CONFIG_VIEW_FOV,    "view_fov",    50 },
     { &CONFIG_VIEW_DP,     "view_dp",     75 },
@@ -326,7 +234,6 @@ static struct
     { &CONFIG_CHEAT,       "cheat",       0 },
     { &CONFIG_STATS,       "stats",       0 },
     { &CONFIG_SCREENSHOT,  "screenshot",  0 },
-<<<<<<< HEAD
     { &CONFIG_LOCK_GOALS,  "lock_goals",  1 },
 
     { &CONFIG_CAMERA_1_SPEED, "camera_1_speed", 250 },
@@ -339,9 +246,6 @@ static struct
 
     { &CONFIG_MULTIBALL, "multiball", 1 },
     { &CONFIG_PHYSICS,   "physics",   0 },
-=======
-    { &CONFIG_LOCK_GOALS,  "lock_goals",  0 }
->>>>>>> origin/csy-extras
 };
 
 static struct
@@ -354,13 +258,9 @@ static struct
     { &CONFIG_PLAYER,       "player",       "" },
     { &CONFIG_BALL_FILE,    "ball_file",    "ball/basic-ball/basic-ball" },
     { &CONFIG_WIIMOTE_ADDR, "wiimote_addr", "" },
-<<<<<<< HEAD
     { &CONFIG_REPLAY_NAME,  "replay_name",  "%s-%l" },
     { &CONFIG_LANGUAGE,     "language",     "" },
     { &CONFIG_THEME,        "theme",        "classic" }
-=======
-    { &CONFIG_REPLAY_NAME,  "replay_name",  "%s-%l" }
->>>>>>> origin/csy-extras
 };
 
 static int dirty = 0;
@@ -371,15 +271,11 @@ static void config_key(const char *s, int i)
 {
     SDL_Keycode c = SDL_GetKeyFromName(s);
 
-<<<<<<< HEAD
     if (c == SDLK_UNKNOWN)
         config_set_d(i, option_d[i].def);
     else
         config_set_d(i, c);
 }
-=======
-    config_set_d(i, option_d[i].def);
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -475,7 +371,6 @@ void config_init(void)
     }
 }
 
-<<<<<<< HEAD
 void config_quit(void)
 {
     int i;
@@ -487,8 +382,6 @@ void config_quit(void)
     }
 }
 
-=======
->>>>>>> origin/csy-extras
 /*
  * Scan an option string and store pointers to the start of key and
  * value at the passed-in locations.  No memory is allocated to store
@@ -528,13 +421,9 @@ void config_load(void)
 {
     fs_file fh;
 
-<<<<<<< HEAD
     SDL_assert(SDL_WasInit(SDL_INIT_VIDEO));
 
     if ((fh = fs_open_read(USER_CONFIG_FILE)))
-=======
-    if ((fh = fs_open(USER_CONFIG_FILE, "r")))
->>>>>>> origin/csy-extras
     {
         char *line, *key, *val;
 
@@ -571,17 +460,11 @@ void config_load(void)
                                  i == CONFIG_KEY_CAMERA_TOGGLE ||
                                  i == CONFIG_KEY_CAMERA_R      ||
                                  i == CONFIG_KEY_CAMERA_L      ||
-<<<<<<< HEAD
                                  i == CONFIG_KEY_RESTART       ||
                                  i == CONFIG_KEY_SCORE_NEXT    ||
                                  i == CONFIG_KEY_ROTATE_FAST   ||
                                  i == CONFIG_KEY_DASH)
-=======
-                                 i == CONFIG_KEY_PAUSE         ||
-                                 i == CONFIG_KEY_RESTART       ||
-                                 i == CONFIG_KEY_SCORE_NEXT    ||
                                  i == CONFIG_KEY_ROTATE_FAST)
->>>>>>> origin/csy-extras
                         {
                             config_key(val, i);
                         }
@@ -617,13 +500,9 @@ void config_save(void)
 {
     fs_file fh;
 
-<<<<<<< HEAD
     SDL_assert(SDL_WasInit(SDL_INIT_VIDEO));
 
     if (dirty && (fh = fs_open_write(USER_CONFIG_FILE)))
-=======
-    if (dirty && (fh = fs_open(USER_CONFIG_FILE, "w")))
->>>>>>> origin/csy-extras
     {
         int i;
 
@@ -654,21 +533,12 @@ void config_save(void)
                      i == CONFIG_KEY_CAMERA_TOGGLE ||
                      i == CONFIG_KEY_CAMERA_R      ||
                      i == CONFIG_KEY_CAMERA_L      ||
-<<<<<<< HEAD
                      i == CONFIG_KEY_RESTART       ||
                      i == CONFIG_KEY_SCORE_NEXT    ||
                      i == CONFIG_KEY_ROTATE_FAST   ||
                      i == CONFIG_KEY_DASH)
             {
                 s = SDL_GetKeyName((SDL_Keycode) option_d[i].cur);
-=======
-                     i == CONFIG_KEY_PAUSE         ||
-                     i == CONFIG_KEY_RESTART       ||
-                     i == CONFIG_KEY_SCORE_NEXT    ||
-                     i == CONFIG_KEY_ROTATE_FAST)
-            {
-                s = SDL_GetKeyName((SDLKey) option_d[i].cur);
->>>>>>> origin/csy-extras
             }
             else if (i == CONFIG_CHEAT)
             {
@@ -685,14 +555,7 @@ void config_save(void)
         /* Write out string options. */
 
         for (i = 0; i < ARRAYSIZE(option_s); i++)
-<<<<<<< HEAD
             fs_printf(fh, "%-25s %s\n", option_s[i].name, option_s[i].cur);
-=======
-        {
-            if (option_s[i].cur && *option_s[i].cur)
-                fs_printf(fh, "%-25s %s\n", option_s[i].name, option_s[i].cur);
-        }
->>>>>>> origin/csy-extras
 
         fs_close(fh);
     }
@@ -739,7 +602,6 @@ void config_set_s(int i, const char *src)
 const char *config_get_s(int i)
 {
     return option_s[i].cur;
-<<<<<<< HEAD
 }
 
 /*---------------------------------------------------------------------------*/
@@ -767,8 +629,6 @@ void config_set(const char *key, const char *value)
                 config_set_d(i, atoi(value));
         }
     }
-=======
->>>>>>> origin/csy-extras
 }
 
 /*---------------------------------------------------------------------------*/

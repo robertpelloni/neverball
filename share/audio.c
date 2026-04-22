@@ -20,20 +20,14 @@
 
 #include <string.h>
 #include <stdlib.h>
-<<<<<<< HEAD
 #include <math.h>
-=======
->>>>>>> origin/csy-extras
 
 #include "config.h"
 #include "audio.h"
 #include "common.h"
 #include "fs.h"
 #include "fs_ov.h"
-<<<<<<< HEAD
 #include "log.h"
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -169,11 +163,7 @@ static struct voice *voice_init(const char *filename, float a)
 
         /* Attempt to open the named Ogg stream. */
 
-<<<<<<< HEAD
         if ((fp = fs_open_read(filename)))
-=======
-        if ((fp = fs_open(filename, "r")))
->>>>>>> origin/csy-extras
         {
             if (ov_open_callbacks(fp, &V->vf, NULL, 0, callbacks) == 0)
             {
@@ -356,13 +346,8 @@ void audio_play(const char *filename, float a)
 
                     V->amp = a;
 
-<<<<<<< HEAD
                     if (V->amp > 1.0f) V->amp = 1.0;
                     if (V->amp < 0.0f) V->amp = 0.0;
-=======
-                    if (V->amp > 1.0) V->amp = 1.0;
-                    if (V->amp < 0.0) V->amp = 0.0;
->>>>>>> origin/csy-extras
 
                     SDL_UnlockAudio();
                     return;
@@ -404,11 +389,7 @@ static void audio_music_play(const char *filename)
     }
 }
 
-<<<<<<< HEAD
 static void audio_music_queue(const char *filename, float t)
-=======
-void audio_music_queue(const char *filename, float t)
->>>>>>> origin/csy-extras
 {
     if (audio_state)
     {

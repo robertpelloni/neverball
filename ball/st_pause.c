@@ -30,6 +30,8 @@
 #include "st_level.h"
 #include "st_pause.h"
 #include "st_shared.h"
+#include "stats.h"
+#include "char.h"
 
 enum
 {
@@ -49,39 +51,23 @@ static int pause_action(int tok, int val)
     switch (tok)
     {
     case PAUSE_CONTINUE:
-<<<<<<< HEAD
         audio_music_fade_in(1.0f);
-=======
-        SDL_PauseAudio(0);
->>>>>>> origin/csy-extras
         video_set_grab(0);
         return goto_state(st_continue);
 
     case PAUSE_RESTART:
         if (progress_same())
         {
-<<<<<<< HEAD
-=======
-            SDL_PauseAudio(0);
->>>>>>> origin/csy-extras
             video_set_grab(1);
             return goto_state(&st_play_ready);
         }
         break;
 
     case PAUSE_EXIT:
-<<<<<<< HEAD
         progress_stat(GAME_NONE, 0);
         progress_stop();
         audio_music_stop();
         return goto_exit();
-=======
-        progress_stat(GAME_NONE);
-        progress_stop();
-        SDL_PauseAudio(0);
-        audio_music_stop();
-        return goto_state(&st_exit);
->>>>>>> origin/csy-extras
     }
 
     return 1;
@@ -118,36 +104,20 @@ static int pause_gui(void)
     return id;
 }
 
-<<<<<<< HEAD
 static int pause_enter(struct state *st, struct state *prev, int intent)
-=======
-static int pause_enter(struct state *st, struct state *prev)
->>>>>>> origin/csy-extras
 {
     st_continue = prev;
 
     video_clr_grab();
-<<<<<<< HEAD
     audio_music_fade_out(1.0f);
 
     return transition_slide(pause_gui(), 1, intent);
-=======
-    SDL_PauseAudio(1);
-
-    hud_update(0);
-
-    return pause_gui();
->>>>>>> origin/csy-extras
 }
 
 static void pause_paint(int id, float t)
 {
     shared_paint(id, t);
-<<<<<<< HEAD
     hud_paint(0, 0, video.device_w, video.device_h);
-=======
-    hud_paint();
->>>>>>> origin/csy-extras
 }
 
 static void pause_timer(int id, float dt)
@@ -160,11 +130,7 @@ static int pause_keybd(int c, int d)
 {
     if (d)
     {
-<<<<<<< HEAD
         if (c == KEY_EXIT)
-=======
-        if (config_tst_d(CONFIG_KEY_PAUSE, c))
->>>>>>> origin/csy-extras
             return pause_action(PAUSE_CONTINUE, 0);
 
         if (config_tst_d(CONFIG_KEY_RESTART, c) && progress_same_avail())
@@ -178,20 +144,12 @@ static int pause_buttn(int b, int d, int device_id)
     if (d)
     {
         int active = gui_active();
-<<<<<<< HEAD
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
             return pause_action(gui_token(active), gui_value(active));
 
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b) ||
             config_tst_d(CONFIG_JOYSTICK_BUTTON_START, b))
-=======
-
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
-            return pause_action(gui_token(active), gui_value(active));
-
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
->>>>>>> origin/csy-extras
             return pause_action(PAUSE_CONTINUE, 0);
     }
     return 1;

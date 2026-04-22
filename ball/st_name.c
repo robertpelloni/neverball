@@ -24,10 +24,7 @@
 #include "video.h"
 #include "text.h"
 #include "geom.h"
-<<<<<<< HEAD
 #include "key.h"
-=======
->>>>>>> origin/csy-extras
 
 #include "game_common.h"
 #include "game_server.h"
@@ -41,23 +38,10 @@
 static struct state *ok_state;
 static struct state *cancel_state;
 
-<<<<<<< HEAD
-=======
-/*---------------------------------------------------------------------------*/
-
-static struct state *ok_state;
-static struct state *cancel_state;
-
->>>>>>> origin/csy-extras
 static unsigned int draw_back;
 
 int goto_name(struct state *ok, struct state *cancel, unsigned int back)
 {
-<<<<<<< HEAD
-=======
-    SAFECPY(player, config_get_s(CONFIG_PLAYER));
-
->>>>>>> origin/csy-extras
     ok_state     = ok;
     cancel_state = cancel;
     draw_back    = back;
@@ -69,12 +53,7 @@ int goto_name(struct state *ok, struct state *cancel, unsigned int back)
 
 enum
 {
-<<<<<<< HEAD
     NAME_OK = GUI_LAST
-=======
-    NAME_OK = GUI_LAST,
-    NAME_CANCEL
->>>>>>> origin/csy-extras
 };
 
 static int name_id;
@@ -107,13 +86,8 @@ static int name_action(int tok, int val)
         break;
 
     case GUI_CHAR:
-<<<<<<< HEAD
         text_input_char(val);
         break;
-=======
-        if (text_add_char(val, player, sizeof (player)))
-            gui_set_label(name_id, player);
->>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -145,17 +119,12 @@ static int name_gui(void)
         gui_layout(id, 0, 0);
 
         gui_set_trunc(name_id, TRUNC_HEAD);
-<<<<<<< HEAD
         gui_set_label(name_id, text_input);
-=======
-        gui_set_label(name_id, player);
->>>>>>> origin/csy-extras
     }
 
     return id;
 }
 
-<<<<<<< HEAD
 static void on_text_input(int typing)
 {
     if (name_id)
@@ -168,9 +137,6 @@ static void on_text_input(int typing)
 }
 
 static int name_enter(struct state *st, struct state *prev, int intent)
-=======
-static int name_enter(struct state *st, struct state *prev)
->>>>>>> origin/csy-extras
 {
     if (draw_back)
     {
@@ -178,7 +144,6 @@ static int name_enter(struct state *st, struct state *prev)
         back_init("back/gui.png");
     }
 
-<<<<<<< HEAD
     text_input_start(on_text_input);
     text_input_str(config_get_s(CONFIG_PLAYER), 0);
 
@@ -186,14 +151,6 @@ static int name_enter(struct state *st, struct state *prev)
 }
 
 static int name_leave(struct state *st, struct state *next, int id, int intent)
-=======
-    SDL_EnableUNICODE(1);
-
-    return name_gui();
-}
-
-static void name_leave(struct state *st, struct state *next, int id)
->>>>>>> origin/csy-extras
 {
     if (draw_back)
         back_free();
@@ -227,7 +184,6 @@ static int name_keybd(int c, int d)
             return name_action(GUI_BACK, 0);
 
         if (c == '\b' || c == 0x7F)
-<<<<<<< HEAD
         {
             gui_focus(enter_id);
             return name_action(GUI_BS, 0);
@@ -237,11 +193,6 @@ static int name_keybd(int c, int d)
             gui_focus(enter_id);
             return 1;
         }
-=======
-            return name_action(GUI_BS, 0);
-        if (c >= ' ')
-            return name_action(GUI_CHAR, c);
->>>>>>> origin/csy-extras
     }
     return 1;
 }
@@ -259,13 +210,8 @@ static int name_buttn(int b, int d, int device_id)
                                      gui_keyboard_char(val) :
                                      val));
         }
-<<<<<<< HEAD
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b))
             name_action(GUI_BACK, 0);
-=======
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
-            name_action(NAME_CANCEL, 0);
->>>>>>> origin/csy-extras
     }
     return 1;
 }

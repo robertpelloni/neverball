@@ -27,21 +27,14 @@ struct game_draw
 
     float fade_k;                       /* Fade in/out level                 */
     float fade_d;                       /* Fade in/out direction             */
-<<<<<<< HEAD
 
     int   punch_active;                 /* Fight punch state                 */
-=======
->>>>>>> origin/csy-extras
 };
 
 /* FIXME: this is just for POSE_* constants. */
 #include "game_client.h"
 
-<<<<<<< HEAD
 void game_draw(struct game_draw *gds, int p_idx, int p_count, int pose, float t, int x, int y, int w, int h);
-=======
-void game_draw(struct game_draw *, int, float);
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -56,11 +49,8 @@ struct game_lerp
 
     float goal_k[2];
     float jump_dt[2];
-<<<<<<< HEAD
 
     int   punch_active[2];              /* Interpolation state (discrete)    */
-=======
->>>>>>> origin/csy-extras
 };
 
 void game_lerp_init(struct game_lerp *, struct game_draw *);

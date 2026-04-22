@@ -12,13 +12,10 @@
  * General Public License for more details.
  */
 
-<<<<<<< HEAD
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
 
-=======
->>>>>>> origin/csy-extras
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -44,12 +41,8 @@ static int cmp_dir_items(const void *A, const void *B)
 
 static int is_archive(struct dir_item *item)
 {
-<<<<<<< HEAD
     return (str_ends_with(item->path, ".zip") ||
             str_ends_with(item->path, ".pk3"));
-=======
-    return strcmp(item->path + strlen(item->path) - 4, ".zip") == 0;
->>>>>>> origin/csy-extras
 }
 
 static void add_archives(const char *path)
@@ -102,11 +95,7 @@ int fs_getc(fs_file fh)
 {
     unsigned char c;
 
-<<<<<<< HEAD
     if (fs_read(&c, 1, fh) != 1)
-=======
-    if (fs_read(&c, 1, 1, fh) != 1)
->>>>>>> origin/csy-extras
         return -1;
 
     return (int) c;
@@ -116,11 +105,7 @@ int fs_putc(int c, fs_file fh)
 {
     unsigned char b = (unsigned char) c;
 
-<<<<<<< HEAD
     if (fs_write(&b, 1, fh) != 1)
-=======
-    if (fs_write(&b, 1, 1, fh) != 1)
->>>>>>> origin/csy-extras
         return -1;
 
     return b;
@@ -206,11 +191,7 @@ static int write_lines(const char *start, int length, fs_file fh)
         lf = strchr(start, '\n');
 
         datalen = lf ? (int) (lf - start) : length - total_written;
-<<<<<<< HEAD
         written = fs_write(start, datalen, fh);
-=======
-        written = fs_write(start, 1, datalen, fh);
->>>>>>> origin/csy-extras
 
         if (written < 0)
             break;
@@ -235,20 +216,6 @@ static int write_lines(const char *start, int length, fs_file fh)
 
 /*---------------------------------------------------------------------------*/
 
-<<<<<<< HEAD
-=======
-/*
- * Trying to avoid defining a feature test macro for every platform by
- * declaring vsnprintf with the C99 signature.  This is probably bad.
- */
-
-#include <stdio.h>
-#include <stdarg.h>
-#ifndef __APPLE__
-extern int vsnprintf(char *, size_t, const char *, va_list);
-#endif
-
->>>>>>> origin/csy-extras
 int fs_printf(fs_file fh, const char *fmt, ...)
 {
     char *buff;
@@ -257,11 +224,7 @@ int fs_printf(fs_file fh, const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-<<<<<<< HEAD
     len = 1 + vsnprintf(NULL, 0, fmt, ap);
-=======
-    len = vsnprintf(NULL, 0, fmt, ap) + 1;
->>>>>>> origin/csy-extras
     va_end(ap);
 
     if ((buff = malloc(len)))
@@ -296,29 +259,18 @@ void *fs_load(const char *path, int *datalen)
 
     data = NULL;
 
-<<<<<<< HEAD
     if ((*datalen = fs_size(path)) > 0)
         if ((fh = fs_open_read(path)))
         {
             if ((data = malloc(*datalen)))
             {
                 if (fs_read(data, *datalen, fh) != *datalen)
-=======
-    if ((fh = fs_open(path, "r")))
-    {
-        if ((*datalen = fs_length(fh)) > 0)
-        {
-            if ((data = malloc(*datalen)))
-            {
-                if (fs_read(data, *datalen, 1, fh) != 1)
->>>>>>> origin/csy-extras
                 {
                     free(data);
                     data = NULL;
                     *datalen = 0;
                 }
             }
-<<<<<<< HEAD
 
             fs_close(fh);
         }
@@ -375,17 +327,11 @@ void *fs_load_cache(const char *path, int *size)
                 fs_cache_list = list_cons(ent, fs_cache_list);
             }
         }
-=======
-        }
-
-        fs_close(fh);
->>>>>>> origin/csy-extras
     }
 
     return data;
 }
 
-<<<<<<< HEAD
 void fs_cache_quit(void)
 {
     while (fs_cache_list)
@@ -429,18 +375,11 @@ const char *fs_resolve(const char *system)
 
     path_normalize(path);
 
-=======
-/*---------------------------------------------------------------------------*/
-
-const char *fs_resolve(const char *path)
-{
->>>>>>> origin/csy-extras
     if (fs_exists(path))
         return path;
 
     /* Chop off directories until we have a match. */
 
-<<<<<<< HEAD
     p = path;
 
     while ((p = path_next_sep(p)))
@@ -451,23 +390,9 @@ const char *fs_resolve(const char *path)
 
         if (fs_exists(p))
             return p;
-=======
-    while ((path = path_next_sep(path)))
-    {
-        /* Skip separator. */
-
-        path += 1;
-
-        if (fs_exists(path))
-            return path;
->>>>>>> origin/csy-extras
     }
 
     return NULL;
 }
 
-<<<<<<< HEAD
 /*---------------------------------------------------------------------------*/
-=======
-/*---------------------------------------------------------------------------*/
->>>>>>> origin/csy-extras

@@ -26,12 +26,9 @@
 
 #include "game_common.h"
 #include "game_client.h"
-<<<<<<< HEAD
 #include "game_server.h"
 
 #include "st_pause.h"
-=======
->>>>>>> origin/csy-extras
 
 /*---------------------------------------------------------------------------*/
 
@@ -51,7 +48,6 @@ static int msg_id;
 static int speed_id;
 static int speed_ids[SPEED_MAX];
 
-<<<<<<< HEAD
 /* Target Mode HUD */
 static int target_hud_id;
 static int spd_val_id;
@@ -64,20 +60,102 @@ static int jump_id;
 static int dash_id;
 static int dash_bar_id;
 
-=======
->>>>>>> origin/csy-extras
 static const char *speed_labels[SPEED_MAX] = {
     "", "8", "4", "2", "1", "2", "4", "8"
 };
 
-<<<<<<< HEAD
 static float cam_timer;
 static float speed_timer;
 static float touch_timer;
-=======
-static float view_timer;
-static float speed_timer;
->>>>>>> origin/csy-extras
+
+static void hud_radar_draw(int vp_w, int vp_h)
+{
+    float min_v[3], max_v[3];
+    float w, h, scale_x, scale_z;
+    int i;
+    int rw, rh, rx, ry;
+
+    curr_map_bounds(min_v, max_v);
+
+    if (min_v[0] >= max_v[0] || min_v[2] >= max_v[2])
+        return;
+
+    /* Radar Dimensions: 1/4th height, square, bottom-right */
+    rh = vp_h / 4;
+    rw = rh;
+    rx = vp_w - rw - 10;
+    ry = 10;
+
+    w = max_v[0] - min_v[0];
+    h = max_v[2] - min_v[2];
+
+    scale_x = (float)rw / w;
+    scale_z = (float)rh / h;
+
+    float scale = (scale_x < scale_z) ? scale_x : scale_z;
+
+    /* Center radar content if aspect ratio differs */
+    float off_x = (rw - w * scale) * 0.5f;
+    float off_y = (rh - h * scale) * 0.5f;
+
+    glDisable(GL_TEXTURE_2D);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    /* Background */
+    glColor4f(0.0f, 0.0f, 0.0f, 0.5f);
+    glBegin(GL_QUADS);
+    glVertex2i(rx, ry);
+    glVertex2i(rx + rw, ry);
+    glVertex2i(rx + rw, ry + rh);
+    glVertex2i(rx, ry + rh);
+    glEnd();
+
+    /* Goals */
+    glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+    glPointSize(4.0f);
+    glBegin(GL_POINTS);
+    for (i = 0; i < curr_goal_count(); i++)
+    {
+        float p[3];
+        curr_goal_pos(i, p);
+        float px = (p[0] - min_v[0]) * scale + off_x;
+        float py = (max_v[2] - p[2]) * scale + off_y;
+
+        glVertex2f(rx + px, ry + py);
+    }
+    glEnd();
+
+    /* Balls */
+    glPointSize(5.0f);
+
+    int count = config_get_d(CONFIG_MULTIBALL);
+    if (count < 1) count = 1;
+#ifdef MAX_PLAYERS
+    if (count > MAX_PLAYERS) count = MAX_PLAYERS;
+#endif
+
+    for (i = 0; i < count; i++)
+    {
+        float p[3];
+        curr_ball_pos(i, p);
+
+        /* Player Colors: Red, Green, Blue, Yellow */
+        if (i==0) glColor4f(1.0f, 0.3f, 0.3f, 1.0f);
+        else if (i==1) glColor4f(0.3f, 1.0f, 0.3f, 1.0f);
+        else if (i==2) glColor4f(0.4f, 0.4f, 1.0f, 1.0f);
+        else glColor4f(1.0f, 1.0f, 0.0f, 1.0f);
+
+        float px = (p[0] - min_v[0]) * scale + off_x;
+        float py = (max_v[2] - p[2]) * scale + off_y;
+
+        glBegin(GL_POINTS);
+        glVertex2f(rx + px, ry + py);
+        glEnd();
+    }
+
+    glEnable(GL_TEXTURE_2D);
+}
 
 static void hud_fps(void)
 {
@@ -87,11 +165,7 @@ static void hud_fps(void)
 void hud_init(void)
 {
     int id;
-<<<<<<< HEAD
     const char *str_cam;
-=======
-    const char *str_view;
->>>>>>> origin/csy-extras
     int v;
 
     if ((Rhud_id = gui_hstack(0)))
@@ -126,7 +200,6 @@ void hud_init(void)
         gui_layout(Lhud_id, -1, -1);
     }
 
-<<<<<<< HEAD
     if ((Touch_id = gui_vstack(0)))
     {
         gui_space(Touch_id);
@@ -149,15 +222,12 @@ void hud_init(void)
         gui_layout(Touch_id, -1, +1);
     }
 
-=======
->>>>>>> origin/csy-extras
     if ((time_id = gui_clock(0, 59999, GUI_MED)))
     {
         gui_set_rect(time_id, GUI_TOP);
         gui_layout(time_id, 0, -1);
     }
 
-<<<<<<< HEAD
     if ((msg_id = gui_label(0, " ", GUI_LRG, gui_yel, gui_red)))
     {
         gui_layout(msg_id, 0, 0);
@@ -175,20 +245,6 @@ void hud_init(void)
         gui_layout(cam_id, 1, 1);
     }
 
-=======
-    /* Find the longest view name. */
-
-    for (str_view = "", v = VIEW_NONE + 1; v < VIEW_MAX; v++)
-        if (strlen(view_to_str(v)) > strlen(str_view))
-            str_view = view_to_str(v);
-
-    if ((view_id = gui_label(0, str_view, GUI_SML, gui_wht, gui_wht)))
-    {
-        gui_set_rect(view_id, GUI_SW);
-        gui_layout(view_id, 1, 1);
-    }
-
->>>>>>> origin/csy-extras
     if ((fps_id = gui_count(0, 1000, GUI_SML)))
     {
         gui_set_rect(fps_id, GUI_SE);
@@ -205,7 +261,6 @@ void hud_init(void)
         gui_set_rect(speed_id, GUI_LFT);
         gui_layout(speed_id, +1, 0);
     }
-<<<<<<< HEAD
 
     /* Target Mode HUD */
     if ((target_hud_id = gui_hstack(0)))
@@ -241,8 +296,6 @@ void hud_init(void)
         gui_layout(dash_id, 0, 4);
         gui_set_hidden(dash_id, 1);
     }
-=======
->>>>>>> origin/csy-extras
 }
 
 void hud_free(void)
@@ -268,7 +321,6 @@ void hud_free(void)
 
 void hud_paint(int x, int y, int w, int h)
 {
-<<<<<<< HEAD
     int p;
     int count = config_get_d(CONFIG_MULTIBALL);
     if (count < 1) count = 1;
@@ -308,49 +360,33 @@ void hud_paint(int x, int y, int w, int h)
 
         if (config_get_d(CONFIG_FPS))
             gui_paint(fps_id);
-=======
-    if (curr_mode() == MODE_CHALLENGE)
-        gui_paint(Lhud_id);
-
-    gui_paint(Rhud_id);
-    gui_paint(time_id);
->>>>>>> origin/csy-extras
 
         if (curr_mode() == MODE_TARGET)
             gui_paint(target_hud_id);
 
-<<<<<<< HEAD
         gui_paint(jump_id);
         gui_paint(dash_id);
 
         hud_cam_paint();
         hud_speed_paint();
         hud_touch_paint();
+
+        video_push_ortho();
+        hud_radar_draw(video.device_w, video.device_h);
+        video_pop_matrix();
     }
 
     glViewport(x, y, w, h);
-=======
-    hud_view_paint();
-    hud_speed_paint();
->>>>>>> origin/csy-extras
 }
 
 void hud_update(int p, int pulse)
 {
-<<<<<<< HEAD
     int clock = curr_clock(p);
     int coins = curr_coins(p);
     int goal  = curr_goal();
     int balls = curr_balls(p);
     int score = curr_score(p);
     int status = curr_status(p);
-=======
-    int clock = curr_clock();
-    int coins = curr_coins();
-    int goal  = curr_goal();
-    int balls = curr_balls();
-    int score = curr_score();
->>>>>>> origin/csy-extras
 
     int c_id;
     int last;
@@ -362,12 +398,17 @@ void hud_update(int p, int pulse)
         gui_pulse(ball_id, 0.f);
         gui_pulse(time_id, 0.f);
         gui_pulse(coin_id, 0.f);
-<<<<<<< HEAD
         gui_pulse(msg_id, 0.f);
-=======
->>>>>>> origin/csy-extras
+
+        gui_set_hidden(crosshair_id, 1);
+        gui_set_hidden(toast_id, 1);
+        gui_set_hidden(item_id, 1);
+        gui_set_hidden(gyro_id, 1);
+        gui_set_hidden(dash_id, 1);
+        gui_set_hidden(jump_id, 1);
 
         speed_timer = 0.0f;
+        toast_timer = 0.0f;
     }
 
     if (status == GAME_GOAL) gui_set_label(msg_id, _("GOAL!"));
@@ -384,11 +425,7 @@ void hud_update(int p, int pulse)
     {
         gui_set_clock(time_id, clock);
 
-<<<<<<< HEAD
         if (pulse)
-=======
-        if (last > clock && pulse)
->>>>>>> origin/csy-extras
         {
             if (last > clock)
             {
@@ -489,18 +526,21 @@ void hud_update(int p, int pulse)
 
 void hud_timer(float dt)
 {
-<<<<<<< HEAD
     hud_update(0, 1);
-=======
-    hud_update(1);
->>>>>>> origin/csy-extras
 
     gui_timer(Rhud_id, dt);
     gui_timer(Lhud_id, dt);
     gui_timer(Touch_id, dt);
     gui_timer(time_id, dt);
-<<<<<<< HEAD
     gui_timer(msg_id, dt);
+    gui_timer(toast_id, dt);
+
+    if (toast_timer > 0.0f) {
+        toast_timer -= dt;
+        if (toast_timer <= 0.0f) {
+             gui_set_hidden(toast_id, 1);
+        }
+    }
 
     if (curr_mode() == MODE_TARGET)
         gui_timer(target_hud_id, dt);
@@ -645,20 +685,6 @@ void hud_touch_timer(float dt)
 void hud_touch_paint(void)
 {
     gui_paint(Touch_id);
-=======
-
-    hud_view_timer(dt);
-    hud_speed_timer(dt);
-}
-
-/*---------------------------------------------------------------------------*/
-
-void hud_view_pulse(int c)
-{
-    gui_set_label(view_id, view_to_str(c));
-    gui_pulse(view_id, 1.2f);
-    view_timer = 2.0f;
->>>>>>> origin/csy-extras
 }
 
 void hud_view_timer(float dt)
@@ -712,6 +738,14 @@ void hud_speed_paint(void)
 {
     if (speed_timer > 0.0f)
         gui_paint(speed_id);
+}
+
+void hud_show_toast(const char *text) {
+    gui_set_label(toast_id, text);
+    gui_set_hidden(toast_id, 0);
+    gui_pulse(toast_id, 1.2f);
+    audio_play(AUD_GOAL, 0.5f);
+    toast_timer = 4.0f;
 }
 
 /*---------------------------------------------------------------------------*/
