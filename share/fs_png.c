@@ -1,5 +1,4 @@
 /*
-<<<<<<<< HEAD:share/fs_png.c
  * Copyright (C) 2003-2010 Neverball authors
  *
  * NEVERBALL is  free software; you can redistribute  it and/or modify
@@ -13,7 +12,6 @@
  * General Public License for more details.
  */
 
-<<<<<<<< HEAD:share/fs_png.c
 #include <png.h>
 #include <string.h>
 #include "fs_png.h"
