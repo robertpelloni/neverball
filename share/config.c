@@ -311,44 +311,6 @@ static const char *config_mouse_name(int b)
 
 /*---------------------------------------------------------------------------*/
 
-static void config_mouse(const char *s, int i)
-{
-    if      (strcmp(s, "none") == 0)
-        config_set_d(i, 0);
-    else if (strcmp(s, "left") == 0)
-        config_set_d(i, SDL_BUTTON_LEFT);
-    else if (strcmp(s, "right") == 0)
-        config_set_d(i, SDL_BUTTON_RIGHT);
-    else if (strcmp(s, "wheelup") == 0)
-        config_set_d(i, SDL_BUTTON_WHEELUP);
-    else if (strcmp(s, "middle") == 0)
-        config_set_d(i, SDL_BUTTON_MIDDLE);
-    else if (strcmp(s, "wheeldown") == 0)
-        config_set_d(i, SDL_BUTTON_WHEELDOWN);
-    else
-        config_set_d(i, atoi(s));
-}
-
-static const char *config_mouse_name(int b)
-{
-    static char buff[sizeof ("256")];
-
-    sprintf(buff, "%d", b);
-
-    switch (b)
-    {
-    case 0:                    return "none";      break;
-    case SDL_BUTTON_LEFT:      return "left";      break;
-    case SDL_BUTTON_RIGHT:     return "right";     break;
-    case SDL_BUTTON_WHEELUP:   return "wheelup";   break;
-    case SDL_BUTTON_MIDDLE:    return "middle";    break;
-    case SDL_BUTTON_WHEELDOWN: return "wheeldown"; break;
-    default:                   return buff;        break;
-    }
-}
-
-/*---------------------------------------------------------------------------*/
-
 void config_init(void)
 {
     int i;
@@ -464,7 +426,6 @@ void config_load(void)
                                  i == CONFIG_KEY_SCORE_NEXT    ||
                                  i == CONFIG_KEY_ROTATE_FAST   ||
                                  i == CONFIG_KEY_DASH)
-                                 i == CONFIG_KEY_ROTATE_FAST)
                         {
                             config_key(val, i);
                         }

@@ -18,8 +18,6 @@
 
 #include "fs.h"
 
-#include "fs.h"
-
 /*---------------------------------------------------------------------------*/
 
 void put_float(fs_file fout, float f)

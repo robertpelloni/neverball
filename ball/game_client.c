@@ -616,6 +616,15 @@ void game_client_free(const char *next)
 
     game_base_free(next);
     back_free();
+
+    if (ghost_active)
+    {
+        game_lerp_free(&ghost_gl);
+        sol_free_draw(&ghost_gd.draw);
+        sol_free_vary(&ghost_gd.vary);
+        /* Back is shared */
+        ghost_active = 0;
+    }
 }
 
 /*---------------------------------------------------------------------------*/

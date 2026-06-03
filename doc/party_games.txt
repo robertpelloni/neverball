@@ -1,87 +1,122 @@
 
-                            * PARTY GAMES *
+* PARTY GAMES *
 
+Neverball features a variety of "Party Game" modes inspired by classic arcade titles. These modes can be played solo or with up to 4 players (some modes support AI opponents).
 
-Neverball includes a suite of Party Games designed for multiplayer fun.
-These modes can be played with 1-4 players in split-screen mode.
+To access these modes, select "Party Games" from the main menu.
 
-To access these games, select "Party Games" from the main menu.
+* MODE LIST
 
+1. MONKEY TARGET
+   Fly your ball off a ramp and land on a target in the ocean.
+   - Controls:
+     - Tilt to steer.
+     - Press Action (A) to open/close wings.
+     - Pitch Up (Stick Down) to gain altitude (loses speed).
+     - Pitch Down (Stick Up) to dive (gains speed).
+   - Goal: Land in the center (Bullseye) for 500 points.
 
-* MONKEY TARGET
+2. MONKEY BATTLE (SHARED)
+   A race to the finish line on a single shared screen.
+   - Features:
+     - All players share one camera. If you fall behind, you warp to the leader.
+     - Items: Missile (Stun leader), Banana (Drop hazard).
 
-Fly your monkey ball through the air and land on the target to score points!
+3. MONKEY FIGHT
+   Knock opponents off the platform.
+   - Controls:
+     - Press Action (A) to extend your boxing glove.
+   - Features:
+     - Hitting an opponent applies a massive impulse.
+     - Last monkey remaining wins.
 
-Controls:
-    Tilt Control:   Steer the ball during the roll phase.
-    Action Button:  Open wings to glide (at the end of the ramp).
-                    Close wings to drop/land.
-    Up/Down (Air):  Control pitch. Pull Up to slow down/gain altitude.
-                    Push Down to speed up/lose altitude.
+4. MONKEY BILLIARDS
+   Standard 8-ball style pool (simplified).
+   - Controls:
+     - Hold Action (A) to charge power.
+     - Release to shoot the cue ball.
+   - Goal: Sink all colored balls. Don't sink the white ball!
 
-Scoring:
-    Red Zone (Bullseye):  500 Points
-    Yellow Zone (Inner):  300 Points
-    Blue Zone (Outer):    100 Points
-    White Zone (Edge):     50 Points
+5. MONKEY BOWLING
+   Ten-pin bowling.
+   - Phases:
+     1. Position: Move Left/Right. Press A to lock.
+     2. Aim: An arrow sweeps L/R. Press A to lock.
+     3. Power: A bar fills up. Press A to lock.
+   - Goal: Knock down as many pins as possible.
 
-Tips:
-    - Build up speed on the ramp before opening your wings.
-    - Use the Wheel of Danger items to disrupt opponents!
-    - Land carefully! If you are moving too fast, you will roll off.
-    - Brake by pulling up just before landing.
+6. MONKEY GOLF
+   Minigolf mechanics on standard levels.
+   - Controls:
+     - Rotate camera to aim.
+     - Hold Action (A) to charge power.
+     - Release to putt.
+   - Features:
+     - Stroke counter is displayed.
+     - High friction "grass" physics.
 
+7. MONKEY BOAT
+   Row a boat down a river course.
+   - Controls:
+     - Tap Left (Tilt Left) to paddle left.
+     - Tap Right (Tilt Right) to paddle right.
+     - Alternate L/R to build speed.
+     - Hold both to brake.
 
-* MONKEY FIGHT
+8. MONKEY SHOT
+   On-rails FPS shooter.
+   - Controls:
+     - Stick moves the cursor.
+     - Action (A) fires.
+     - B Button reloads.
+   - Goal: Shoot targets and enemies.
 
-Knock your opponents off the stage to be the last monkey standing!
+9. MONKEY SOCCER
+   Giant soccer match!
+   - Teams:
+     - Red Team (Players 1 & 3) vs Blue Team (Players 2 & 4).
+   - Gameplay:
+     - A giant soccer ball spawns in the center.
+     - Push the ball into the opponent's goal (Z+ or Z-).
+     - First to score wins the round.
 
-Controls:
-    Tilt Control:   Move your monkey ball.
-    Action Button:  Punch! (Extends a boxing glove).
+10. MONKEY TENNIS
+   1v1 or 2v2 Tennis Match!
+   - Controls:
+     - Use Action (A) to swing your racket.
+     - Hit the ball over the net.
+     - Standard scoring applies.
 
-Power-ups:
-    Speed:          Temporary speed boost.
-    Big Punch:      Increases punch range and knockback.
+11. MONKEY BASEBALL
+   Home Run Derby!
+   - Controls:
+     - Pitcher: Aim with Stick, Throw with A.
+     - Batter: Time your swing (A) to hit the ball.
+     - Score points for distance!
 
+12. WHACK-A-MOLE
+   Whack the Moles!
+   - Gameplay:
+     - A grid of moles will pop up and down continuously.
+     - Roll over the moles while they are "up" to score points.
+     - You will be bounced up slightly upon a successful whack.
+     - The player with the most points when the timer runs out wins!
 
-* MONKEY BILLIARDS
+13. HAMMER THROW
+   Olympic Monkey Hammer!
+   - Controls:
+     - Spin the stick or tilt left/right rapidly to build up throw speed.
+     - The charge meter will show your current rotational power.
+     - Press Action (A) to release the ball.
+   - Gameplay:
+     - The ball will be thrown forward with an arc based on your speed.
+     - Points are awarded equal to the distance traveled before coming to rest.
 
-A simplified billiards game. Sink all the balls to win!
-
-Controls:
-    Tilt Control:   Aim your shot.
-    Action Button:  Hold to charge power, release to shoot.
-
-Rules:
-    - Sink balls to earn points (100 pts each).
-    - Don't sink the cue ball (Scratch)!
-
-
-* MONKEY BOWLING
-
-Ten-pin bowling with a monkey ball twist.
-
-Controls:
-    Step 1: Position. Use Left/Right to position your monkey.
-            Press Action to confirm.
-    Step 2: Aim. An arrow will sweep back and forth.
-            Press Action to stop it at the desired angle.
-    Step 3: Power. A power meter will fill up.
-            Press Action to lock in the power and throw!
-
-Scoring:
-    Standard bowling scoring applies (Strikes, Spares).
-
-
-* BATTLE MODE (RACE)
-
-Race against your friends on any existing Neverball level!
-
-Controls:
-    Standard Neverball controls apply.
-
-Power-ups:
-    Speed:          Boosts your speed.
-    Missile:        Homing missile that stuns the leader.
-    Banana:         Slip hazard.
+14. MONKEY DOGFIGHT
+   Aerial Combat!
+   - Gameplay:
+     - Your monkey is permanently in flight mode (glider deployed).
+     - Steer your monkey through the sky.
+     - Press Action (A) to fire your machine gun at opponents in front of you.
+     - Each hit deals 10 damage. A player is destroyed (and respawns) at 100 damage.
+     - Destroying a target awards you 50 points.

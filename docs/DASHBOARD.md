@@ -1,34 +1,20 @@
 # Project Dashboard
 
-## Overview
-Neverball is a 3D rolling ball game. This project aims to extend it with features inspired by Super Monkey Ball.
-
-## Version
-Current Version: **1.6.2-dev** (See `VERSION` file)
-
-## Project Structure
-
-### Source Code
-*   `ball/`: Core game logic (Neverball), including game modes, physics, and states.
-    *   `game_server.c`: Game logic, physics simulation, and mode-specific updates.
-    *   `game_client.c`: Rendering, interpolation, and client-side logic.
-    *   `st_*.c`: Game states (Title, Play, Party, etc.).
-*   `putt/`: Minigolf game logic (Neverputt).
-*   `share/`: Shared engine code.
-    *   `gui.c`: User Interface system.
-    *   `geom.c`: Geometry loading and rendering.
-    *   `solid_*.c`: Physics engine (Solid).
-
-### Assets
-*   `data/`: Game assets (levels, textures, sounds, fonts).
-*   `doc/`: User documentation (manuals).
-*   `docs/`: Developer documentation (Roadmap, Vision, Agents).
-*   `po/`: Localization files.
+## Directory Structure
+*   `ball/` - Core game engine source code for Neverball. Contains state management, physics integration, and party mode logic.
+*   `putt/` - Source code for Neverputt (Minigolf variant).
+*   `share/` - Shared libraries, physics engine (`solid_sim_sol.c`), rendering (`solid_draw.c`), and math utilities.
+*   `data/` - Game assets, including maps, textures, geometry, and UI elements.
+*   `doc/` - End-user documentation (manuals, party game rules).
+*   `docs/` - Developer documentation, roadmaps, AI agent instructions.
+*   `locale/` & `po/` - Translation files for i18n.
+*   `scripts/` - Utility scripts for building and versioning.
 
 ## Submodules
-*No submodules are currently registered in this repository.*
+*Currently, the project uses integrated dependencies (like `stb` or `miniz` found in `share/`) rather than explicit git submodules.*
 
-## Build Information
-*   **Build System:** Makefile
-*   **Dependencies:** SDL2, JPEG, PNG, Vorbis, PhysFS, Freetype, TTF, Gettext.
-*   **Compiler:** GCC/Clang (C99 standard).
+If external submodules are added in the future (e.g., for advanced physics or networking), they will be listed here with their respective paths, versions, and commit hashes.
+
+## Build Status
+*   **Current Version:** (See `VERSION` file)
+*   **Primary Target:** SDL2 / OpenGL Desktop (Linux, Windows, macOS).

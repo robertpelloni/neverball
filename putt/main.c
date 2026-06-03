@@ -308,13 +308,6 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    if (!fs_init(argv[0]))
-    {
-        fprintf(stderr, "Failure to initialize virtual file system: %s\n",
-                fs_error());
-        return 1;
-    }
-
     srand((int) time(NULL));
 
     opt_parse(argc, argv);

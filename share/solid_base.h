@@ -127,10 +127,6 @@
 #define P_ORIENTED 1
 #define P_PARENTED 2
 
-/* Path flags. */
-
-#define P_ORIENTED 1
-
 /*---------------------------------------------------------------------------*/
 
 struct b_mtrl

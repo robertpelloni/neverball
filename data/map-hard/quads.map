@@ -3,22 +3,14 @@
 "classname" "worldspawn"
 "message" "Don't get bullied.\"
 "author" "Robert Kooima"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "back" "map-back/volcano.sol"
 "grad" "back/volcano.png"
 "shot" "shot-hard/quads.jpg"
 "song" "bgm/track6.ogg"
 "time" "6000"
 "goal" "20"
-<<<<<<< HEAD
 "time_hs" "700 1600"
-=======
-"time_hs" "700 3000"
->>>>>>> origin/csy-extras
 "goal_hs" "2000 4500"
 "coin_hs" "54 30"
 // brush 0

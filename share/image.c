@@ -28,9 +28,6 @@
 #include "fs.h"
 #include "fs_png.h"
 
-#include "fs.h"
-#include "fs_png.h"
-
 /*---------------------------------------------------------------------------*/
 
 void image_snap(const char *filename)

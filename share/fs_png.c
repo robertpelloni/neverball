@@ -1,5 +1,4 @@
 /*
-<<<<<<<< HEAD:share/fs_png.c
  * Copyright (C) 2003-2010 Neverball authors
  *
  * NEVERBALL is  free software; you can redistribute  it and/or modify
@@ -13,7 +12,6 @@
  * General Public License for more details.
  */
 
-<<<<<<<< HEAD:share/fs_png.c
 #include <png.h>
 #include <string.h>
 #include "fs_png.h"
@@ -40,12 +38,3 @@ void fs_png_flush(png_structp writep)
 }
 
 /*---------------------------------------------------------------------------*/
-
-void video_push_persp(float, float, float);
-void video_push_ortho(void);
-void video_pop_matrix(void);
-void video_clear(void);
-
-/*---------------------------------------------------------------------------*/
-
-#endif

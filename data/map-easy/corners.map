@@ -2,11 +2,7 @@
 {
 "classname" "worldspawn"
 "coin_hs" "196 146"
-<<<<<<< HEAD
 "time_hs" "400 1500"
-=======
-"time_hs" "400 3000"
->>>>>>> origin/csy-extras
 "goal_hs" "400 4000"
 "goal" "50"
 "time" "6000"
@@ -14,11 +10,7 @@
 "shot" "shot-easy/corners.jpg"
 "grad" "back/space.png"
 "back" "map-back/jupiter.sol"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "author" "Robert Kooima"
 "message" "Here are some more opportunities for you to\fall off into the void. Hit the bump hard to\grab some big coins and score a short time.\"
 // brush 0

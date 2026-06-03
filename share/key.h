@@ -17,24 +17,16 @@
 
 #include <SDL.h>
 
-enum {
-    KEY_NONE,
-    KEY_EXIT,
-    KEY_SCREENSHOT,
-    KEY_FPS,
-    KEY_WIREFRAME,
-    KEY_RESOURCES,
-    KEY_FULLSCREEN,
-    KEY_CAMERA,
-    KEY_POSE,
-    KEY_LOOKAROUND,
-    KEY_LEVELSHOTS,
-    KEY_MAX
-};
-
-/* Virtual keys for game actions */
-/* These map to actual SDL keys via config */
-
-/* ... existing code ... */
+#define KEY_NONE        SDLK_UNKNOWN
+#define KEY_EXIT        SDLK_ESCAPE
+#define KEY_SCREENSHOT  SDLK_F12
+#define KEY_FPS         SDLK_F11
+#define KEY_WIREFRAME   SDLK_F10
+#define KEY_RESOURCES   SDLK_F9
+#define KEY_FULLSCREEN  SDLK_F8
+#define KEY_CAMERA      SDLK_F7
+#define KEY_POSE        SDLK_F6
+#define KEY_LOOKAROUND  SDLK_F5
+#define KEY_LEVELSHOTS  SDLK_F4
 
 #endif

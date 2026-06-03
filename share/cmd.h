@@ -67,6 +67,10 @@ enum cmd_type
     CMD_MOVE_TIME,
     CMD_SET_PLAYER,
     CMD_PUNCH,
+    CMD_JUMP_READY,
+    CMD_DASH_CHARGE,
+    CMD_GYRO_STATE,
+    CMD_PLACE_ITEM,
 
     CMD_MAX
 };
@@ -376,6 +380,10 @@ union cmd
     struct cmd_move_time          movetime;
     struct cmd_set_player         setplayer;
     struct cmd_punch              punch;
+    struct cmd_jump_ready         jumpready;
+    struct cmd_dash_charge        dashcharge;
+    struct cmd_gyro_state         gyrostate;
+    struct cmd_place_item         placeitem;
 };
 
 #undef CMD_HEADER

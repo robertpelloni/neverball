@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
 "classname" "worldspawn"
 "material" "item/coin/coin"
@@ -29,9 +28,3 @@
 "speed" "0.333"
 "smooth" "0"
 }
-=======
-{
-"classname" "worldspawn"
-"model" "item/coin/coin.obj"
-}
->>>>>>> origin/csy-extras

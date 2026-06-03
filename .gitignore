@@ -1,4 +1,12 @@
-bin/
-obj/
 *.o
 *.d
+*.mo
+*.sol
+*.map
+*.obj
+*.mtl
+*.po~
+*.po
+*.pot
+data/textures/mtrl/*
+locale/*

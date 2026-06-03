@@ -3,7 +3,7 @@
 This document consolidates instructions for all AI agents working on the Neverball repository. All agents (Claude, GPT, Gemini, Copilot, etc.) must adhere to these guidelines.
 
 ## 1. Core Philosophy
-*   **Goal:** Achieve complete feature parity with the Super Monkey Ball series (SMB 1, 2, Deluxe, Banana Blitz/Mania) while maintaining the open-source legacy.
+*   **Goal:** Achieve complete feature parity with the Super Monkey Ball series (SMB 1, 2, Deluxe, Banana Blitz/Mania) and Marble Blast, while preserving the open-source legacy.
 *   **Quality:** "Extremely robust," "no bugs," "full detail," "comprehensive documentation."
 *   **Persistence:** "Don't ever stop. Don't ever quit." Continue implementing features autonomously.
 
@@ -13,8 +13,8 @@ This document consolidates instructions for all AI agents working on the Neverba
 *   **Input Documentation:** Document all user input and clarifications to ensure the project direction aligns with the vision.
 
 ## 3. Versioning & Changelog
-*   **Single Source of Truth:** The version number must reside in a single text file (e.g., `VERSION` or `CHANGELOG.md`), not hardcoded in C source files. Code should read this file.
-*   **Incrementing:** Every build/session that produces changes should increment the version number (e.g., `1.6.0` -> `1.6.1-dev`).
+*   **Single Source of Truth:** The version number must reside in a single text file (`VERSION`), not hardcoded in C source files. Code should read this file if possible or build scripts should inject it.
+*   **Incrementing:** Every build/session that produces changes should increment the version number (e.g., `1.6.2-dev` -> `1.6.3-dev`).
 *   **Changelog:** Maintain a detailed `CHANGELOG.md`. Sync all version references to this file.
 
 ## 4. Git & Workflow
@@ -36,7 +36,7 @@ This document consolidates instructions for all AI agents working on the Neverba
     *   Project directory structure explanation.
     *   List of all submodules with versions, dates, and build numbers.
 
-## 7. Handover Protocol
+## 7. Handoff Protocol
 *   Before ending a session:
     1.  Merge branches/Update submodules.
     2.  Update Roadmap/Docs.

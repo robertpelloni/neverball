@@ -336,6 +336,18 @@ int demo_play_init(const char *name, const struct level *level,
     return 0;
 }
 
+int demo_ghost_record(const char *name)
+{
+    char path[MAXSTR];
+    sprintf(path, "Replays/%s.gho", name);
+
+    if ((ghost_fp = fs_open_write(path)))
+    {
+        /* Minimal header or just reuse demo header */
+        /* For simplicity, no header for raw ghost stream or minimal? */
+        /* Let's assume standard demo format for ghost too */
+        struct demo d = demo_play; /* Copy current */
+        demo_header_write(ghost_fp, &d);
         return 1;
     }
     return 0;

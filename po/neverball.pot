@@ -8,11 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: robert.kooima@gmail.com\n"
-<<<<<<< HEAD
 "POT-Creation-Date: 2021-12-09 22:48+0200\n"
-=======
-"POT-Creation-Date: 2010-10-29 02:46+0300\n"
->>>>>>> origin/csy-extras
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,9 +16,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
-<<<<<<< HEAD
 #: ball/game_common.c:28
 msgid "Aborted"
 msgstr ""
@@ -305,345 +299,6 @@ msgid "Finish"
 msgstr ""
 
 #: ball/st_help.c:102
-=======
-#: ball/demo.c:234
-msgid "Missing format character in replay name\n"
-msgstr ""
-
-#: ball/demo.c:239
-#, c-format
-msgid "Invalid format character in replay name: \"%%%c\"\n"
-msgstr ""
-
-#: ball/game_common.c:26
-msgid "Aborted"
-msgstr ""
-
-#: ball/game_common.c:27
-msgid "Time-out"
-msgstr ""
-
-#: ball/game_common.c:28
-msgid "Success"
-msgstr ""
-
-#: ball/game_common.c:29
-msgid "Fall-out"
-msgstr ""
-
-#: ball/game_common.c:30 ball/game_common.c:41 ball/progress.c:394
-msgid "Unknown"
-msgstr ""
-
-#: ball/game_common.c:38
-msgid "Chase"
-msgstr ""
-
-#: ball/game_common.c:39
-msgid "Lazy"
-msgstr ""
-
-#: ball/game_common.c:40
-msgid "Manual"
-msgstr ""
-
-#: ball/game_common.h:10
-msgid "snd/select.ogg"
-msgstr ""
-
-#: ball/game_common.h:11
-msgid "snd/ready.ogg"
-msgstr ""
-
-#: ball/game_common.h:12
-msgid "snd/set.ogg"
-msgstr ""
-
-#: ball/game_common.h:13
-msgid "snd/go.ogg"
-msgstr ""
-
-#: ball/game_common.h:24
-msgid "snd/record.ogg"
-msgstr ""
-
-#: ball/game_common.h:25
-msgid "snd/fall.ogg"
-msgstr ""
-
-#: ball/game_common.h:26
-msgid "snd/time.ogg"
-msgstr ""
-
-#: ball/game_common.h:27
-msgid "snd/over.ogg"
-msgstr ""
-
-#: ball/hud.c:60 ball/st_demo.c:203 ball/st_goal.c:177
-msgid "Coins"
-msgstr ""
-
-#: ball/hud.c:61
-msgid "Goal"
-msgstr ""
-
-#: ball/hud.c:80 ball/st_goal.c:165
-msgid "Balls"
-msgstr ""
-
-#: ball/hud.c:81 ball/st_goal.c:171 putt/hud.c:45
-msgid "Score"
-msgstr ""
-
-#: ball/level.c:133
-#, c-format
-msgid "Failure to load level file '%s'\n"
-msgstr ""
-
-#: ball/main.c:254
-#, c-format
-msgid ""
-"Usage: %s [options ...]\n"
-"Options:\n"
-"  -h, --help                show this usage message.\n"
-"  -v, --version             show version.\n"
-"  -d, --data <dir>          use 'dir' as game data directory.\n"
-"  -r, --replay <file>       play the replay 'file'.\n"
-msgstr ""
-
-#: ball/main.c:263
-#, c-format
-msgid "Option '%s' requires an argument.\n"
-msgstr ""
-
-#: ball/progress.c:392 ball/st_help.c:247
-msgid "Challenge Mode"
-msgstr ""
-
-#: ball/progress.c:392 ball/st_start.c:206
-msgid "Challenge"
-msgstr ""
-
-#: ball/progress.c:393 ball/st_help.c:239
-msgid "Normal Mode"
-msgstr ""
-
-#: ball/progress.c:393
-msgid "Normal"
-msgstr ""
-
-#: ball/progress.c:394
-msgid "Unknown Mode"
-msgstr ""
-
-#: ball/set.c:182
-#, c-format
-msgid "Failure to load user score file '%s'\n"
-msgstr ""
-
-#: ball/set.c:202
-#, c-format
-msgid "Failure to load set file '%s'\n"
-msgstr ""
-
-#: ball/st_ball.c:175 ball/st_conf.c:327
-msgid "Ball"
-msgstr ""
-
-#: ball/st_ball.c:177 ball/st_conf.c:212 ball/st_help.c:96 ball/st_start.c:176
-#: ball/util.c:430 share/st_resol.c:99 putt/st_all.c:344 putt/st_all.c:492
-#: putt/st_conf.c:157
-msgid "Back"
-msgstr ""
-
-#: ball/st_conf.c:210 putt/st_conf.c:155
-msgid "Options"
-msgstr ""
-
-#: ball/st_conf.c:220 ball/st_demo.c:642 ball/st_save.c:209 putt/st_conf.c:165
-msgid "No"
-msgstr ""
-
-#: ball/st_conf.c:221 ball/st_demo.c:643 ball/st_save.c:210
-#: ball/st_start.c:231 putt/st_conf.c:166
-msgid "Yes"
-msgstr ""
-
-#: ball/st_conf.c:223 putt/st_conf.c:168
-msgid "Fullscreen"
-msgstr ""
-
-#: ball/st_conf.c:231 share/st_resol.c:97 putt/st_conf.c:176
-msgid "Resolution"
-msgstr ""
-
-#: ball/st_conf.c:239 putt/st_conf.c:184
-msgid "Low"
-msgstr ""
-
-#: ball/st_conf.c:240 putt/st_conf.c:185
-msgid "High"
-msgstr ""
-
-#: ball/st_conf.c:242 putt/st_conf.c:187
-msgid "Textures"
-msgstr ""
-
-#: ball/st_conf.c:248 ball/st_conf.c:257 ball/st_conf.c:266 putt/st_conf.c:193
-msgid "Off"
-msgstr ""
-
-#: ball/st_conf.c:249 ball/st_conf.c:258 ball/st_conf.c:267 putt/st_conf.c:194
-msgid "On"
-msgstr ""
-
-#: ball/st_conf.c:251
-msgid "Reflection"
-msgstr ""
-
-#: ball/st_conf.c:260
-msgid "Background"
-msgstr ""
-
-#: ball/st_conf.c:269 putt/st_conf.c:196
-msgid "Shadow"
-msgstr ""
-
-#: ball/st_conf.c:291 putt/st_conf.c:218
-msgid "Sound Volume"
-msgstr ""
-
-#: ball/st_conf.c:311 putt/st_conf.c:238
-msgid "Music Volume"
-msgstr ""
-
-#: ball/st_conf.c:320 ball/st_name.c:101
-msgid "Player Name"
-msgstr ""
-
-#: ball/st_demo.c:202
-msgid "Time"
-msgstr ""
-
-#: ball/st_demo.c:204
-msgid "Status"
-msgstr ""
-
-#: ball/st_demo.c:231 ball/st_demo.c:402
-msgid "Replay"
-msgstr ""
-
-#: ball/st_demo.c:232 putt/st_all.c:680
-msgid "Player"
-msgstr ""
-
-#: ball/st_demo.c:233
-msgid "Date"
-msgstr ""
-
-#: ball/st_demo.c:283
-msgid "Select Replay"
-msgstr ""
-
-#: ball/st_demo.c:299
-msgid "No Replays"
-msgstr ""
-
-#: ball/st_demo.c:543
-msgid "Replay Paused"
-msgstr ""
-
-#: ball/st_demo.c:546
-msgid "Replay Ends"
-msgstr ""
-
-#: ball/st_demo.c:555 ball/st_pause.c:85 putt/st_all.c:592
-msgid "Quit"
-msgstr ""
-
-#: ball/st_demo.c:559
-msgid "Keep"
-msgstr ""
-
-#: ball/st_demo.c:560 share/keynames.c:39
-msgid "Delete"
-msgstr ""
-
-#: ball/st_demo.c:565 ball/st_pause.c:90 putt/st_all.c:593
-msgid "Continue"
-msgstr ""
-
-#: ball/st_demo.c:569
-msgid "Repeat"
-msgstr ""
-
-#: ball/st_demo.c:638
-msgid "Delete Replay?"
-msgstr ""
-
-#: ball/st_demo.c:680 ball/st_level.c:155
-msgid "Warning!"
-msgstr ""
-
-#: ball/st_demo.c:682
-msgid ""
-"The current replay was recorded with a\\different (or unknown) version of "
-"this level.\\Be prepared to encounter visual errors.\\"
-msgstr ""
-
-#: ball/st_done.c:61
-msgid "New Set Record"
-msgstr ""
-
-#: ball/st_done.c:62
-msgid "Set Complete"
-msgstr ""
-
-#: ball/st_done.c:82
-msgid "Select Level"
-msgstr ""
-
-#: ball/st_fall_out.c:82
-msgid "Fall-out!"
-msgstr ""
-
-#: ball/st_fall_out.c:89 ball/st_time_out.c:85
-msgid "Exit"
-msgstr ""
-
-#: ball/st_fall_out.c:92 ball/st_goal.c:213 ball/st_time_out.c:88
-msgid "Next Level"
-msgstr ""
-
-#: ball/st_fall_out.c:95 ball/st_goal.c:216 ball/st_time_out.c:91
-msgid "Retry Level"
-msgstr ""
-
-#: ball/st_fall_out.c:98 ball/st_goal.c:219 ball/st_time_out.c:94
-msgid "Save Replay"
-msgstr ""
-
-#: ball/st_goal.c:106
-msgid "New Record"
-msgstr ""
-
-#: ball/st_goal.c:107
-msgid "GOAL"
-msgstr ""
-
-#: ball/st_goal.c:150
-#, c-format
-msgid "%d new bonus level"
-msgid_plural "%d new bonus levels"
-msgstr[0] ""
-msgstr[1] ""
-
-#: ball/st_goal.c:208 ball/st_goal.c:210
-msgid "Finish"
-msgstr ""
-
-#: ball/st_help.c:92
->>>>>>> origin/csy-extras
 msgid "Tricks"
 msgstr ""
 
@@ -689,73 +344,44 @@ msgstr ""
 msgid "Screenshot"
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_help.c:256
-=======
-#: ball/st_help.c:241
->>>>>>> origin/csy-extras
 msgid ""
 "Finish a level before the time runs out.\\You need to collect coins in order "
 "to open the goal."
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_help.c:269
-=======
-#: ball/st_help.c:249
->>>>>>> origin/csy-extras
 msgid ""
 "Start playing from the first level of the set.\\You start with only three "
 "balls, do not lose them.\\Earn an extra ball for each 100 coins collected."
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_help.c:283
-=======
-#: ball/st_help.c:263
->>>>>>> origin/csy-extras
 msgid ""
 "Corners can be used to jump.\\Get rolling and take aim\\at the angle. You "
 "may be able\\to reach new places.\\"
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_help.c:288
-=======
-#: ball/st_help.c:268
->>>>>>> origin/csy-extras
 msgid ""
 "Tilting in 2 directions increases\\the slope. Use the manual camera\\and "
 "turn the camera by 45\\degrees for best results.\\"
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_help.c:308 ball/st_help.c:318
 msgid "Watch demo"
 msgstr ""
 
 #: ball/st_level.c:56
-=======
-#: ball/st_help.c:288 ball/st_help.c:298
-msgid "Watch demo"
-msgstr ""
-
-#: ball/st_level.c:55
->>>>>>> origin/csy-extras
 #, c-format
 msgid "Bonus Level %s"
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_level.c:58
-=======
-#: ball/st_level.c:57
->>>>>>> origin/csy-extras
 #, c-format
 msgid "Level %s"
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_level.c:64
 #, c-format
 msgid "Standalone level"
@@ -765,19 +391,12 @@ msgstr ""
 msgid ""
 "A replay file could not be opened for writing.\\This game will not be "
 "recorded.\\"
-=======
-#: ball/st_level.c:157
-msgid ""
-"The default replay file could not be opened.\\You will not be able to save a "
-"replay when\\playing this level.\\"
->>>>>>> origin/csy-extras
 msgstr ""
 
 #: ball/st_name.c:112
 msgid "OK"
 msgstr ""
 
-<<<<<<< HEAD
 #: ball/st_name.c:114 ball/st_save.c:113 ball/st_save.c:222
 msgid "Cancel"
 msgstr ""
@@ -1058,438 +677,10 @@ msgid "Players?"
 msgstr ""
 
 #: putt/st_all.c:722
-=======
-#: ball/st_name.c:114 ball/st_save.c:124
-msgid "Cancel"
-msgstr ""
-
-#: ball/st_over.c:35
-msgid "GAME OVER"
-msgstr ""
-
-#: ball/st_pause.c:79 putt/st_all.c:587
-msgid "Paused"
-msgstr ""
-
-#: ball/st_pause.c:88
-msgid "Restart"
-msgstr ""
-
-#: ball/st_play.c:118
-msgid "Ready?"
-msgstr ""
-
-#: ball/st_play.c:202
-msgid "Set?"
-msgstr ""
-
-#: ball/st_play.c:308
-msgid "GO!"
-msgstr ""
-
-#: ball/st_save.c:111
-msgid "Replay Name"
-msgstr ""
-
-#: ball/st_save.c:122
-msgid "Save"
-msgstr ""
-
-#: ball/st_save.c:203
-msgid "Overwrite?"
-msgstr ""
-
-#: ball/st_set.c:107
-msgid "Level Set"
-msgstr ""
-
-#. Translators: adjust the amount of whitespace here
-#. * as necessary for the buttons to look good.
-#: ball/st_start.c:228
-msgid "   No   "
-msgstr ""
-
-#: ball/st_start.c:237
-msgid "Lock Goals of Completed Levels?"
-msgstr ""
-
-#: ball/st_time_out.c:78
-msgid "Time's Up!"
-msgstr ""
-
-#: ball/st_title.c:127 ball/st_title.c:161
-msgid "menu^Cheat"
-msgstr ""
-
-#: ball/st_title.c:133 ball/st_title.c:164 putt/st_all.c:214
-msgid "menu^Play"
-msgstr ""
-
-#: ball/st_title.c:167
-msgid "menu^Replay"
-msgstr ""
-
-#: ball/st_title.c:168
-msgid "menu^Help"
-msgstr ""
-
-#: ball/st_title.c:169 putt/st_all.c:215
-msgid "menu^Options"
-msgstr ""
-
-#: ball/st_title.c:170 putt/st_all.c:216
-msgid "menu^Exit"
-msgstr ""
-
-#: ball/util.c:27
-msgid "Hard"
-msgstr ""
-
-#: ball/util.c:28
-msgid "Medium"
-msgstr ""
-
-#: ball/util.c:29
-msgid "Easy"
-msgstr ""
-
-#: ball/util.c:77 ball/util.c:142
-msgid "Unavailable"
-msgstr ""
-
-#: ball/util.c:202 ball/util.c:250
-msgid "Most Coins"
-msgstr ""
-
-#: ball/util.c:208 ball/util.c:254
-msgid "Best Times"
-msgstr ""
-
-#: ball/util.c:214 ball/util.c:258
-msgid "Fast Unlock"
-msgstr ""
-
-#: ball/util.c:226
-msgid "Change Name"
-msgstr ""
-
-#: ball/util.c:363
-msgid "caps"
-msgstr ""
-
-#: ball/util.c:424
-msgid "Next"
-msgstr ""
-
-#: ball/util.c:425
-msgid "Prev"
-msgstr ""
-
-#: share/gui.c:236
-#, c-format
-msgid "Font '%s' doesn't exist, trying default font.\n"
-msgstr ""
-
-#: share/gui.c:292
-#, c-format
-msgid "Could not load font '%s'.\n"
-msgstr ""
-
-#: share/gui.h:23
-msgid "ttf/DejaVuSans-Bold.ttf"
-msgstr ""
-
-#: share/image.c:229
-#, c-format
-msgid "Failed to convert SDL_ttf surface: %s\n"
-msgstr ""
-
-#. Translators,
-#. *
-#. * This is a mostly-complete list of human-readable SDL key names.  There
-#. * might not be corresponding names for all these keys in your language,
-#. * and that's perfectly fine -- in such cases just copy the source string.
-#.
-#: share/keynames.c:32
-msgid "Backspace"
-msgstr ""
-
-#: share/keynames.c:33
-msgid "Tab"
-msgstr ""
-
-#: share/keynames.c:34
-msgid "Clear"
-msgstr ""
-
-#: share/keynames.c:35
-msgid "Return"
-msgstr ""
-
-#: share/keynames.c:36
-msgid "Pause"
-msgstr ""
-
-#: share/keynames.c:37
-msgid "Escape"
-msgstr ""
-
-#: share/keynames.c:38
-msgid "Space"
-msgstr ""
-
-#: share/keynames.c:40
-msgid "Enter"
-msgstr ""
-
-#: share/keynames.c:41
-msgid "Equals"
-msgstr ""
-
-#: share/keynames.c:42
-msgid "Up"
-msgstr ""
-
-#: share/keynames.c:43 share/keynames.c:46
-msgid "Down"
-msgstr ""
-
-#: share/keynames.c:44
-msgid "Right"
-msgstr ""
-
-#: share/keynames.c:45
-msgid "Left"
-msgstr ""
-
-#: share/keynames.c:47
-msgid "Insert"
-msgstr ""
-
-#: share/keynames.c:48
-msgid "Home"
-msgstr ""
-
-#: share/keynames.c:49
-msgid "End"
-msgstr ""
-
-#: share/keynames.c:50
-msgid "Page Up"
-msgstr ""
-
-#: share/keynames.c:51
-msgid "Page Down"
-msgstr ""
-
-#: share/keynames.c:52
-msgid "F1"
-msgstr ""
-
-#: share/keynames.c:53
-msgid "F2"
-msgstr ""
-
-#: share/keynames.c:54
-msgid "F3"
-msgstr ""
-
-#: share/keynames.c:55
-msgid "F4"
-msgstr ""
-
-#: share/keynames.c:56
-msgid "F5"
-msgstr ""
-
-#: share/keynames.c:57
-msgid "F6"
-msgstr ""
-
-#: share/keynames.c:58
-msgid "F7"
-msgstr ""
-
-#: share/keynames.c:59
-msgid "F8"
-msgstr ""
-
-#: share/keynames.c:60
-msgid "F9"
-msgstr ""
-
-#: share/keynames.c:61
-msgid "F10"
-msgstr ""
-
-#: share/keynames.c:62
-msgid "F11"
-msgstr ""
-
-#: share/keynames.c:63
-msgid "F12"
-msgstr ""
-
-#: share/keynames.c:64
-msgid "F13"
-msgstr ""
-
-#: share/keynames.c:65
-msgid "F14"
-msgstr ""
-
-#: share/keynames.c:66
-msgid "F15"
-msgstr ""
-
-#: share/keynames.c:67
-msgid "Num Lock"
-msgstr ""
-
-#: share/keynames.c:68
-msgid "Caps Lock"
-msgstr ""
-
-#: share/keynames.c:69
-msgid "Scroll Lock"
-msgstr ""
-
-#: share/keynames.c:70
-msgid "Right Shift"
-msgstr ""
-
-#: share/keynames.c:71
-msgid "Left Shift"
-msgstr ""
-
-#: share/keynames.c:72
-msgid "Right CTRL"
-msgstr ""
-
-#: share/keynames.c:73
-msgid "Left CTRL"
-msgstr ""
-
-#: share/keynames.c:74
-msgid "Right Alt"
-msgstr ""
-
-#: share/keynames.c:75
-msgid "Left Alt"
-msgstr ""
-
-#: share/keynames.c:76
-msgid "Right Meta"
-msgstr ""
-
-#: share/keynames.c:77
-msgid "Left Meta"
-msgstr ""
-
-#: share/keynames.c:78
-msgid "Left Super"
-msgstr ""
-
-#: share/keynames.c:79
-msgid "Right Super"
-msgstr ""
-
-#: share/keynames.c:80
-msgid "Alt Gr"
-msgstr ""
-
-#: share/keynames.c:81
-msgid "Compose"
-msgstr ""
-
-#: share/keynames.c:82
-msgid "Help"
-msgstr ""
-
-#: share/keynames.c:83
-msgid "Print Screen"
-msgstr ""
-
-#: share/keynames.c:84
-msgid "Sys Req"
-msgstr ""
-
-#: share/keynames.c:85
-msgid "Break"
-msgstr ""
-
-#: share/keynames.c:86
-msgid "Menu"
-msgstr ""
-
-#: share/keynames.c:87
-msgid "Power"
-msgstr ""
-
-#: share/keynames.c:88
-msgid "Euro"
-msgstr ""
-
-#: share/keynames.c:89
-msgid "Undo"
-msgstr ""
-
-#: share/syswm.c:58
-#, c-format
-msgid "Failed to get WM info: %s\n"
-msgstr ""
-
-#: share/syswm.c:129
-msgid "Failed to allocate memory for EWMH icon data.\n"
-msgstr ""
-
-#: putt/hole.c:115 putt/hud.c:51 putt/st_all.c:98 putt/st_all.c:142
-msgid "Par"
-msgstr ""
-
-#: putt/hole.c:117 putt/st_all.c:99 putt/st_all.c:143
-msgid "P1"
-msgstr ""
-
-#: putt/hole.c:118 putt/st_all.c:100 putt/st_all.c:144
-msgid "P2"
-msgstr ""
-
-#: putt/hole.c:119 putt/st_all.c:101 putt/st_all.c:145
-msgid "P3"
-msgstr ""
-
-#: putt/hole.c:120 putt/st_all.c:102 putt/st_all.c:146
-msgid "P4"
-msgstr ""
-
-#: putt/st_all.c:76
-msgid "O"
-msgstr ""
-
-#: putt/st_all.c:112
-msgid "Tot"
-msgstr ""
-
-#: putt/st_all.c:121
-msgid "I"
-msgstr ""
-
-#: putt/st_all.c:303
-msgid "Select Course"
-msgstr ""
-
-#: putt/st_all.c:469
-msgid "Players?"
-msgstr ""
-
-#: putt/st_all.c:673
->>>>>>> origin/csy-extras
 #, c-format
 msgid "Hole %02d"
 msgstr ""
 
-<<<<<<< HEAD
 #: putt/st_all.c:1071
 msgid "It's In!"
 msgstr ""
@@ -1503,21 +694,6 @@ msgid "Scores"
 msgstr ""
 
 #: putt/st_all.c:1345
-=======
-#: putt/st_all.c:998
-msgid "It's In!"
-msgstr ""
-
-#: putt/st_all.c:1140
-msgid "1 Stroke Penalty"
-msgstr ""
-
-#: putt/st_all.c:1218
-msgid "Scores"
-msgstr ""
-
-#: putt/st_all.c:1271
->>>>>>> origin/csy-extras
 msgid "Final Scores"
 msgstr ""
 
@@ -1580,7 +756,6 @@ msgstr ""
 msgid ""
 "Difficulty: Expert through Impossible\\\\Assorted levels for advanced "
 "players.\\Author: Florian Priester\\\\"
-<<<<<<< HEAD
 msgstr ""
 
 #: data/set-tones.txt
@@ -1589,8 +764,6 @@ msgstr ""
 
 #: data/set-tones.txt
 msgid "Difficulty: Moderate to Difficult.\\\\Author: Ian Walker\\\\"
-=======
->>>>>>> origin/csy-extras
 msgstr ""
 
 #: data/set-misc.txt
@@ -1634,7 +807,6 @@ msgid ""
 "Through Insane\\Author: Byron James Johnson"
 msgstr ""
 
-<<<<<<< HEAD
 #: data/holes-vidski.txt
 msgid ""
 "Golf Jambalaya\\\\Vidski's infamous course.\\Difficulty: Medium to hard."
@@ -1651,8 +823,6 @@ msgstr ""
 msgid "Neverball\\\\http://neverball.org\\\\Created by Robert Kooima\\"
 msgstr ""
 
-=======
->>>>>>> origin/csy-extras
 #: data/map-easy/bumper.map
 msgid ""
 "Try to avoid being hit by moving objects.\\One bump can throw the ball"
@@ -1816,13 +986,10 @@ msgstr ""
 msgid "=Atrium=\\Remove the coins from their columns."
 msgstr ""
 
-<<<<<<< HEAD
 #: data/map-fwp/buoys.map
 msgid "=Buoys=\\He who controls the timers, controls the gates."
 msgstr ""
 
-=======
->>>>>>> origin/csy-extras
 #: data/map-fwp/cargo.map
 msgid "=Cargo=\\Let yourself be carried away."
 msgstr ""
@@ -1835,7 +1002,6 @@ msgstr ""
 msgid "=Discs=\\Used correctly, the platforms will take you to the goal."
 msgstr ""
 
-<<<<<<< HEAD
 #: data/map-fwp/inferno.map
 msgid "=Inferno=\\The fire thwomps will try to foil your mission."
 msgstr ""
@@ -1844,8 +1010,6 @@ msgstr ""
 msgid "=Ladybirds=\\Don't let them bug you."
 msgstr ""
 
-=======
->>>>>>> origin/csy-extras
 #: data/map-fwp/mountains.map
 msgid "=Mountains=\\Ups and downs are a part of life."
 msgstr ""
@@ -1866,13 +1030,10 @@ msgstr ""
 msgid "=Ramps=\\Can you make it to the top?"
 msgstr ""
 
-<<<<<<< HEAD
 #: data/map-fwp/rings.map
 msgid "=Rings=\\Roll your way through this trap."
 msgstr ""
 
-=======
->>>>>>> origin/csy-extras
 #: data/map-fwp/slope.map
 msgid "=Slope=\\Try not to become a modern-day Sisyphus."
 msgstr ""
@@ -2105,18 +1266,6 @@ msgid ""
 "challenge!"
 msgstr ""
 
-#: data/map-medium/roundfloors.map
-msgid ""
-"This wedding cake is plenty rich,\\but be careful as you go\\to each lower "
-"layer."
-msgstr ""
-
-#: data/map-medium/sparselines.map
-msgid ""
-"Bump the logs at speed to change lanes.\\Try to reach the top for an extra "
-"challenge!"
-msgstr ""
-
 #: data/map-medium/spiraldn.map
 msgid ""
 "Take it slow to keep it away from the edge.\\Or, don't.\\Either way might "
@@ -2146,13 +1295,6 @@ msgid ""
 "on a timer.\\When it expires, the barriers will rise.\\"
 msgstr ""
 
-<<<<<<< HEAD
-=======
-#: data/map-medium/title.map
-msgid "Neverball\\\\http://neverball.org\\\\Created by Robert Kooima\\"
-msgstr ""
-
->>>>>>> origin/csy-extras
 #: data/map-medium/woodmaze.map
 msgid "Follow the trail of coins\\to make it through the labyrinth."
 msgstr ""
@@ -2230,11 +1372,7 @@ msgid "Le parcours du combattant.\\Ready for the assault course?"
 msgstr ""
 
 #: data/map-mym/circuit1.map
-<<<<<<< HEAD
 msgid "La course effrénée.\\Let's run some laps."
-=======
-msgid "La course effrénée.\\Let's make some laps."
->>>>>>> origin/csy-extras
 msgstr ""
 
 #: data/map-mym/circuit2.map
@@ -2314,11 +1452,7 @@ msgstr ""
 
 #: data/map-mym/narrow.map
 msgid ""
-<<<<<<< HEAD
 "Le sentier étroit.\\Patience and timing.\\Tip: maximise speed at the first "
-=======
-"Le sentier étroit.\\Patience and timing.\\Tips: maximise speed at the first "
->>>>>>> origin/csy-extras
 "slope."
 msgstr ""
 
@@ -2431,11 +1565,7 @@ msgid "Préparez un petit sac.\\The stomach-tester."
 msgstr ""
 
 #: data/map-mym2/sonic.map
-<<<<<<< HEAD
 msgid "Un petit échauffement.\\Welcome to Mehdi's new set!"
-=======
-msgid "Un petit échauffement.\\Welcome to the new Mehdi's set!"
->>>>>>> origin/csy-extras
 msgstr ""
 
 #: data/map-mym2/speed.map
@@ -2458,7 +1588,6 @@ msgstr ""
 msgid "Les toiles attirantes.\\Get out of the webs."
 msgstr ""
 
-<<<<<<< HEAD
 #: data/map-tones/bigtube.map
 msgid "Speed is the name of the game."
 msgstr ""
@@ -2548,8 +1677,6 @@ msgstr ""
 msgid "Surf's Up !!"
 msgstr ""
 
-=======
->>>>>>> origin/csy-extras
 #. Desktop entry comment
 #: dist/neverball.desktop.in
 msgid "A 3D arcade game with a ball"
@@ -2583,12 +1710,9 @@ msgstr ""
 
 msgid "item/coin/coin"
 msgstr ""
-<<<<<<< HEAD
 
 msgid "item/coin/coin5"
 msgstr ""
 
 msgid "item/coin/coin10"
 msgstr ""
-=======
->>>>>>> origin/csy-extras

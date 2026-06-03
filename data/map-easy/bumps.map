@@ -2,22 +2,14 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "back" "map-back/alien.sol"
 "grad" "back/alien.png"
 "shot" "shot-easy/bumps.jpg"
 "song" "bgm/track5.ogg"
 "time" "12000"
 "goal" "30"
-<<<<<<< HEAD
 "time_hs" "500 1000"
-=======
-"time_hs" "500 3000"
->>>>>>> origin/csy-extras
 "coin_hs" "190 60"
 "goal_hs" "1500 4500"
 "message" "Learn to control a bouncing ball.\Look at the shadow to know where the\ball will land.  If you're feeling confident in\your mastery of bouncing, take a risk\for a big payoff.\"

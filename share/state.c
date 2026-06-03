@@ -181,7 +181,6 @@ void st_paint(float t)
             transition_paint();
         }
         else
-        */
         {
             state->paint(state->gui_id, t);
 

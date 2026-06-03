@@ -2,22 +2,14 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "back" "map-back/clouds.sol"
 "grad" "back/land.png"
 "shot" "shot-easy/peasy.jpg"
 "song" "bgm/track1.ogg"
 "time" "12000"
 "goal" "10"
-<<<<<<< HEAD
 "time_hs" "600 1000"
-=======
-"time_hs" "600 2000"
->>>>>>> origin/csy-extras
 "coin_hs" "20 15"
 "goal_hs" "2200 5000"
 "message" "Mouse buttons rotate the view.\Press Escape to pause or quit.\\\\Click to begin.\"

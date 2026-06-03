@@ -27,7 +27,7 @@
 #include "game_common.h"
 
 #include "st_done.h"
-#include "st_level.h"
+#include "st_start.h"
 #include "st_name.h"
 #include "st_shared.h"
 

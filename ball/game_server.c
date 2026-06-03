@@ -33,6 +33,8 @@
 #include "cmd.h"
 #include "progress.h"
 #include "stats.h"
+#include "profile.h"
+#include "hud.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -79,6 +81,9 @@ struct server_player
     /* Jump Physics State */
     int   can_jump;
     float jump_timer;
+
+    /* Spin Dash Physics State */
+    float spin_charge;
 
     /* Fight Physics State */
     int   punch_state; /* 0=None, 1=Extending, 2=Retracting */
@@ -158,6 +163,13 @@ struct server_player
 
 static struct server_player players[MAX_PLAYERS];
 static int player_count = 1;
+static int cpu_count = 0;
+
+void game_ai_step(int p, float dt);
+
+void game_set_cpu_count(int n) {
+    cpu_count = n;
+}
 
 #define VIEW_FADE_MIN 0.2f
 #define VIEW_FADE_MAX 1.0f
@@ -638,6 +650,25 @@ static void grow_step(int p, float dt)
 
 static struct lockstep server_step;
 
+/* Helper to resize ball array for party modes */
+static void game_init_party_mode_physics(struct server_player *pl, int count)
+{
+    if (pl->sim_owner && count > 1)
+    {
+        struct v_ball *new_uv = realloc(pl->vary.uv, sizeof(struct v_ball) * count);
+        if (new_uv)
+        {
+            pl->vary.uv = new_uv;
+            /* Initialize new balls as copies of the first (default) ball */
+            int i;
+            for (i = 1; i < count; i++) {
+                pl->vary.uv[i] = pl->vary.uv[0];
+            }
+            pl->vary.uc = count;
+        }
+    }
+}
+
 static void game_player_init(int p, int t, int e, int mode)
 {
     struct server_player *pl = &players[p];
@@ -713,13 +744,6 @@ static void game_player_init(int p, int t, int e, int mode)
     }
     pl->ai_timer = 0.0f;
     pl->ai_state = 0;
-
-    /* Load stats for the current ball */
-    stats_load(&player_stats[p], config_get_s(CONFIG_BALL_FILE));
-
-    /* Adjust jump force based on stats (default is implicitly handled by physics engine but we can tweak it?) */
-    /* The jump logic uses sol_jump_test which just checks for jump pads. */
-    /* But we can affect acceleration. */
 
     /* Load stats for the current ball */
     stats_load(&player_stats[p], config_get_s(CONFIG_BALL_FILE));
@@ -1460,12 +1484,16 @@ static int game_update_state(int p, int bt)
         }
         else if (hp->t == ITEM_BANANA)
         {
-            audio_play(AUD_FALL, 1.f);
+            pl->held_item = ITEM_BANANA;
+            audio_play(AUD_COIN, 1.f);
         }
 
-        audio_play(AUD_COIN, 1.f);
-
-        hp->t = ITEM_NONE;
+        /* Check for item consumption */
+        if (hp->t != ITEM_NONE)
+        {
+            audio_play(AUD_COIN, 1.f);
+            hp->t = ITEM_NONE;
+        }
     }
 
     /* Test for a switch. */
@@ -2646,6 +2674,57 @@ static int game_step(int p, const float g[3], float dt, int bt)
                     pl->fly_done = 1; /* Locked */
                 }
             }
+            else if (game_mode == MODE_DOGFIGHT)
+            {
+                /* Fire Weapon */
+                if (pl->ammo > 0) {
+                    pl->ammo--;
+                    audio_play(AUD_BUMPS, 1.0f);
+
+                    /* Hitscan logic for Dogfight */
+                    int j;
+                    float fwd[3];
+                    v_cpy(fwd, pl->view.e[2]);
+                    v_scl(fwd, fwd, -1.0f);
+
+                    for (j = 0; j < player_count; j++) {
+                        if (j == p) continue;
+                        struct v_ball *other = &pl->sim_state->uv[players[j].ball_index];
+                        float vec[3];
+                        v_sub(vec, other->p, pl->sim_state->uv[pl->ball_index].p);
+
+                        float dist = v_len(vec);
+                        v_nrm(vec, vec);
+
+                        /* Forward cone hit detection */
+                        if (dist < 50.0f && v_dot(fwd, vec) > 0.95f) {
+                            /* Hit! Apply damage/knockback */
+                            audio_play(AUD_BUMPL, 1.0f);
+                            players[j].coins += 10; /* Use coins as damage taken */
+                            game_cmd_coins(j); /* Update UI for victim */
+
+                            /* Knockback */
+                            float force[3];
+                            v_cpy(force, fwd);
+                            v_scl(force, force, 30.0f);
+                            v_add(other->v, other->v, force);
+
+                            /* If damage > 100, they die */
+                            if (players[j].coins >= 100) {
+                                players[j].coins = 0;
+                                game_cmd_coins(j); /* Reset victim UI */
+                                hud_show_toast("Target Destroyed!");
+                                pl->coins += 50; /* Reward shooter */
+                                game_cmd_coins(p);
+                                game_respawn(j);
+                            }
+                            break; /* Only hit one per shot */
+                        }
+                    }
+                } else {
+                    audio_play(AUD_BUMPM, 0.5f); /* Click */
+                }
+            }
             else if (game_mode == MODE_NORMAL || game_mode == MODE_CHALLENGE || game_mode == MODE_BATTLE || game_mode == MODE_STANDALONE)
             {
                 /* Active Jump */
@@ -2656,6 +2735,8 @@ static int game_step(int p, const float g[3], float dt, int bt)
                     b->v[1] += jump_force;
                     pl->can_jump = 0;
                     audio_play(AUD_JUMP, 1.0f);
+
+                    if (!pl->is_cpu) profile_add_stat(STAT_JUMPS, 1);
                 }
             }
         }
@@ -2765,10 +2846,12 @@ static int game_step(int p, const float g[3], float dt, int bt)
             if (fabsf(b->v[1]) < 0.1f)
             {
                 pl->can_jump = 1;
+        game_cmd_jump_ready(p, 1);
             }
             else
             {
                 pl->can_jump = 0;
+        game_cmd_jump_ready(p, 0);
             }
         }
 

@@ -24,11 +24,8 @@ msgstr ""
 msgid "item/coin/coin"
 msgstr ""
 
-<<<<<<< HEAD
 msgid "item/coin/coin5"
 msgstr ""
 
 msgid "item/coin/coin10"
 msgstr ""
-=======
->>>>>>> origin/csy-extras

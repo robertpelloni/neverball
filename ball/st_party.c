@@ -42,6 +42,15 @@ static const char *get_mode_label(int m) {
     if (m == MODE_FIGHT)     return "Mode: Monkey Fight";
     if (m == MODE_BILLIARDS) return "Mode: Monkey Billiards";
     if (m == MODE_BOWLING)   return "Mode: Monkey Bowling";
+    if (m == MODE_GOLF)      return "Mode: Monkey Golf";
+    if (m == MODE_BOAT)      return "Mode: Monkey Boat";
+    if (m == MODE_SHOT)      return "Mode: Monkey Shot";
+    if (m == MODE_SOCCER)    return "Mode: Monkey Soccer";
+    if (m == MODE_TENNIS)    return "Mode: Monkey Tennis";
+    if (m == MODE_BASEBALL)  return "Mode: Monkey Baseball";
+    if (m == MODE_MOLE)      return "Mode: Whack-a-Mole";
+    if (m == MODE_HAMMER)    return "Mode: Hammer Throw";
+    if (m == MODE_DOGFIGHT)  return "Mode: Monkey Dogfight";
     return "Mode: Unknown";
 }
 
@@ -68,6 +77,50 @@ static const char *get_mode_desc(int m) {
                "1. Position (Left/Right + A)\n"
                "2. Aim (A)\n"
                "3. Power (A)";
+    if (m == MODE_GOLF)
+        return "Minigolf on Monkey Ball levels!\n"
+               "1. Aim with Camera.\n"
+               "2. Hold (A) to Charge.\n"
+               "3. Release to Putt.";
+    if (m == MODE_BOAT)
+        return "Row your boat down the river!\n"
+               "Alternate Left/Right (L1/R1) to paddle.\n"
+               "Press both to brake.\n"
+               "Reach the goal before time runs out!";
+    if (m == MODE_SHOT)
+        return "FPS Rail Shooter!\n"
+               "Move Cursor with Stick.\n"
+               "Shoot with (A).\n"
+               "Reload with (B).";
+    if (m == MODE_SOCCER)
+        return "Score goals in a giant soccer match!\n"
+               "Red Team vs Blue Team.\n"
+               "Push the giant ball into the opponent's goal.\n"
+               "First to 3 goals wins!";
+    if (m == MODE_TENNIS)
+        return "1v1 or 2v2 Tennis Match!\n"
+               "Use Action (A) to swing your racket.\n"
+               "Hit the ball over the net.\n"
+               "Standard scoring applies.";
+    if (m == MODE_BASEBALL)
+        return "Home Run Derby!\n"
+               "Pitcher: Aim with Stick, Throw with A.\n"
+               "Batter: Time your swing (A) to hit the ball.\n"
+               "Score points for distance!";
+    if (m == MODE_MOLE)
+        return "Whack the Moles!\n"
+               "Roll over the moles as they pop up to score points.\n"
+               "Collect the most points before time runs out.";
+    if (m == MODE_HAMMER)
+        return "Hammer Throw!\n"
+               "Tilt Left/Right to build up spin power.\n"
+               "Press Action (A) to release the throw.\n"
+               "Score points based on the distance thrown.";
+    if (m == MODE_DOGFIGHT)
+        return "Aerial Combat!\n"
+               "Steer your glider and shoot down opponents.\n"
+               "Press Action (A) to fire machine gun.\n"
+               "100 damage destroys a target!";
     return "";
 }
 
@@ -96,7 +149,16 @@ static int party_action(int tok, int val) {
             else if (party_mode == MODE_BATTLE)    party_mode = MODE_FIGHT;
             else if (party_mode == MODE_FIGHT)     party_mode = MODE_BILLIARDS;
             else if (party_mode == MODE_BILLIARDS) party_mode = MODE_BOWLING;
-            else if (party_mode == MODE_BOWLING)   party_mode = MODE_TARGET;
+            else if (party_mode == MODE_BOWLING)   party_mode = MODE_GOLF;
+            else if (party_mode == MODE_GOLF)      party_mode = MODE_BOAT;
+            else if (party_mode == MODE_BOAT)      party_mode = MODE_SHOT;
+            else if (party_mode == MODE_SHOT)      party_mode = MODE_SOCCER;
+            else if (party_mode == MODE_SOCCER)    party_mode = MODE_TENNIS;
+            else if (party_mode == MODE_TENNIS)    party_mode = MODE_BASEBALL;
+            else if (party_mode == MODE_BASEBALL)  party_mode = MODE_MOLE;
+            else if (party_mode == MODE_MOLE)      party_mode = MODE_HAMMER;
+            else if (party_mode == MODE_HAMMER)    party_mode = MODE_DOGFIGHT;
+            else if (party_mode == MODE_DOGFIGHT)  party_mode = MODE_TARGET;
             update_labels();
             break;
 

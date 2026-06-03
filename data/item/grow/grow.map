@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 {
 "classname" "worldspawn"
 "model" "item/grow/grow.obj"
@@ -28,9 +27,3 @@
 "speed" "0.333"
 "smooth" "0"
 }
-=======
-{
-"classname" "worldspawn"
-"model" "item/grow/grow.obj"
-}
->>>>>>> origin/csy-extras
