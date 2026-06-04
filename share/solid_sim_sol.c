@@ -890,7 +890,9 @@ float sol_step(struct s_vary *vary, cmd_fn cmd_func,
 
                     v_sub(v, V, up->v);
                     v_nrm(v, v);
-                    v_mad(up->v, up->v, v, dt);
+
+                    /* Apply friction scaled by material factor */
+                    v_mad(up->v, up->v, v, dt * friction);
 
                     /* Scale the angular velocity. */
 

@@ -828,7 +828,7 @@ static int next_buttn(int b, int d, int device_id)
     {
         if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
         {
-            if (num > 0 && hole_goto(num, -1))
+            if (num > 0)
             {
                 if (hole_goto(num, -1))
                 {

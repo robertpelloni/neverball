@@ -45,6 +45,8 @@
 #include "st_package.h"
 #include "st_party.h"
 #include "st_story.h"
+#include "st_shop.h"
+#include "st_edit.h"
 #include "profile.h"
 #include "st_char.h"
 
@@ -118,7 +120,6 @@ static int title_action(int tok, int val)
     {
     case GUI_BACK:
         return 0;
-            return goto_state(&st_set);
         break;
 
     case TITLE_PLAY:

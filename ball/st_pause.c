@@ -24,8 +24,6 @@
 
 #include "game_common.h"
 
-#include "game_common.h"
-
 #include "st_play.h"
 #include "st_level.h"
 #include "st_pause.h"

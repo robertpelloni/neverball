@@ -3,9 +3,5 @@ ambient   0.0 0.0 0.0 1.0
 specular  0.0 0.0 0.0 1.0
 emissive  0.0 0.0 0.0 1.0
 shininess 0.0
-<<<<<<< HEAD
 flags     lit transparent
-=======
-flags     transparent 
->>>>>>> origin/csy-extras
 angle     45.0

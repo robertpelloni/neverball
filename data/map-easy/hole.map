@@ -3,11 +3,7 @@
 "classname" "worldspawn"
 "message" "Stay away from the edges!\When approaching a drop, begin slowing down\early. You need just as much room to slow\down as you did to speed up.\"
 "coin_hs" "34 28"
-<<<<<<< HEAD
 "time_hs" "350 800"
-=======
-"time_hs" "350 2000"
->>>>>>> origin/csy-extras
 "goal_hs" "1200 2500"
 "goal" "20"
 "time" "4500"
@@ -15,11 +11,7 @@
 "back" "map-back/city.sol"
 "grad" "back/city.png"
 "song" "bgm/track3.ogg"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "author" "Robert Kooima"
 // brush 0
 {

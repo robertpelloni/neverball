@@ -28,7 +28,7 @@
 
 /*---------------------------------------------------------------------------*/
 
-static struct b_mtrl coin_base_mtrl =
+struct part
 {
     float v[3];               /* Velocity                                    */
     float w;                  /* Angular velocity (degrees)                  */
@@ -170,6 +170,7 @@ void part_burst(const float *p, const float *c)
         {
             float a = rnd(-1.0f * PI, +1.0f * PI);
             float b = rnd(+0.3f * PI, +0.5f * PI);
+            float w = rnd(-4.0f * PI, +4.0f * PI);
 
             coin_part[i].c[0] = c[0];
             coin_part[i].c[1] = c[1];

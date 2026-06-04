@@ -140,6 +140,8 @@ static int conf_action(int tok, int val)
 
         break;
     }
+
+    return r;
 }
 
 static int conf_gui(void)

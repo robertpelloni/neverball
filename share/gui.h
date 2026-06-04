@@ -96,13 +96,6 @@ void gui_resize(void);
 
 /*---------------------------------------------------------------------------*/
 
-enum trunc
-{
-    TRUNC_NONE,
-    TRUNC_HEAD,
-    TRUNC_TAIL
-};
-
 void gui_set_label(int, const char *);
 void gui_set_image(int, const char *);
 void gui_set_font(int, const char *);

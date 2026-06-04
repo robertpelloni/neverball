@@ -3,11 +3,7 @@
 "classname" "worldspawn"
 "message" "Getting to the goal\shouldn't be a problem,\but getting all of the coins will\require some planning.\\Hint: often it is faster to avoid\a hole instead of falling into it."
 "author" "Janis Rucis"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "back" "map-back/clouds.sol"
 "grad" "back/land.png"
 "shot" "shot-easy/groundbreak.jpg"
@@ -430,11 +426,7 @@
 ( 128 256 -8 ) ( 128 512 -8 ) ( 128 256 8 ) mtrl/edge-blue 0 0 0 0.5 0.5 0 0 0
 ( 384 512 -72 ) ( 128 256 -72 ) ( 384 512 56 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 192 448 -72 ) ( 192 320 -72 ) ( 192 448 56 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-<<<<<<< HEAD
 ( 128 384 -64 ) ( 384 384 -64 ) ( 128 384 64 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-=======
-( 128 384 -64 ) ( 384 384 -64 ) ( 128 384 64 ) mtrl/invisible 0 0 0 0 0 0 0 0
->>>>>>> origin/csy-extras
 }
 // brush 46
 {
@@ -443,11 +435,7 @@
 ( 128 256 -8 ) ( 384 256 -8 ) ( 128 512 -8 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 320 320 -72 ) ( 320 448 -72 ) ( 320 320 56 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 128 512 56 ) ( 384 256 -72 ) ( 128 512 -72 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-<<<<<<< HEAD
 ( 128 384 -64 ) ( 384 384 -64 ) ( 128 384 64 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-=======
-( 128 384 -64 ) ( 384 384 -64 ) ( 128 384 64 ) mtrl/invisible 0 0 0 0 0 0 0 0
->>>>>>> origin/csy-extras
 }
 // brush 47
 {
@@ -474,11 +462,7 @@
 ( 192 320 56 ) ( 320 320 -72 ) ( 192 320 -72 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 192 448 56 ) ( 192 320 -72 ) ( 192 448 -72 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 320 320 56 ) ( 320 448 -72 ) ( 320 320 -72 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-<<<<<<< HEAD
 ( 128 384 -64 ) ( 384 384 -64 ) ( 128 384 64 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-=======
-( 128 384 -64 ) ( 384 384 -64 ) ( 128 384 64 ) mtrl/invisible 0 0 0 0 0 0 0 0
->>>>>>> origin/csy-extras
 }
 // brush 50
 {
@@ -487,11 +471,7 @@
 ( 128 256 -8 ) ( 128 512 -8 ) ( 128 256 8 ) mtrl/edge-green-check2 0 0 0 0.5 0.5 0 0 0
 ( 192 448 -72 ) ( 192 320 -72 ) ( 192 448 56 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 128 512 -72 ) ( 384 256 -72 ) ( 128 512 56 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-<<<<<<< HEAD
 ( 128 384 64 ) ( 384 384 -64 ) ( 128 384 -64 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-=======
-( 128 384 64 ) ( 384 384 -64 ) ( 128 384 -64 ) mtrl/invisible 0 0 0 0 0 0 0 0
->>>>>>> origin/csy-extras
 }
 // brush 51
 {
@@ -500,11 +480,7 @@
 ( 128 256 -8 ) ( 384 256 -8 ) ( 128 512 -8 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 320 320 -72 ) ( 320 448 -72 ) ( 320 320 56 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 384 512 56 ) ( 128 256 -72 ) ( 384 512 -72 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-<<<<<<< HEAD
 ( 128 384 64 ) ( 384 384 -64 ) ( 128 384 -64 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-=======
-( 128 384 64 ) ( 384 384 -64 ) ( 128 384 -64 ) mtrl/invisible 0 0 0 0 0 0 0 0
->>>>>>> origin/csy-extras
 }
 // brush 52
 {
@@ -513,11 +489,7 @@
 ( 192 448 56 ) ( 192 320 -72 ) ( 192 448 -72 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 320 320 56 ) ( 320 448 -72 ) ( 320 320 -72 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 192 448 -72 ) ( 320 448 -72 ) ( 192 448 56 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-<<<<<<< HEAD
 ( 128 384 64 ) ( 384 384 -64 ) ( 128 384 -64 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-=======
-( 128 384 64 ) ( 384 384 -64 ) ( 128 384 -64 ) mtrl/invisible 0 0 0 0 0 0 0 0
->>>>>>> origin/csy-extras
 }
 // brush 53
 {

@@ -314,84 +314,6 @@ int goto_exit(void)
 
 /*---------------------------------------------------------------------------*/
 
-static int nodemo_gui(void)
-{
-    int id;
-
-    if ((id = gui_vstack(0)))
-    {
-        gui_label(id, _("Warning!"), GUI_MED, 0, 0);
-        gui_space(id);
-        gui_multi(id, _("A replay file could not be opened for writing.\\"
-                        "This game will not be recorded.\\"),
-                  GUI_SML, gui_wht, gui_wht);
-
-        gui_layout(id, 0, 0);
-    }
-
-    return id;
-}
-
-static int nodemo_enter(struct state *st, struct state *prev)
-{
-    check_nodemo = 0;
-
-    return nodemo_gui();
-}
-
-static void nodemo_timer(int id, float dt)
-{
-    game_step_fade(dt);
-    gui_timer(id, dt);
-}
-
-static int nodemo_buttn(int b, int d)
-{
-    if (d)
-    {
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_A, b))
-            return goto_state(&st_level);
-        if (config_tst_d(CONFIG_JOYSTICK_BUTTON_EXIT, b))
-            return goto_state(&st_level);
-    }
-    return 1;
-}
-
-
-/*---------------------------------------------------------------------------*/
-
-static int exit_enter(struct state *st, struct state *prev)
-{
-    struct state *dst;
-
-    if (progress_done())
-        dst = &st_done;
-    else if (curr_mode() == MODE_CHALLENGE)
-        dst = &st_over;
-    else if (curr_mode() == MODE_STANDALONE)
-        dst = NULL;
-    else
-        dst = &st_start;
-
-    if (dst)
-    {
-        /* Visit the auxilliary screen or exit to level selection. */
-
-        goto_state(dst != prev ? dst : &st_start);
-    }
-    else
-    {
-        /* Quit the game. */
-
-        SDL_Event e = { SDL_QUIT };
-        SDL_PushEvent(&e);
-    }
-
-    return 0;
-}
-
-/*---------------------------------------------------------------------------*/
-
 struct state st_level = {
     level_enter,
     shared_leave,
@@ -399,7 +321,6 @@ struct state st_level = {
     level_timer,
     shared_point,
     shared_stick,
-    NULL,
     NULL,
     level_click,
     level_keybd,

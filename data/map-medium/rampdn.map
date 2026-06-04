@@ -3,25 +3,16 @@
 "classname" "worldspawn"
 "author" "Robert Kooima"
 "shot" "shot-medium/rampdn.jpg"
-"back" "map-back/earth.sol"
+"back" "map-back/jupiter.sol"
 "grad" "back/space.png"
 "song" "bgm/track4.ogg"
 "coin_hs" "160 100"
-<<<<<<< HEAD
 "time_hs" "650 2600"
 "goal_hs" "1500 5250"
 "goal" "40"
 "time" "9000"
 "version" "1.1"
 "message" "You'll need to exert some control over your\view here.  Press 3 to stop the auto-rotation.\Use the mouse buttons to rotate it manually.\Press 1 to return to the auto-rotating view.\"
-=======
-"time_hs" "650 4500"
-"goal_hs" "1500 5250"
-"goal" "40"
-"time" "9000"
-"version" "1"
-"message" "You'll need to exert some control over your\view here.  Press F3 to stop the auto-rotation.\Use the mouse buttons to rotate it manually.\Press F1 to return to the auto-rotating view.\"
->>>>>>> origin/csy-extras
 // brush 0
 {
 ( 336 128 -16 ) ( 0 128 -16 ) ( 0 0 -16 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
@@ -654,7 +645,6 @@
 // brush 73
 {
 ( 768 -384 -656 ) ( 640 -384 -656 ) ( 640 -512 -656 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-<<<<<<< HEAD
 ( 640 -496 -640 ) ( 768 -512 -632 ) ( 640 -512 -632 ) mtrl/goal 0 0 0 0.5 0.5 134217728 0 0
 ( 640 -512 -656 ) ( 640 -512 -632 ) ( 768 -512 -632 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( 640 -496 -640 ) ( 640 -512 -632 ) ( 640 -496 -656 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
@@ -687,13 +677,6 @@
 ( 752 -400 -656 ) ( 768 -384 -632 ) ( 752 -400 -640 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( 752 -416 64 ) ( 752 -432 -64 ) ( 752 -416 -64 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( 752 -496 -640 ) ( 768 -512 -632 ) ( 752 -496 -656 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-=======
-( 640 -512 -639 ) ( 640 -384 -639 ) ( 768 -384 -639 ) mtrl/goal 0 0 0 0.5 0.5 134217728 0 0
-( 640 -512 -639 ) ( 768 -512 -639 ) ( 768 -512 -655 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-( 768 -512 -639 ) ( 768 -384 -639 ) ( 768 -384 -655 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-( 768 -384 -639 ) ( 640 -384 -639 ) ( 640 -384 -655 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-( 640 -384 -639 ) ( 640 -512 -639 ) ( 640 -512 -655 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
->>>>>>> origin/csy-extras
 }
 }
 // entity 1

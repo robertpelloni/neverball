@@ -471,6 +471,10 @@ int cmd_put(fs_file fp, const union cmd *cmd)
         PUT_CASE(CMD_MOVE_TIME);
         PUT_CASE(CMD_SET_PLAYER);
         PUT_CASE(CMD_PUNCH);
+        PUT_CASE(CMD_JUMP_READY);
+        PUT_CASE(CMD_DASH_CHARGE);
+        PUT_CASE(CMD_GYRO_STATE);
+        PUT_CASE(CMD_PLACE_ITEM);
 
     case CMD_NONE:
     case CMD_MAX:
@@ -540,6 +544,10 @@ int cmd_get(fs_file fp, union cmd *cmd)
             GET_CASE(CMD_MOVE_TIME);
             GET_CASE(CMD_SET_PLAYER);
             GET_CASE(CMD_PUNCH);
+            GET_CASE(CMD_JUMP_READY);
+            GET_CASE(CMD_DASH_CHARGE);
+            GET_CASE(CMD_GYRO_STATE);
+            GET_CASE(CMD_PLACE_ITEM);
 
         case CMD_NONE:
         case CMD_MAX:

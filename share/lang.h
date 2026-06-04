@@ -28,8 +28,6 @@
 #define _(s) (s)
 #define gt_plural(msgid, msgid_plural, n) ((n) == 1 ? (msgid) : (msgid_plural))
 
-#define ngettext(msgid, msgid_plural, n) ((n) == 1 ? (msgid) : (msgid_plural))
-
 #endif /* ENABLE_NLS */
 
 /* No-op, useful for marking up strings for extraction-only. */

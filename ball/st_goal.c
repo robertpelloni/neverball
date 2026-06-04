@@ -29,10 +29,6 @@
 #include "game_server.h"
 #include "game_client.h"
 
-#include "game_common.h"
-#include "game_server.h"
-#include "game_client.h"
-
 #include "st_goal.h"
 #include "st_save.h"
 #include "st_level.h"
@@ -274,17 +270,6 @@ static void goal_paint(int id, float t)
     game_client_draw(0, t);
     hud_paint(0, 0, video.device_w, video.device_h);
     gui_paint(id);
-}
-
-static int goal_enter(struct state *st, struct state *prev)
-{
-    if (prev == &st_name)
-        progress_rename(0);
-
-    audio_music_fade_out(2.0f);
-    video_clr_grab();
-    resume = (prev == &st_goal || prev == &st_name || prev == &st_save);
-    return goal_gui();
 }
 
 static void goal_timer(int id, float dt)

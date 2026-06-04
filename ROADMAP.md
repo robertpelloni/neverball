@@ -106,22 +106,15 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
 ## Progress Update (Current)
 
 ### Completed Features
-*   **Physics Parity:** "Arcade Physics" toggle implemented (CONFIG_PHYSICS).
-*   **Party Games:**
-    *   **Monkey Target:** Flight physics, landing zones, and scoring implemented.
-    *   **Monkey Fight:** Punch mechanics and knockback implemented.
-    *   **Monkey Billiards:** 16-ball physics, pockets, and cue stick implemented.
-    *   **Monkey Bowling:** 10-pin setup, frame logic, and basic throwing UI implemented.
-    *   **Monkey Race:** Basic race mode with waypoints supported.
-*   **Documentation:** Comprehensive Party Mode instructions added (`doc/party_games.txt`) and UI descriptions integrated into the menu.
+*   **Phase 1, 2, and 3 are functionally complete.**
+*   **Minigames:** A massive suite of 14 party games is now fully playable, documented, and integrated into the UI.
+*   **Economy:** A persistent profile system stores coins, tracks stats, manages achievements, and allows purchasing unlockables in the new Shop.
+*   **Mechanics:** Spin Dash, Active Jump, and item powerups (Missile, Banana, Shock, Gyro, Super Speed) are operational.
 
 ### In Progress / Next Steps
-*   **Character Mechanics:** Spin Dash is being implemented. Jump is in place.
-*   **UI Polish:** Enhance in-game HUDs for Party Games and new mechanics (Dash Charge Meter).
-*   **Campaign:** Hub World logic (Warps) is in place; need to build actual Hub levels and integrate cutscenes.
-*   **Marble Blast Features:** Assess feasibility of Gravity Modifiers.
+*   **Campaign Content:** The logic for Hub Worlds and Scripted Cutscenes is done. Level designers now need to build the map files (`.map`) to utilize these features.
 
 ## Immediate Action Plan
-The team should focus on **Phase 3, Item 2: New Mechanics (Spin Dash)**.
-*   **Reasoning:** Completing the "Modern" movement suite (Jump + Dash) creates a solid foundation for designing levels that utilize these abilities, bridging the gap between SMB and Marble Blast gameplay styles.
-*   **Prerequisite:** `game_server.c` logic for impulse application.
+The team should pivot to **Phase 4: Future Tech**.
+*   **Reasoning:** With the core game loop, minigames, and mechanics complete, the remaining challenges are systemic (Online Multiplayer, Level Editor).
+*   Review the newly generated `docs/NETWORK_RESEARCH.md` and `docs/LEVEL_EDITOR_RESEARCH.md` to begin scaffolding these massive features.

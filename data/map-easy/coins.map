@@ -2,22 +2,14 @@
 {
 "classname" "worldspawn"
 "author" "Robert Kooima"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "back" "map-back/clouds.sol"
 "grad" "back/land.png"
 "shot" "shot-easy/coins.jpg"
 "song" "bgm/track1.ogg"
 "time" "6000"
 "goal" "50"
-<<<<<<< HEAD
 "time_hs" "300 400"
-=======
-"time_hs" "300 1000"
->>>>>>> origin/csy-extras
 "coin_hs" "112 80"
 "goal_hs" "2000 4000"
 "message" "This time you must get 50 coins to unlock the goal.\Red coins are worth 5, blue coins are worth 10.\Get to the goal before time expires!\\Click to begin.\"
@@ -84,56 +76,7 @@
 ( 0 -64 16 ) ( 0 64 16 ) ( 128 64 16 ) mtrl/arrow-green-light 0 128 0 0.5 0.5 134217728 0 0
 ( 128 64 0 ) ( 0 64 0 ) ( 0 -64 0 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 }
-<<<<<<< HEAD
 // brush 7
-=======
-// brush 12
-{
-( -192 448 16 ) ( -192 640 16 ) ( -192 640 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( -200 448 16 ) ( -192 448 16 ) ( -192 448 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( -200 648 0 ) ( -200 648 16 ) ( -200 448 16 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-( -200 648 16 ) ( -200 648 0 ) ( -192 640 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( -200 640 16 ) ( -192 640 16 ) ( -192 448 16 ) mtrl/edge-green-offset 0 0 0 0.5 0.5 0 0 0
-( -200 448 0 ) ( -192 448 0 ) ( -192 640 0 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-}
-// brush 13
-{
-( 320 640 0 ) ( 320 448 0 ) ( 328 448 0 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-( 320 448 16 ) ( 320 640 16 ) ( 328 640 16 ) mtrl/edge-green-offset 0 0 0 0.5 0.5 0 0 0
-( 320 640 0 ) ( 328 648 0 ) ( 328 648 16 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 328 448 16 ) ( 328 648 16 ) ( 328 648 0 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-( 320 448 0 ) ( 320 448 16 ) ( 328 448 16 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 320 640 0 ) ( 320 640 16 ) ( 320 448 16 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-}
-// brush 14
-{
-( -192 448 0 ) ( -200 448 0 ) ( -200 320 0 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-( -200 320 16 ) ( -200 448 16 ) ( -192 448 16 ) mtrl/edge-green-offset 0 0 0 0.5 0.5 0 0 0
-( -200 320 16 ) ( -192 320 16 ) ( -192 320 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( -192 320 16 ) ( -192 448 16 ) ( -192 448 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( -192 448 16 ) ( -200 448 16 ) ( -200 448 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( -200 448 16 ) ( -200 320 16 ) ( -200 320 0 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-}
-// brush 15
-{
-( 320 448 16 ) ( 320 320 16 ) ( 320 320 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 328 448 16 ) ( 320 448 16 ) ( 320 448 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 328 320 16 ) ( 328 448 16 ) ( 328 448 0 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-( 320 320 16 ) ( 328 320 16 ) ( 328 320 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 320 320 16 ) ( 320 448 16 ) ( 328 448 16 ) mtrl/edge-green-offset 0 0 0 0.5 0.5 0 0 0
-( 328 448 0 ) ( 320 448 0 ) ( 320 320 0 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-}
-// brush 16
-{
-( 0 64 16 ) ( 0 -64 16 ) ( 0 -64 0 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-( 128 64 16 ) ( 0 64 16 ) ( 0 64 0 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-( 128 -64 16 ) ( 128 64 16 ) ( 128 64 0 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-( 0 -64 16 ) ( 128 -64 16 ) ( 128 -64 0 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
-( 0 -64 16 ) ( 0 64 16 ) ( 128 64 16 ) mtrl/arrow-green-light 0 128 0 0.5 0.5 134217728 0 0
-( 128 64 0 ) ( 0 64 0 ) ( 0 -64 0 ) mtrl/invisible 0 -128 0 0.5 0.5 134217728 0 0
-}
-// brush 17
->>>>>>> origin/csy-extras
 {
 ( 128 768 0 ) ( 0 768 0 ) ( 0 640 0 ) mtrl/invisible 0 0 0 0.5 0.5 134217728 0 0
 ( 0 640 16 ) ( 0 768 16 ) ( 128 768 16 ) mtrl/goal 0 128 0 0.5 0.5 134217728 0 0
@@ -442,15 +385,6 @@
 ( 328 120 0 ) ( 328 120 16 ) ( 328 320 16 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
 ( 320 320 16 ) ( 320 128 16 ) ( 320 128 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
 ( 320 640 0 ) ( 328 648 0 ) ( 328 648 16 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-}
-// brush 48
-{
-( 0 64 16 ) ( 0 -64 16 ) ( 0 -64 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 128 64 16 ) ( 0 64 16 ) ( 0 64 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 128 -64 16 ) ( 128 64 16 ) ( 128 64 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 0 -64 16 ) ( 128 -64 16 ) ( 128 -64 0 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-( 0 -64 16 ) ( 0 64 16 ) ( 128 64 16 ) mtrl/turf-green-dark 0 -128 0 0.5 0.5 0 0 0
-( 128 64 0 ) ( 0 64 0 ) ( 0 -64 0 ) mtrl/turf-grey 0 -128 0 0.5 0.5 0 0 0
 }
 }
 // entity 1

@@ -38,12 +38,3 @@ void fs_png_flush(png_structp writep)
 }
 
 /*---------------------------------------------------------------------------*/
-
-void video_push_persp(float, float, float);
-void video_push_ortho(void);
-void video_pop_matrix(void);
-void video_clear(void);
-
-/*---------------------------------------------------------------------------*/
-
-#endif

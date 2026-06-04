@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 
 #------------------------------------------------------------------------------
 
@@ -7,22 +6,10 @@ BUILD := $(shell cat neverball-build.txt 2> /dev/null || echo release)
 
 VERSION := $(shell sh scripts/version.sh)
 
-=======
-
-#------------------------------------------------------------------------------
-
-BUILD := $(shell head -n1 BUILD 2> /dev/null || echo release)
-
-VERSION := 1.6.0
-VERSION := $(shell sh scripts/version.sh "$(BUILD)" "$(VERSION)" \
-	"share/version.in.h" "share/version.h" ".version")
-
->>>>>>> origin/csy-extras
 $(info Will make a "$(BUILD)" build of Neverball $(VERSION).)
 
 #------------------------------------------------------------------------------
 # Provide a target system hint for the Makefile.
-<<<<<<< HEAD
 # Recognized PLATFORM values: darwin, mingw, haiku.
 
 ifeq ($(shell uname), Darwin)
@@ -39,12 +26,6 @@ endif
 
 ifeq ($(shell uname), Haiku)
 	PLATFORM := haiku
-=======
-# Recognized PLATFORM values: darwin, mingw.
-
-ifeq ($(shell uname), Darwin)
-    PLATFORM := darwin
->>>>>>> origin/csy-extras
 endif
 
 #------------------------------------------------------------------------------
@@ -55,7 +36,6 @@ DATADIR   := ./data
 LOCALEDIR := ./locale
 
 ifeq ($(PLATFORM),mingw)
-<<<<<<< HEAD
 	USERDIR := Neverball
 endif
 
@@ -65,20 +45,12 @@ endif
 
 ifneq ($(BUILD),release)
 	USERDIR := $(USERDIR)-dev
-=======
-    USERDIR := Neverball
-endif
-
-ifneq ($(BUILD),release)
-    USERDIR := $(USERDIR)-dev
->>>>>>> origin/csy-extras
 endif
 
 #------------------------------------------------------------------------------
 # Optional flags (CFLAGS, CPPFLAGS, ...)
 
 ifeq ($(DEBUG),1)
-<<<<<<< HEAD
 	CFLAGS   := -g
 	CXXFLAGS := -g
 	CPPFLAGS :=
@@ -86,13 +58,6 @@ else
 	CFLAGS   := -O2
 	CXXFLAGS := -O2
 	CPPFLAGS := -DNDEBUG
-=======
-    CFLAGS   := -g
-    CPPFLAGS :=
-else
-    CFLAGS   := -O2
-    CPPFLAGS := -DNDEBUG
->>>>>>> origin/csy-extras
 endif
 
 #------------------------------------------------------------------------------
@@ -101,7 +66,6 @@ endif
 # Compiler...
 
 ifeq ($(ENABLE_TILT),wii)
-<<<<<<< HEAD
 	# -std=c99 because we need isnormal and -fms-extensions because
 	# libwiimote headers make heavy use of the "unnamed fields" GCC
 	# extension.
@@ -116,33 +80,10 @@ ALL_CXXFLAGS := -fno-rtti -fno-exceptions $(CXXFLAGS)
 # Preprocessor...
 
 SDL_CPPFLAGS := $(shell sdl2-config --cflags)
-=======
-    # -std=c99 because we need isnormal and -fms-extensions because
-    # libwiimote headers make heavy use of the "unnamed fields" GCC
-    # extension.
-
-    ALL_CFLAGS := -Wall -std=c99 -pedantic -fms-extensions $(CFLAGS)
-else
-    ALL_CFLAGS := -Wall -ansi -pedantic $(CFLAGS)
-endif
-
-# Preprocessor...
-
-SDL_CPPFLAGS := $(shell sdl-config --cflags) -U_GNU_SOURCE
->>>>>>> origin/csy-extras
 PNG_CPPFLAGS := $(shell libpng-config --cflags)
 JPEG_CPPFLAGS := $(shell pkg-config --cflags libjpeg)
 
-<<<<<<< HEAD
 ALL_CPPFLAGS := $(SDL_CPPFLAGS) $(JPEG_CPPFLAGS) $(PNG_CPPFLAGS) -Ishare
-=======
-ALL_CPPFLAGS := $(SDL_CPPFLAGS) $(PNG_CPPFLAGS) -Ishare
-
-ALL_CPPFLAGS += \
-    -DCONFIG_USER=\"$(USERDIR)\" \
-    -DCONFIG_DATA=\"$(DATADIR)\" \
-    -DCONFIG_LOCALE=\"$(LOCALEDIR)\"
->>>>>>> origin/csy-extras
 
 ALL_CPPFLAGS += \
 	-DCONFIG_USER=\"$(USERDIR)\" \
@@ -153,7 +94,6 @@ ifeq ($(ENABLE_OPENGLES),1)
 	ALL_CPPFLAGS += -DENABLE_OPENGLES=1
 endif
 
-<<<<<<< HEAD
 ifeq ($(ENABLE_NLS),0)
 	ALL_CPPFLAGS += -DENABLE_NLS=0
 else
@@ -191,10 +131,6 @@ ifeq ($(PLATFORM),darwin)
         $(patsubst %, -I%, $(wildcard /opt/local/include \
                                       /usr/local/include \
                                       /opt/homebrew/include))
-=======
-ifeq ($(PLATFORM),darwin)
-    ALL_CPPFLAGS += -I/opt/local/include
->>>>>>> origin/csy-extras
 endif
 
 ALL_CPPFLAGS += $(CPPFLAGS)
@@ -229,7 +165,6 @@ SDL_LIBS := $(shell sdl2-config --libs)
 PNG_LIBS := $(shell libpng-config --ldflags)
 JPEG_LIBS := $(shell pkg-config --libs libjpeg)
 
-<<<<<<< HEAD
 ENABLE_FS := stdio
 ifeq ($(ENABLE_FS),stdio)
 FS_LIBS :=
@@ -319,71 +254,11 @@ MAPC_LIBS := $(BASE_LIBS)
 ifeq ($(ENABLE_RADIANT_CONSOLE),1)
 	MAPC_LIBS += -lSDL2_net
 endif
-=======
-ifeq ($(ENABLE_FS),stdio)
-FS_LIBS :=
-else
-FS_LIBS := -lphysfs
-endif
-
-# On some systems we need to link this directly.
-X11_LIBS := -lX11
-
-# The  non-conditionalised values  below  are specific  to the  native
-# system. The native system of this Makefile is Linux (or GNU+Linux if
-# you prefer). Please be sure to  override ALL of them for each target
-# system in the conditional parts below.
-
-INTL_LIBS :=
-
-ifeq ($(ENABLE_TILT),wii)
-    TILT_LIBS := -lcwiimote -lbluetooth
-else
-ifeq ($(ENABLE_TILT),loop)
-    TILT_LIBS := -lusb-1.0 -lfreespace
-endif
-endif
-
-OGL_LIBS := -lGL
-
-ifeq ($(PLATFORM),mingw)
-    ifneq ($(ENABLE_NLS),0)
-        INTL_LIBS := -lintl
-    endif
-
-    TILT_LIBS :=
-    OGL_LIBS  := -lopengl32
-    X11_LIBS :=
-endif
-
-ifeq ($(PLATFORM),darwin)
-    ifneq ($(ENABLE_NLS),0)
-        INTL_LIBS := -lintl
-    endif
-
-    TILT_LIBS :=
-    OGL_LIBS  := -framework OpenGL
-    X11_LIBS  :=
-endif
-
-BASE_LIBS := -ljpeg $(PNG_LIBS) $(FS_LIBS) -lm
-
-ifeq ($(PLATFORM),darwin)
-    BASE_LIBS += -L/opt/local/lib
-endif
-
-ALL_LIBS := $(SDL_LIBS) $(X11_LIBS) $(BASE_LIBS) $(TILT_LIBS) $(INTL_LIBS) -lSDL_ttf \
-    -lvorbisfile $(OGL_LIBS)
->>>>>>> origin/csy-extras
 
 #------------------------------------------------------------------------------
 
 ifeq ($(PLATFORM),mingw)
-<<<<<<< HEAD
 X := .exe
-=======
-    EXT := .exe
->>>>>>> origin/csy-extras
 endif
 
 MAPC_TARG := mapc$(X)
@@ -391,11 +266,7 @@ BALL_TARG := neverball$(X)
 PUTT_TARG := neverputt$(X)
 
 ifeq ($(PLATFORM),mingw)
-<<<<<<< HEAD
 	MAPC := $(WINE) ./$(MAPC_TARG)
-=======
-    MAPC := $(WINE) ./$(MAPC_TARG)
->>>>>>> origin/csy-extras
 else
 	MAPC := ./$(MAPC_TARG)
 endif
@@ -416,10 +287,7 @@ MAPC_OBJS := \
 	share/dir.o         \
 	share/array.o       \
 	share/list.o        \
-<<<<<<< HEAD
 	share/mapclib.o     \
-=======
->>>>>>> origin/csy-extras
 	share/mapc.o
 BALL_OBJS := \
 	share/lang.o        \
@@ -430,7 +298,6 @@ BALL_OBJS := \
 	share/solid_base.o  \
 	share/solid_vary.o  \
 	share/solid_draw.o  \
-<<<<<<< HEAD
 	share/solid_all.o   \
 	share/mtrl.o        \
 	share/part.o        \
@@ -438,14 +305,6 @@ BALL_OBJS := \
 	share/ball.o        \
 	share/ease.o        \
 	share/transition.o  \
-=======
-	share/solid_cmd.o   \
-	share/solid_all.o   \
-	share/part.o        \
-	share/geom.o        \
-	share/item.o        \
-	share/ball.o        \
->>>>>>> origin/csy-extras
 	share/gui.o         \
 	share/font.o        \
 	share/theme.o       \
@@ -458,17 +317,11 @@ BALL_OBJS := \
 	share/audio.o       \
 	share/text.o        \
 	share/common.o      \
-<<<<<<< HEAD
-=======
-	share/keynames.o    \
-	share/syswm.o       \
->>>>>>> origin/csy-extras
 	share/list.o        \
 	share/queue.o       \
 	share/cmd.o         \
 	share/array.o       \
 	share/dir.o         \
-<<<<<<< HEAD
 	share/fbo.o         \
 	share/glsl.o        \
 	share/fs_common.o   \
@@ -480,14 +333,6 @@ BALL_OBJS := \
 	share/package.o     \
 	share/st_package.o  \
 	share/mapclib.o     \
-=======
-	share/fs_common.o   \
-	share/fs_png.o      \
-	share/fs_jpg.o      \
-	share/fs_rwops.o    \
-	share/fs_ov.o       \
-	share/sync.o        \
->>>>>>> origin/csy-extras
 	ball/hud.o          \
 	ball/game_common.o  \
 	ball/game_client.o  \
@@ -517,17 +362,8 @@ BALL_OBJS := \
 	ball/st_name.o      \
 	ball/st_shared.o    \
 	ball/st_pause.o     \
-<<<<<<< HEAD
 	ball/st_party.o     \
 	ball/st_story.o     \
-<<<<<<< HEAD
-	ball/profile.o      \
-	ball/stats.o        \
-	ball/char.o         \
-	ball/st_char.o      \
-=======
->>>>>>> origin/csy-extras
-=======
 	ball/st_shop.o      \
 	ball/st_edit.o      \
 	ball/profile.o      \
@@ -535,7 +371,6 @@ BALL_OBJS := \
 	ball/stats.o        \
 	ball/char.o         \
 	ball/st_char.o      \
->>>>>>> origin/party-games-ui-docs-8101435436098214570
 	ball/st_ball.o      \
 	ball/main.o
 PUTT_OBJS := \
@@ -547,13 +382,8 @@ PUTT_OBJS := \
 	share/solid_base.o  \
 	share/solid_vary.o  \
 	share/solid_draw.o  \
-<<<<<<< HEAD
 	share/solid_all.o   \
 	share/mtrl.o        \
-=======
-	share/solid_cmd.o   \
-	share/solid_all.o   \
->>>>>>> origin/csy-extras
 	share/part.o        \
 	share/geom.o        \
 	share/ball.o        \
@@ -571,15 +401,10 @@ PUTT_OBJS := \
 	share/theme.o       \
 	share/text.o        \
 	share/common.o      \
-<<<<<<< HEAD
-=======
-	share/syswm.o       \
->>>>>>> origin/csy-extras
 	share/list.o        \
 	share/fs_common.o   \
 	share/fs_png.o      \
 	share/fs_jpg.o      \
-<<<<<<< HEAD
 	share/fs_ov.o       \
 	share/dir.o         \
 	share/fbo.o         \
@@ -587,13 +412,6 @@ PUTT_OBJS := \
 	share/array.o       \
 	share/log.o         \
 	share/joy.o         \
-=======
-	share/fs_rwops.o    \
-	share/fs_ov.o       \
-	share/dir.o         \
-	share/array.o       \
-	share/sync.o        \
->>>>>>> origin/csy-extras
 	putt/hud.o          \
 	putt/game.o         \
 	putt/hole.o         \
@@ -606,25 +424,14 @@ BALL_OBJS += share/solid_sim_sol.o
 PUTT_OBJS += share/solid_sim_sol.o
 
 ifeq ($(ENABLE_FS),stdio)
-<<<<<<< HEAD
 BALL_OBJS += share/fs_stdio.o share/zip.o
 PUTT_OBJS += share/fs_stdio.o share/zip.o
 MAPC_OBJS += share/fs_stdio.o share/zip.o
-=======
-BALL_OBJS += share/fs_stdio.o
-PUTT_OBJS += share/fs_stdio.o
-MAPC_OBJS += share/fs_stdio.o
-else
-BALL_OBJS += share/fs_physfs.o
-PUTT_OBJS += share/fs_physfs.o
-MAPC_OBJS += share/fs_physfs.o
->>>>>>> origin/csy-extras
 endif
 
 ifeq ($(ENABLE_TILT),wii)
 BALL_OBJS += share/tilt_wii.o
 else
-<<<<<<< HEAD
 ifeq ($(ENABLE_TILT),wiiuse)
 BALL_OBJS += share/tilt_wiiuse.o
 else
@@ -652,21 +459,12 @@ BALL_OBJS += share/hmd_null.o
 PUTT_OBJS += share/hmd_null.o
 endif
 endif
-=======
-ifeq ($(ENABLE_TILT),loop)
-BALL_OBJS += share/tilt_loop.o
-else
-BALL_OBJS += share/tilt_null.o
-endif
-endif
->>>>>>> origin/csy-extras
 
 ifeq ($(PLATFORM),mingw)
 BALL_OBJS += neverball.ico.o
 PUTT_OBJS += neverputt.ico.o
 endif
 
-<<<<<<< HEAD
 FETCH_OBJS := share/fetch_null.o
 ifeq ($(ENABLE_FETCH),curl)
 FETCH_OBJS := share/fetch_curl.o
@@ -674,8 +472,6 @@ endif
 
 BALL_OBJS += $(FETCH_OBJS)
 
-=======
->>>>>>> origin/csy-extras
 BALL_DEPS := $(BALL_OBJS:.o=.d)
 PUTT_DEPS := $(PUTT_OBJS:.o=.d)
 MAPC_DEPS := $(MAPC_OBJS:.o=.d)
@@ -685,13 +481,10 @@ SOLS := $(MAPS:%.map=%.sol)
 
 DESKTOPS := $(basename $(wildcard dist/*.desktop.in))
 
-<<<<<<< HEAD
 # The build environment defines this (or should).
 # This is a fallback that likely only works on a Windows host.
 WINDRES ?= windres
 
-=======
->>>>>>> origin/csy-extras
 #------------------------------------------------------------------------------
 
 %.o : %.c
@@ -714,7 +507,6 @@ WINDRES ?= windres
 #------------------------------------------------------------------------------
 
 all : $(BALL_TARG) $(PUTT_TARG) $(MAPC_TARG) sols locales desktops
-<<<<<<< HEAD
 
 ifeq ($(ENABLE_HMD),libovr)
 LINK := $(CXX) $(ALL_CXXFLAGS)
@@ -725,8 +517,6 @@ else
 LINK := $(CC) $(ALL_CFLAGS)
 endif
 endif
-=======
->>>>>>> origin/csy-extras
 
 $(BALL_TARG) : $(BALL_OBJS)
 	$(LINK) -o $(BALL_TARG) $(BALL_OBJS) $(LDFLAGS) $(ALL_LIBS)
@@ -762,96 +552,10 @@ clean : clean-src
 	$(RM) $(DESKTOPS)
 	$(MAKE) -C po clean
 
-<<<<<<< HEAD
 #------------------------------------------------------------------------------
 
 .PHONY : all sols locales desktops clean-src clean
-=======
-test : all
-	./neverball
-
-TAGS :
-	$(RM) $@
-	find . -name '*.[ch]' | xargs etags -a
-
-#------------------------------------------------------------------------------
-
-.PHONY : all sols locales clean-src clean test TAGS
->>>>>>> origin/csy-extras
 
 -include $(BALL_DEPS) $(PUTT_DEPS) $(MAPC_DEPS)
 
 #------------------------------------------------------------------------------
-<<<<<<< HEAD
-=======
-
-ifeq ($(PLATFORM),mingw)
-
-#------------------------------------------------------------------------------
-
-INSTALLER := ../neverball-$(VERSION)-setup.exe
-
-MAKENSIS := makensis
-MAKENSIS_FLAGS := -DVERSION=$(VERSION) -DOUTFILE=$(INSTALLER)
-
-TODOS   := todos
-FROMDOS := fromdos
-
-CP := cp
-
-TEXT_DOCS := \
-	doc/AUTHORS \
-	doc/MANUAL  \
-	CHANGES     \
-	COPYING     \
-	README
-
-TXT_DOCS := $(TEXT_DOCS:%=%.txt)
-
-#------------------------------------------------------------------------------
-
-.PHONY: setup
-setup: $(INSTALLER)
-
-$(INSTALLER): install-dlls convert-text-files all contrib
-	$(MAKENSIS) $(MAKENSIS_FLAGS) -nocd scripts/neverball.nsi
-
-$(INSTALLER): LDFLAGS := -s $(LDFLAGS)
-
-.PHONY: clean-setup
-clean-setup: clean
-	$(RM) install-dlls.sh *.dll $(TXT_DOCS)
-	find data -name "*.txt" -exec $(FROMDOS) {} \;
-	$(MAKE) -C contrib EXT=$(EXT) clean
-
-#------------------------------------------------------------------------------
-
-.PHONY: install-dlls
-install-dlls: install-dlls.sh
-	sh $<
-
-install-dlls.sh: $(MAPC_TARG) $(BALL_TARG) $(PUTT_TARG)
-	mingw-list-dlls --format=shell $^ > $@
-
-#------------------------------------------------------------------------------
-
-.PHONY: convert-text-files
-convert-text-files: $(TXT_DOCS)
-	find data -name "*.txt" -exec $(TODOS) {} \;
-
-%.txt: %
-	$(CP) $< $@
-	$(TODOS) $@
-
-#------------------------------------------------------------------------------
-
-.PHONY: contrib
-contrib:
-	$(MAKE) -C contrib EXT=$(EXT)
-
-#------------------------------------------------------------------------------
-
-endif
-
-#------------------------------------------------------------------------------
->>>>>>> origin/csy-extras

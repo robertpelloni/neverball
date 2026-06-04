@@ -40,6 +40,7 @@
 #include "st_title.h"
 #include "st_shared.h"
 #include "st_common.h"
+#include "st_play.h"
 
 /*---------------------------------------------------------------------------*/
 
@@ -187,7 +188,20 @@ static void gui_demo_update_thumbs(void)
         demo = item->data;
 
         gui_set_image(thumbs[i].shot_id, demo ? demo->shot : "");
-        gui_set_label(thumbs[i].name_id, demo ? demo->name : base_name(item->path));
+
+        char name_label[256];
+        char meta_label[256];
+
+        if (demo) {
+            SAFECPY(name_label, demo->name);
+            sprintf(meta_label, "Coins: %d | Time: %.2f", demo->coins, demo->timer / 100.0f);
+        } else {
+            SAFECPY(name_label, base_name(item->path));
+            SAFECPY(meta_label, " ");
+        }
+
+        gui_set_label(thumbs[i].name_id, name_label);
+        gui_set_label(thumbs[i].meta_id, meta_label);
     }
 }
 
@@ -367,18 +381,7 @@ static int demo_gui(void)
         }
     }
 
-    return demo_gui();
-}
-
-static void demo_leave(struct state *st, struct state *next, int id)
-{
-    if (next == &st_title)
-    {
-        demo_dir_free(items);
-        items = NULL;
-    }
-
-    gui_delete(id);
+    return id;
 }
 
 static int demo_enter(struct state *st, struct state *prev, int intent)
@@ -643,9 +646,6 @@ static int demo_play_buttn(int b, int d, int device_id)
             demo_paused = 1;
             return goto_state(&st_demo_end);
         }
-
-        if (c == SDLK_F6)
-            show_hud = !show_hud;
     }
     return 1;
 }

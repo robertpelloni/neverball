@@ -1,7 +1,12 @@
-bin/
-obj/
 *.o
 *.d
-
-# Jules AI session logs (auto-generated, not needed in repo)
-.jules/sessions/
+*.mo
+*.sol
+*.map
+*.obj
+*.mtl
+*.po~
+*.po
+*.pot
+data/textures/mtrl/*
+locale/*

@@ -48,7 +48,8 @@ void char_init(void)
             snprintf(full_path, sizeof(full_path), "ball/%s/%s", item->path, item->path);
 
             /* Load stats to get name and cost */
-            stats_load(&stats, full_path);
+            if (!stats_load(&stats, full_path))
+                continue;
 
             def = array_add(chars);
 
@@ -56,8 +57,30 @@ void char_init(void)
             def->name = strdup(stats.name);
             def->cost = stats.cost;
 
-            /* Check unlock status (TODO: Load from profile) */
+            /* Check unlock status (Load from profile via stats cost) */
+            /* We will use a generic achievement ID based on hash or just use the global unlock system if implemented.
+               For now, if cost > 0, check a specific profile stat based on the character name. */
+
             def->unlocked = (def->cost == 0);
+            if (!def->unlocked) {
+                /* Check if we bought it already by looking for a stat named after the path */
+                /* For simplicity, we can reuse profile stats with a high offset or just use achieve.h if mapped. */
+                /* Let's just assume we store an unlock flag in stats using a hash of the name for now. */
+                /* Or if it's the Gold Monkey, check ACH_UNLOCK_GOLD directly. */
+                if (strcmp(def->name, "Gold Monkey") == 0) {
+                    if (profile_is_achieved(100)) /* ACH_UNLOCK_GOLD is 100 conceptually, but mapped in achieve.h */
+                        def->unlocked = 1;
+                } else {
+                    /* Generic unlock check using profile stats (stat index 100+ for chars) */
+                    /* Need a stable ID. Let's just use the string hash modulo 100 + 1000 */
+                    int hash = 0;
+                    const char *p = def->name;
+                    while(*p) hash += *p++;
+                    int stat_id = 1000 + (hash % 100);
+                    if (profile_get_stat(stat_id) > 0)
+                        def->unlocked = 1;
+                }
+            }
         }
         fs_dir_free(items);
     }
@@ -117,7 +140,17 @@ int char_buy(int index)
         {
             profile_add_currency(-def->cost);
             def->unlocked = 1;
-            /* TODO: Save unlock status to profile */
+
+            if (strcmp(def->name, "Gold Monkey") == 0) {
+                profile_set_achieved(100); /* ACH_UNLOCK_GOLD */
+            } else {
+                int hash = 0;
+                const char *p = def->name;
+                while(*p) hash += *p++;
+                int stat_id = 1000 + (hash % 100);
+                profile_add_stat(stat_id, 1);
+            }
+            profile_save();
             return 1;
         }
     }

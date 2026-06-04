@@ -3,11 +3,7 @@
 "classname" "worldspawn"
 "message" "Here's yet another test of your ability\to control bouncing.  Moving down the\stairs too quickly can be hazardous.\"
 "coin_hs" "110 89"
-<<<<<<< HEAD
 "time_hs" "650 3000"
-=======
-"time_hs" "650 4500"
->>>>>>> origin/csy-extras
 "goal_hs" "2000 5500"
 "goal" "50"
 "time" "9000"
@@ -15,11 +11,7 @@
 "shot" "shot-medium/stairs.jpg"
 "grad" "back/city.png"
 "back" "map-back/city.sol"
-<<<<<<< HEAD
 "version" "1.1"
-=======
-"version" "1"
->>>>>>> origin/csy-extras
 "author" "Robert Kooima"
 // brush 0
 {
@@ -423,11 +415,7 @@
 ( -64 -256 16 ) ( -64 -128 16 ) ( 64 -128 16 ) mtrl/turf-red 0 0 0 0.5 0.5 0 0 0
 ( -64 -256 0 ) ( 64 -256 0 ) ( 64 -256 -256 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
 ( 64 -256 208 ) ( 64 -128 208 ) ( 64 -128 -48 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
-<<<<<<< HEAD
 ( 64 -128 0 ) ( -64 -128 0 ) ( -64 -128 -256 ) mtrl/invisible 0 0 0 0.5 0.5 0 0 0
-=======
-( 64 -128 0 ) ( -64 -128 0 ) ( -64 -128 -256 ) mtrl/invisible 32 0 0 0.5 0.5 0 0 0
->>>>>>> origin/csy-extras
 ( -64 -128 0 ) ( -64 -256 0 ) ( -64 -256 -256 ) mtrl/turf-grey 0 0 0 0.5 0.5 0 0 0
 }
 }
