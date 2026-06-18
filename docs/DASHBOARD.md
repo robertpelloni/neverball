@@ -1,20 +1,13 @@
-# Project Dashboard
+# DASHBOARD
 
-## Directory Structure
-*   `ball/` - Core game engine source code for Neverball. Contains state management, physics integration, and party mode logic.
-*   `putt/` - Source code for Neverputt (Minigolf variant).
-*   `share/` - Shared libraries, physics engine (`solid_sim_sol.c`), rendering (`solid_draw.c`), and math utilities.
-*   `data/` - Game assets, including maps, textures, geometry, and UI elements.
-*   `doc/` - End-user documentation (manuals, party game rules).
-*   `docs/` - Developer documentation, roadmaps, AI agent instructions.
-*   `locale/` & `po/` - Translation files for i18n.
-*   `scripts/` - Utility scripts for building and versioning.
+## Project Structure
+* `ball/` - Core Neverball engine code
+* `putt/` - Neverputt minigolf code
+* `share/` - Shared code between the two
+* `data/` - Assets and level geometry
+* `docs/` - Dev documentation and research notes
+* `doc/` - User manuals and help files
 
 ## Submodules
-*Currently, the project uses integrated dependencies (like `stb` or `miniz` found in `share/`) rather than explicit git submodules.*
+Currently, Neverball doesn't rely on Git Submodules for its dependencies, using system packages via Make. If submodules are added in the future for tools or physics, they will be tracked here.
 
-If external submodules are added in the future (e.g., for advanced physics or networking), they will be listed here with their respective paths, versions, and commit hashes.
-
-## Build Status
-*   **Current Version:** (See `VERSION` file)
-*   **Primary Target:** SDL2 / OpenGL Desktop (Linux, Windows, macOS).
