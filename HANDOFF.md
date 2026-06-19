@@ -23,3 +23,10 @@ This session successfully expanded upon the Phase 4 Level Editor scaffolding. `s
 *   **Version:** `1.6.14-dev`
 *   **Build:** Passing and clean.
 *   **Active Branch:** `feature/level-editor-prototype` -> Merge to `main`.
+
+## End-to-End Integration Test Failure Log
+*   **Target:** `xvfb-run -a ./neverball --debug`
+*   **Outcome:** SIGSEGV (Segmentation Fault)
+*   **Root Cause Analysis:** The engine crashes immediately during the initial boot sequence. The stack trace points to `game_view_fly() -> game_client_fly() -> title_enter()`. The headless environment fails to load core materials (e.g., `mtrl/default` and `default`) resulting in uninitialized pointers being passed to the rendering pipeline during the title screen's background fly-by sequence.
+*   **Impact:** This prevents fully automated, headless UI or physics verification of the Level Editor Prototype (or standard ball layouts) without extensive mocking of the data directory or modifying the engine to support a true dedicated server/headless mode.
+*   **Recommended Follow-up:** Implement null-pointer checks in `game_view_fly()` and related `share/solid_draw.c` functions to safely fallback or skip rendering if texture loading fails, allowing headless integration testing to proceed.
