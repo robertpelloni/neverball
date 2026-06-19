@@ -174,7 +174,7 @@ void game_view_fly(struct game_view *view, const struct s_vary *vary, float k)
 
     /* k = +1.0 view is s_view 0 */
 
-    if (k >= 0 && vary->base->wc > 0)
+    if (k >= 0 && vary && vary->base && vary->base->wc > 0)
     {
         v_cpy(p1, vary->base->wv[0].p);
         v_cpy(c1, vary->base->wv[0].q);
@@ -182,7 +182,7 @@ void game_view_fly(struct game_view *view, const struct s_vary *vary, float k)
 
     /* k = -1.0 view is s_view 1 */
 
-    if (k <= 0 && vary->base->wc > 1)
+    if (k <= 0 && vary && vary->base && vary->base->wc > 1)
     {
         v_cpy(p1, vary->base->wv[1].p);
         v_cpy(c1, vary->base->wv[1].q);

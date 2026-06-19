@@ -1,32 +1,21 @@
-# Handoff - Level Editor Prototype (Phase 4)
+# Handoff - Integration Testing & Core Fixes
 
 ## Executive Summary
-This session successfully expanded upon the Phase 4 Level Editor scaffolding. `st_edit.c` has been enhanced with a robust prototyping UI and grid-snapping logic.
+This session followed the successful implementation of the Phase 4 Level Editor Prototyping (`st_edit.c`). The primary goal shifted to running an end-to-end integration test (`xvfb-run -a ./neverball`) to validate autonomous control logic against standard layouts. However, a systemic issue with the headless environment caused a persistent `SIGSEGV` crash.
 
-## Key Accomplishments & Features Implemented
-*   **Level Editor Prototyping (`st_edit.c`):**
-    *   **Data Structures:** Implemented a new `editor_tile` struct to track placed objects by type and 3D coordinate. Added an internal array to track up to 128 placed tiles.
-    *   **UI Enhancements:** Updated the top bar using `gui_hstack` and `gui_label` to clearly display the currently selected tile type (Straight Track, Turn Track, Player Spawn, Level Goal) alongside the position readout.
-    *   **Grid Snapping & Controls:** Bound `Q` and `E` to cycle through the tile enum. Bound `SPACE` to place a tile at the current cursor position, and `BACKSPACE` to remove the most recently placed tile. The cursor position is intelligently snapped to a 10x5x10 grid using `roundf()` for precise layout design.
-    *   **Visualization:** Leveraged direct immediate-mode OpenGL rendering (`glBegin(GL_LINES)`) within `edit_paint()` to draw colored wireframe boxes representing the placed tiles (Green, Blue, Yellow, Red) and a distinct Magenta box for the active placement cursor.
+## Key Accomplishments & Fixes Implemented
+1.  **Test Environment Discovery:** We discovered that running `neverball` headlessly without specific data assets (like `mtrl/default` texture) causes the game to fail the `game_base_load` process. This leaves `gd[0].state` in a failed state, meaning `gd[0].vary.base` is uninitialized.
+2.  **Core Engine Patching:** We identified a segmentation fault occurring in `ball/game_common.c` inside `game_view_fly()`. When the title screen attempts its background fly-by, it accesses `vary->base->wc` without checking if `vary->base` is valid. We patched this function with explicit null checks (`if (k >= 0 && vary && vary->base && vary->base->wc > 0)`).
+3.  **Documentation:** Maintained the universal standard by pushing version `1.6.14-dev`, generating `DASHBOARD.md`, and keeping this `HANDOFF.md` updated with our findings on the systemic headless testing constraints.
 
-## Architecture Quirks & Discoveries
-1.  **Dynamic Geometry Constraints:** The engine's reliance on pre-compiled, monolithic `.sol` binaries makes dynamically loading and stitching together level geometry at runtime highly complex. This prototype relies on abstract markers (colored wireframes) to visualize layout without fighting the `solid_sim_sol` engine.
-2.  **OpenGL State:** When drawing raw primitives on top of the Neverball engine, it's critical to disable `GL_TEXTURE_2D` and `GL_LIGHTING` first, and re-enable them afterward, to prevent visual corruption of the UI and game world.
+## Next Concrete Task
+While the immediate null-pointer dereference in `game_view_fly()` was patched, the overarching integration test still fails deeper in the pipeline (`game_client_fly`) because the entire `game_client_draw` sequence expects valid initialized geometry arrays (`uv`, `wv`, etc.).
 
-## Next Steps for Implementor Agent
-1.  **Level Editor Persistence:** The placed tiles currently exist only in memory. Implement a function to serialize the `tiles` array to a simple JSON or text format (e.g., `user_level.json`) and write it to the user's configuration directory. Add a "Save" function bound to a key.
-2.  **Level Compiler Integration:** Investigate if the `mapc` tool (which compiles `.map` to `.sol`) can be modified or wrapped to take our `user_level.json` format, generate a `.map` string, and compile it dynamically in a background thread, allowing the user to seamlessly "Playtest" their creation.
-3.  **Online Multiplayer (Phase 4):** Continue feasibility studies based on `docs/NETWORK_RESEARCH.md`.
+**Next Steps:**
+1.  **Deep Pipeline Hardening:** Systematically trace through `ball/game_client.c` (specifically `game_client_fly` and `game_client_draw`) and add robust null-pointer guards to prevent any rendering or camera logic from executing if `gd[p].vary.base` failed to load.
+2.  **Asset Injection:** Alternatively, focus on injecting or mocking a valid `data/mtrl/default.png` and `data/gui/title.sol` so the headless tests can successfully boot into the main menu.
 
 ## Status
 *   **Version:** `1.6.14-dev`
-*   **Build:** Passing and clean.
-*   **Active Branch:** `feature/level-editor-prototype` -> Merge to `main`.
-
-## End-to-End Integration Test Failure Log
-*   **Target:** `xvfb-run -a ./neverball --debug`
-*   **Outcome:** SIGSEGV (Segmentation Fault)
-*   **Root Cause Analysis:** The engine crashes immediately during the initial boot sequence. The stack trace points to `game_view_fly() -> game_client_fly() -> title_enter()`. The headless environment fails to load core materials (e.g., `mtrl/default` and `default`) resulting in uninitialized pointers being passed to the rendering pipeline during the title screen's background fly-by sequence.
-*   **Impact:** This prevents fully automated, headless UI or physics verification of the Level Editor Prototype (or standard ball layouts) without extensive mocking of the data directory or modifying the engine to support a true dedicated server/headless mode.
-*   **Recommended Follow-up:** Implement null-pointer checks in `game_view_fly()` and related `share/solid_draw.c` functions to safely fallback or skip rendering if texture loading fails, allowing headless integration testing to proceed.
+*   **Build:** Passing (Compile-time), Failing (Headless Run-time).
+*   **Active Branch:** `feature/level-editor-prototype` -> Ready for deep pipeline hardening.
