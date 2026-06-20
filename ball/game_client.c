@@ -485,21 +485,25 @@ int  game_client_init(const char *file_name)
             /* If fail, partial clean? We rely on game_client_free cleaning up. */
             /* But caller checks return. */
             /* Let's assume if p=0 fails we return 0. */
+            cg->state = 0;
             if (p == 0)
             {
                 game_base_free(NULL);
-                return (cg->state = 0);
+                return 0;
             }
+            continue; /* Skip setting state=1 if load failed */
         }
 
         if (!sol_load_draw(&cg->draw, &cg->vary, config_get_d(CONFIG_SHADOW)))
         {
             sol_free_vary(&cg->vary);
+            cg->state = 0;
             if (p == 0)
             {
                 game_base_free(NULL);
-                return (cg->state = 0);
+                return 0;
             }
+            continue; /* Skip setting state=1 if load failed */
         }
 
         cg->state = 1;
@@ -567,7 +571,7 @@ int  game_client_init(const char *file_name)
     /* Compute map bounds */
     if (gd[0].state) {
         struct s_base *base = gd[0].vary.base;
-        if (base->vc > 0) {
+        if (base && base->vc > 0) {
             v_cpy(map_min, base->vv[0].p);
             v_cpy(map_max, base->vv[0].p);
             for (i = 1; i < base->vc; i++) {
@@ -929,7 +933,7 @@ void curr_map_bounds(float *min_v, float *max_v)
 
 void curr_ball_pos(int p, float *pos)
 {
-    if (gd[p].state && gd[p].vary.uc > 0)
+    if (gd[p].state && gd[p].vary.uc > 0 && gd[p].vary.uv)
         v_cpy(pos, gd[p].vary.uv[0].p);
     else
         v_zero(pos);
@@ -937,14 +941,14 @@ void curr_ball_pos(int p, float *pos)
 
 int curr_goal_count(void)
 {
-    if (gd[0].state)
+    if (gd[0].state && gd[0].vary.base)
         return gd[0].vary.base->zc;
     return 0;
 }
 
 void curr_goal_pos(int i, float *pos)
 {
-    if (gd[0].state && i >= 0 && i < gd[0].vary.base->zc)
+    if (gd[0].state && gd[0].vary.base && i >= 0 && i < gd[0].vary.base->zc)
         v_cpy(pos, gd[0].vary.base->zv[i].p);
     else
         v_zero(pos);
@@ -1017,8 +1021,10 @@ void game_client_fly(float k)
     int p;
     for (p = 0; p < MAX_PLAYERS; p++)
     {
-        game_view_fly(&gl[p].view[CURR], &gd[p].vary, k);
-        gl[p].view[PREV] = gl[p].view[CURR];
+        if (gd[p].state && gd[p].vary.base) {
+            game_view_fly(&gl[p].view[CURR], &gd[p].vary, k);
+            gl[p].view[PREV] = gl[p].view[CURR];
+        }
     }
 }
 
