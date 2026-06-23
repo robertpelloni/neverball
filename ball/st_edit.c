@@ -112,6 +112,7 @@ static void edit_paint(int id, float t)
         glPushMatrix();
         glTranslatef(tiles[i].x, tiles[i].y, tiles[i].z);
 
+
         switch (tiles[i].type) {
             case TILE_STRAIGHT: glColor3f(0.0f, 1.0f, 0.0f); break; /* Green */
             case TILE_TURN:     glColor3f(0.0f, 0.0f, 1.0f); break; /* Blue */
@@ -130,6 +131,7 @@ static void edit_paint(int id, float t)
         glVertex3f( s,  s, -s); glVertex3f( s,  s,  s);
         glVertex3f(-s,  s, -s); glVertex3f(-s,  s,  s);
         glEnd();
+
 
         glPopMatrix();
     }
@@ -164,6 +166,11 @@ static void edit_timer(int id, float dt)
     /* Update POS readout and calculate snapped position */
     float p[3];
     curr_ball_pos(0, p);
+
+    snapped_pos[0] = roundf(p[0] / 10.0f) * 10.0f;
+    snapped_pos[1] = roundf(p[1] / 5.0f) * 5.0f;
+    snapped_pos[2] = roundf(p[2] / 10.0f) * 10.0f;
+
 
     snapped_pos[0] = roundf(p[0] / 10.0f) * 10.0f;
     snapped_pos[1] = roundf(p[1] / 5.0f) * 5.0f;
