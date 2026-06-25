@@ -276,7 +276,7 @@ static void input_set_dash(int p, int d)
 static float input_get_s(int p)
 {
     float s = (p >= 0 && p < MAX_PLAYERS) ? input_players[p].s : RESPONSE;
-    if (config_get_d(CONFIG_PHYSICS)) return s * 0.2f; /* Faster response */
+    if (config_get_d(CONFIG_PHYSICS)) return s * 0.6f; /* Much faster, snappier acceleration for Arcade */
     return s;
 }
 
@@ -1333,7 +1333,7 @@ static void game_update_view(int p, float dt)
             float target_n[3];
             v_scl(target_n, vel_n, -1.0f);
 
-            v_lerp(pl->view.e[2], pl->view.e[2], target_n, 5.0f * dt);
+            v_lerp(pl->view.e[2], pl->view.e[2], target_n, 12.0f * dt);
             v_nrm(pl->view.e[2], pl->view.e[2]);
         }
     }

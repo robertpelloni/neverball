@@ -19,6 +19,7 @@
 
 #include "solid_vary.h"
 #include "solid_sim.h"
+#include "config.h"
 #include "solid_all.h"
 
 #define LARGE 1.0e+5f
@@ -872,6 +873,7 @@ float sol_step(struct s_vary *vary, cmd_fn cmd_func,
             /* Material / Friction Logic */
             /* Default Friction Coefficient */
             float friction = 1.0f;
+            if (config_get_d(CONFIG_PHYSICS)) friction = 4.0f; /* Higher friction for Arcade */
 
             /* TODO: Ideally we inspect the material at contact point P. */
             /* vary->base->lv[...].mi stores material index. */

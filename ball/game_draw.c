@@ -335,8 +335,6 @@ static void game_draw_beams(struct s_rend *rend, const struct game_draw *gd)
     float beam_p[3], beam_e[4], u[3], a;
     int i;
 
-    if (!base) return;
-
     if (gd->goal_e)
         for (i = 0; i < base->zc; i++)
         {
@@ -397,8 +395,6 @@ static void game_draw_goals(struct s_rend *rend,
     float goal_p[3], goal_e[4], u[3], a;
     int i;
 
-    if (!base) return;
-
     if (gd->goal_e)
         for (i = 0; i < base->zc; i++)
         {
@@ -426,8 +422,6 @@ static void game_draw_jumps(struct s_rend *rend,
     float jump_p[3], jump_e[4], u[3], a;
     int i;
 
-    if (!base) return;
-
     for (i = 0; i < base->jc; i++)
     {
         sol_entity_p(jump_p, vary, vary->jv[i].mi, vary->jv[i].mj);
@@ -450,8 +444,7 @@ static void game_draw_jumps(struct s_rend *rend,
 static void game_draw_tilt(const struct game_draw *gd, int d)
 {
     const struct game_tilt *tilt = &gd->tilt;
-    const float default_p[3] = {0.0f, 0.0f, 0.0f};
-    const float *ball_p = (gd->vary.uc > 0 && gd->vary.uv) ? gd->vary.uv[0].p : default_p;
+    const float *ball_p = gd->vary.uv[0].p;
 
     glTranslatef(+ball_p[0], +ball_p[1] * d, +ball_p[2]);
     glRotatef(-tilt->rz * d, tilt->z[0], tilt->z[1], tilt->z[2]);
@@ -564,8 +557,7 @@ static void game_draw_fore(struct s_rend *rend,
                            int d, float t)
 {
     struct game_draw *gd = &gds[p_idx];
-    const float default_p[3] = {0.0f, 0.0f, 0.0f};
-    const float *ball_p = (gd->vary.uc > 0 && gd->vary.uv) ? gd->vary.uv[0].p : default_p;
+    const float *ball_p = gd->vary.uv[0].p;
 
     struct s_draw *draw = &gd->draw;
 
