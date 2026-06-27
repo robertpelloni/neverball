@@ -108,9 +108,3 @@
 
 ### Fixed
 - Fixed build error by adding `st_story.o` and `st_party.o` to Makefile.
-
-## [1.6.14-dev] - 2026-06-25
-### Added
-- Phase 1 Arcade Physics: Increased global friction modifier to 4.0x when `MODE_ARCADE` is active.
-- Phase 1 Arcade Physics: Increased input acceleration multiplier to `0.6f` to achieve snappy movement.
-- Phase 1 Camera: Adjusted arcade camera "snap-to-back" interpolation speed to tightly track the ball's velocity vector.
