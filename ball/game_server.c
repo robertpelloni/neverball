@@ -1320,21 +1320,30 @@ static void game_update_view(int p, float dt)
         v_cpy(pl->view.e[2], v);
     }
 
-    /* Arcade Camera Snap */
+    /* Arcade Camera Snap & Fixed Angle Options */
     if (config_get_d(CONFIG_PHYSICS))
     {
         float speed = v_len(b->v);
-        if (speed > 5.0f)
+
+        /* Tighter snap for Arcade Physics - Strict Auto-follow behind the ball */
+        if (speed > 0.5f) /* Even lower threshold to maintain lock-on */
         {
             float vel_n[3];
             v_cpy(vel_n, b->v);
-            v_nrm(vel_n, vel_n);
+            vel_n[1] = 0.0f; /* Keep camera horizontal to ball */
 
-            float target_n[3];
-            v_scl(target_n, vel_n, -1.0f);
+            /* If magnitude is very small after zeroing Y, don't update to avoid jitter */
+            if (v_len(vel_n) > 0.1f)
+            {
+                v_nrm(vel_n, vel_n);
 
-            v_lerp(pl->view.e[2], pl->view.e[2], target_n, 5.0f * dt);
-            v_nrm(pl->view.e[2], pl->view.e[2]);
+                float target_n[3];
+                v_scl(target_n, vel_n, -1.0f);
+
+                /* Extreme lerp factor for near-instant strict lock-on (Super Monkey Ball style) */
+                v_lerp(pl->view.e[2], pl->view.e[2], target_n, 30.0f * dt);
+                v_nrm(pl->view.e[2], pl->view.e[2]);
+            }
         }
     }
 
