@@ -873,6 +873,13 @@ float sol_step(struct s_vary *vary, cmd_fn cmd_func,
             /* Default Friction Coefficient */
             float friction = 1.0f;
 
+            #include "config.h"
+            if (config_get_d(CONFIG_PHYSICS))
+            {
+                /* Extreme friction for Arcade Physics (Monkey Ball) */
+                friction *= 4.0f;
+            }
+
             /* TODO: Ideally we inspect the material at contact point P. */
             /* vary->base->lv[...].mi stores material index. */
             /* Accessing it requires raycasting or getting the lump from sol_test_file. */

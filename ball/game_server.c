@@ -1320,30 +1320,21 @@ static void game_update_view(int p, float dt)
         v_cpy(pl->view.e[2], v);
     }
 
-    /* Arcade Camera Snap & Fixed Angle Options */
+    /* Arcade Camera Snap */
     if (config_get_d(CONFIG_PHYSICS))
     {
         float speed = v_len(b->v);
-
-        /* Tighter snap for Arcade Physics - Strict Auto-follow behind the ball */
-        if (speed > 0.5f) /* Even lower threshold to maintain lock-on */
+        if (speed > 5.0f)
         {
             float vel_n[3];
             v_cpy(vel_n, b->v);
-            vel_n[1] = 0.0f; /* Keep camera horizontal to ball */
+            v_nrm(vel_n, vel_n);
 
-            /* If magnitude is very small after zeroing Y, don't update to avoid jitter */
-            if (v_len(vel_n) > 0.1f)
-            {
-                v_nrm(vel_n, vel_n);
+            float target_n[3];
+            v_scl(target_n, vel_n, -1.0f);
 
-                float target_n[3];
-                v_scl(target_n, vel_n, -1.0f);
-
-                /* Extreme lerp factor for near-instant strict lock-on (Super Monkey Ball style) */
-                v_lerp(pl->view.e[2], pl->view.e[2], target_n, 30.0f * dt);
-                v_nrm(pl->view.e[2], pl->view.e[2]);
-            }
+            v_lerp(pl->view.e[2], pl->view.e[2], target_n, 5.0f * dt);
+            v_nrm(pl->view.e[2], pl->view.e[2]);
         }
     }
 
@@ -1353,32 +1344,6 @@ static void game_update_view(int p, float dt)
     v_nrm(pl->view.e[2], pl->view.e[2]);
 
     k = 1.0f + v_dot(pl->view.e[2], view_v) / 10.0f;
-
-    /* Fixed pitch angle for Arcade Physics */
-    if (config_get_d(CONFIG_PHYSICS))
-    {
-        /* Force k to 1.0f to prevent zooming in/out based on dot product */
-        k = 1.0f;
-        /* Override view_k as well to keep distance static */
-        pl->view_k = 1.0f;
-
-        /* Angle downward by rotating e[1] and e[2] on the local X axis (e[0]) */
-        /* Rotate pitch by 15 degrees downward */
-        float M[16];
-        m_rot(M, pl->view.e[0], V_RAD(15.0f));
-
-        /* Save current horizontal forward/up before fixed pitch override if we needed them,
-           but here we can just apply the rotation to e[1] and e[2] */
-        float temp_e1[3], temp_e2[3];
-        v_cpy(temp_e1, pl->view.e[1]);
-        v_cpy(temp_e2, pl->view.e[2]);
-
-        m_vxfm(pl->view.e[1], M, temp_e1);
-        m_vxfm(pl->view.e[2], M, temp_e2);
-
-        v_nrm(pl->view.e[1], pl->view.e[1]);
-        v_nrm(pl->view.e[2], pl->view.e[2]);
-    }
 
     pl->view_k = pl->view_k + (k - pl->view_k) * dt;
 
