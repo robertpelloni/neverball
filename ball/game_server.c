@@ -1345,6 +1345,54 @@ static void game_update_view(int p, float dt)
 
     k = 1.0f + v_dot(pl->view.e[2], view_v) / 10.0f;
 
+    /* Fixed pitch angle for Arcade Physics */
+    if (config_get_d(CONFIG_PHYSICS))
+    {
+        /* Force k to 1.0f to prevent zooming in/out based on dot product */
+        k = 1.0f;
+        /* Override view_k as well to keep distance static */
+        pl->view_k = 1.0f;
+
+        /* Angle downward by rotating e[1] and e[2] on the local X axis (e[0]) */
+        /* Rotate pitch by 15 degrees downward */
+        float M_pitch[16];
+        m_rot(M_pitch, pl->view.e[0], V_RAD(15.0f));
+
+        float temp_e1[3], temp_e2[3];
+        v_cpy(temp_e1, pl->view.e[1]);
+        v_cpy(temp_e2, pl->view.e[2]);
+
+        m_vxfm(pl->view.e[1], M_pitch, temp_e1);
+        m_vxfm(pl->view.e[2], M_pitch, temp_e2);
+
+        v_nrm(pl->view.e[1], pl->view.e[1]);
+        v_nrm(pl->view.e[2], pl->view.e[2]);
+    }
+
+    /* Fixed pitch angle for Arcade Physics */
+    if (config_get_d(CONFIG_PHYSICS))
+    {
+        /* Force k to 1.0f to prevent zooming in/out based on dot product */
+        k = 1.0f;
+        /* Override view_k as well to keep distance static */
+        pl->view_k = 1.0f;
+
+        /* Angle downward by rotating e[1] and e[2] on the local X axis (e[0]) */
+        /* Rotate pitch by 15 degrees downward */
+        float M_pitch[16];
+        m_rot(M_pitch, pl->view.e[0], V_RAD(15.0f));
+
+        float temp_e1[3], temp_e2[3];
+        v_cpy(temp_e1, pl->view.e[1]);
+        v_cpy(temp_e2, pl->view.e[2]);
+
+        m_vxfm(pl->view.e[1], M_pitch, temp_e1);
+        m_vxfm(pl->view.e[2], M_pitch, temp_e2);
+
+        v_nrm(pl->view.e[1], pl->view.e[1]);
+        v_nrm(pl->view.e[2], pl->view.e[2]);
+    }
+
     pl->view_k = pl->view_k + (k - pl->view_k) * dt;
 
     if (pl->view_k < 0.5f) pl->view_k = 0.5;
