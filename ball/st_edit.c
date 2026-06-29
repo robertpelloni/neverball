@@ -30,6 +30,10 @@ static int edit_gui(void)
         /* Editor Toolbar Placeholder */
         int top_bar = gui_hstack(root);
         gui_label(top_bar, "EDITOR MODE (Phase 4 Prototype)", GUI_MED, gui_yel, gui_red);
+        gui_space(top_bar);
+
+        gui_harray("Type", gui_state(top_bar, "Base Floor", GUI_SML, 0, 0));
+
         gui_filler(top_bar);
         pos_id = gui_label(top_bar, "Pos: 0.0, 0.0, 0.0", GUI_SML, gui_wht, gui_wht);
 
