@@ -30,11 +30,6 @@ static int edit_gui(void)
         /* Editor Toolbar Placeholder */
         int top_bar = gui_hstack(root);
         gui_label(top_bar, "EDITOR MODE (Phase 4 Prototype)", GUI_MED, gui_yel, gui_red);
-        gui_space(top_bar);
-
-        /* Cycle Tile Type with Q/E */
-        gui_label(top_bar, "Type: Base Floor", GUI_SML, gui_blu, gui_blu);
-
         gui_filler(top_bar);
         pos_id = gui_label(top_bar, "Pos: 0.0, 0.0, 0.0", GUI_SML, gui_wht, gui_wht);
 
@@ -117,16 +112,6 @@ static int edit_keybd(int c, int d)
         if (c == SDLK_s) game_set_z(-1.0f, 0);
         if (c == SDLK_a) game_set_x(-1.0f, 0);
         if (c == SDLK_d) game_set_x(1.0f, 0);
-
-        /* Cycle selection placeholder */
-        if (c == SDLK_e)
-        {
-            /* NEXT TILE */
-        }
-        if (c == SDLK_q)
-        {
-            /* PREV TILE */
-        }
 
         if (c == 27) /* ESC */
             return goto_state(&st_title);
