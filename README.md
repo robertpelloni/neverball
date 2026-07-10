@@ -33,3 +33,6 @@ Release highlights can be found in [doc/release-notes.md](doc/release-notes.md).
 Neverball uses the gettext approach to translations. We're always
 interested in covering more languages. Join the
 [Neverball project on Transifex](https://www.transifex.com/neverball/neverball/).
+
+## Development Notes
+- **Phase 1: Arcade Physics**: Implemented a global friction multiplier (4x) and a strict auto-follow camera snap to emulate Super Monkey Ball's handling. The toggle is accessible via the Options menu.

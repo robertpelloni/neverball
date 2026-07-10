@@ -50,7 +50,8 @@ enum
     CONF_SOUND_VOLUME,
     CONF_MUSIC_VOLUME,
     CONF_PLAYER,
-    CONF_BALL
+    CONF_BALL,
+    CONF_PHYSICS
 };
 
 static int mouse_id[11];
@@ -184,6 +185,10 @@ static int conf_gui(void)
                         sound_id, ARRAYSIZE(sound_id));
             conf_slider(id, _("Music Volume"), CONF_MUSIC_VOLUME, music,
                         music_id, ARRAYSIZE(music_id));
+
+            gui_space(id);
+
+            conf_state(id, _("Arcade Physics (SMB)"), config_get_d(CONFIG_PHYSICS) ? _("On") : _("Off"), CONF_PHYSICS);
 
             gui_space(id);
 
