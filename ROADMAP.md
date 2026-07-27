@@ -115,6 +115,6 @@ The roadmap is divided into four phases, prioritizing the "Golden Era" (SMB 1 & 
 *   **Campaign Content:** The logic for Hub Worlds and Scripted Cutscenes is done. Level designers now need to build the map files (`.map`) to utilize these features.
 
 ## Immediate Action Plan
-The team should pivot to **Phase 4: Future Tech**.
-*   **Reasoning:** With the core game loop, minigames, and mechanics complete, the remaining challenges are systemic (Online Multiplayer, Level Editor).
-*   Review the newly generated `docs/NETWORK_RESEARCH.md` and `docs/LEVEL_EDITOR_RESEARCH.md` to begin scaffolding these massive features.
+The team should pivot to **Phase 2: The "Deluxe" Expansion**.
+*   **Reasoning:** With Phase 1 completed, we need to address Phase 2 mechanics, specifically focusing on Dynamic Level Elements (Moving/Morphing stages, Switches, Warp Gates).
+*   Begin drafting technical specifications and level designs for these missing features.
