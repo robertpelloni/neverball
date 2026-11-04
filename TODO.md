@@ -4,8 +4,8 @@
 - [x] Integrate Level Editor entry into the primary Main Menu hierarchy (`ball/st_title.c`).
 - [x] Implement live UI hover tooltips across main menu options.
 - [x] Protect headless server and client loops against missing texture/varying crashes (`game_common.c`, `game_draw.c`).
-- [ ] Implement grid-snapped object placement in `ball/st_edit.c` (selecting from predefined brush pieces).
-- [ ] Add serialization for custom placed layout objects (`editor_level.txt`).
+- [x] Implement grid-snapped object placement in `ball/st_edit.c` (selecting from predefined brush pieces).
+- [x] Add serialization for custom placed layout objects (`editor_level.txt`).
 - [ ] Connect switch triggers (`sol_swch_test`) in `game_server.c` to open goals dynamically.
 
 ## Content & Assets

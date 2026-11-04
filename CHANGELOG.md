@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.6.15-dev] - Grid-Snapped Level Editor & Layout Persistence
+
+### Added
+- **Grid-Snapped Tile Placement (`ball/st_edit.c`)**: Enhanced the Phase 4 Level Editor with 2.0 unit grid-snapped object placement supporting up to 128 elements.
+- **Tile Cycling System**: Added hotkeys `Q` / `E` to cycle through placeable tile types (Yellow Coin, Red Coin, Blue Coin, Goal Tape, Bumper/Spring, Hazard/Spike).
+- **Editor Action Hotkeys & HUD**: Added `SPACE` to snap-place, `BACKSPACE` to remove, and live HUD readouts displaying position, grid snap size, and current tile selection.
+- **Level Layout Persistence**: Added `F5` / `F9` hotkeys to serialize and deserialize custom level layouts to and from `editor_level.txt`.
+
 ## [1.6.14-dev] - UI Consolidation, Main Menu Redesign & Headless Stabilization
 
 ### Added

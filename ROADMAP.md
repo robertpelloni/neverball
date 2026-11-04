@@ -32,7 +32,7 @@ This roadmap defines the structural milestones to evolve Neverball into a full-f
 ## Milestone 4: Level Editor & Dynamic Elements (Current Focus)
 - [x] **Main Menu Integration**: Prominently featured Level Editor directly in the Title Screen alongside core game modes.
 - [x] **In-Engine Layout Editor Prototype (`st_edit.c`)**: Free-flight inspection, real-time coordinate HUD, dynamic item spawning.
-- [ ] **Grid-Based Tile Placement**: 3D placement grid with snapping for ramps, bumpers, moving platforms, and goal tapes.
+- [x] **Grid-Based Tile Placement**: 3D placement grid with snapping (2.0 units), tile cycling (Coins, Goal, Spring, Hazard), and disk serialization (`editor_level.txt`).
 - [ ] **Moving Platform Entities**: Dynamic paths and translation vectors without full map re-compilation.
 - [ ] **Switch & Trigger Logic**: Ground switches activating gates and teleporters.
 
