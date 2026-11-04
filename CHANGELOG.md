@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.6.14-dev] - UI Consolidation, Main Menu Redesign & Headless Stabilization
+
+### Added
+- **Main Menu Hierarchy Redesign (`ball/st_title.c`)**: Reorganized main menu into clear categorical groupings: Primary Modes (Arcade, Story, Party Games, Level Editor), Extras (Monkey Shop, Replays), and System/Guide (Help, Options, Exit).
+- **Interactive Tooltip Banner**: Added contextual descriptions at the bottom of the Title screen that dynamically update when navigating or hovering over menu items.
+- **Robust Headless Null-Safety (`ball/game_common.c`, `ball/game_draw.c`)**: Added defensive null and count guards for ball varying pointers (`vary->uc`, `vary->uv`, `vary->base`), preventing segmentation faults in headless CI/server testing when maps or default textures fail to load.
+- **Consolidated Architecture Dashboard (`docs/DASHBOARD.md`)**: Fully updated single master dashboard outlining subprojects, directory architecture, submodule tracking, UI organization, and headless server lifecycle commands.
+- **Headless Smoke Test Suite (`test_run.sh`)**: Updated automated smoke test script to test both Neverball and Neverputt under `xvfb-run`, validating process health and clean shutdown.
+
 ## [1.6.13-dev] - Dynamic Level Editing
 
 ### Added
