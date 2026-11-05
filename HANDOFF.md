@@ -1,6 +1,8 @@
 # Model Handoff & Session State
 
 ## Session Summary
+- **In-Engine 3D Wireframe Placement Rendering (`ball/st_edit.c`)**:
+  - Implemented 3D wireframe bounding box rendering for placed level tiles, color-coded by tile type.
 - **Level Editor Grid-Snapped Placement & Persistence (`ball/st_edit.c`)**:
   - Implemented 2.0-unit grid snapping for placing up to 128 level elements in real-time.
   - Implemented tile category cycling (`Q`/`E`) across Yellow Coins, Red Coins (+5), Blue Coins (+10), Goal Tape, Bumper/Spring, and Hazard/Spike.
@@ -15,10 +17,10 @@
 - **Documentation & Dashboard Overhaul**:
   - Consolidated `docs/DASHBOARD.md` into a singular master page.
   - Maintained `MEMORY.md`, `ROADMAP.md`, `TODO.md`, and `CHANGELOG.md`.
-  - Bumped version to `1.6.15-dev`.
+  - Bumped version to `1.6.16-dev`.
 
 ## Next Recommended Tasks (Phase 4 Continuation)
-1. **Dynamic Switch Collision**:
-   - Connect switch trigger testing (`sol_swch_test`) in `game_server.c` to trigger moving platforms or open goal barriers.
-2. **Dynamic Moving Platform Paths**:
+1. **Dynamic Moving Platform Paths**:
    - Enable scripted platform waypoint loops defined in `.txt` layout files.
+2. **Online State Serialization**:
+   - Isolate fixed-step physics state snapshots for UDP serialization.

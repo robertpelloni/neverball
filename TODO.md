@@ -6,7 +6,7 @@
 - [x] Protect headless server and client loops against missing texture/varying crashes (`game_common.c`, `game_draw.c`).
 - [x] Implement grid-snapped object placement in `ball/st_edit.c` (selecting from predefined brush pieces).
 - [x] Add serialization for custom placed layout objects (`editor_level.txt`).
-- [ ] Connect switch triggers (`sol_swch_test`) in `game_server.c` to open goals dynamically.
+- [x] Connect switch triggers (`sol_swch_test`) in `game_server.c` to open goals dynamically.
 
 ## Content & Assets
 - [ ] Construct themed Hub World brush maps (`data/map-hub/`) with warp trigger zones.

@@ -13,6 +13,7 @@
 #include "video.h"
 #include "key.h"
 #include "config.h"
+#include "glext.h"
 
 #include "game_client.h"
 #include "game_server.h"
@@ -157,9 +158,73 @@ static int edit_leave(struct state *st, struct state *next, int id, int intent)
     return transition_slide(id, 0, intent);
 }
 
+static void editor_render_tiles(void)
+{
+    if (placed_tile_count == 0) return;
+
+    glDisable(GL_TEXTURE_2D);
+    glDisable(GL_LIGHTING);
+    glLineWidth(2.0f);
+
+    for (int i = 0; i < placed_tile_count; i++)
+    {
+        float x = placed_tiles[i].pos[0];
+        float y = placed_tiles[i].pos[1];
+        float z = placed_tiles[i].pos[2];
+        float s = GRID_SNAP_SIZE * 0.45f;
+
+        switch (placed_tiles[i].type)
+        {
+        case TILE_COIN_YELLOW:
+            glColor4f(1.0f, 0.9f, 0.0f, 0.9f);
+            break;
+        case TILE_COIN_RED:
+            glColor4f(1.0f, 0.1f, 0.1f, 0.9f);
+            break;
+        case TILE_COIN_BLUE:
+            glColor4f(0.1f, 0.4f, 1.0f, 0.9f);
+            break;
+        case TILE_GOAL:
+            glColor4f(0.1f, 1.0f, 0.2f, 0.9f);
+            break;
+        case TILE_BUMPER:
+            glColor4f(0.8f, 0.2f, 1.0f, 0.9f);
+            break;
+        case TILE_HAZARD:
+            glColor4f(1.0f, 0.4f, 0.0f, 0.9f);
+            break;
+        default:
+            glColor4f(1.0f, 1.0f, 1.0f, 0.8f);
+            break;
+        }
+
+        /* Draw 3D wireframe bounding box representing placed tile */
+        glBegin(GL_LINES);
+        /* Bottom quad */
+        glVertex3f(x - s, y - s, z - s); glVertex3f(x + s, y - s, z - s);
+        glVertex3f(x + s, y - s, z - s); glVertex3f(x + s, y - s, z + s);
+        glVertex3f(x + s, y - s, z + s); glVertex3f(x - s, y - s, z + s);
+        glVertex3f(x - s, y - s, z + s); glVertex3f(x - s, y - s, z - s);
+
+        /* Top quad */
+        glVertex3f(x - s, y + s, z - s); glVertex3f(x + s, y + s, z - s);
+        glVertex3f(x + s, y + s, z - s); glVertex3f(x + s, y + s, z + s);
+        glVertex3f(x + s, y + s, z + s); glVertex3f(x - s, y + s, z + s);
+        glVertex3f(x - s, y + s, z + s); glVertex3f(x - s, y + s, z - s);
+
+        /* Pillars */
+        glVertex3f(x - s, y - s, z - s); glVertex3f(x - s, y + s, z - s);
+        glVertex3f(x + s, y - s, z - s); glVertex3f(x + s, y + s, z - s);
+        glVertex3f(x + s, y - s, z + s); glVertex3f(x + s, y + s, z + s);
+        glVertex3f(x - s, y - s, z + s); glVertex3f(x - s, y + s, z + s);
+        glEnd();
+    }
+}
+
 static void edit_paint(int id, float t)
 {
     game_client_draw(0, t);
+    editor_render_tiles();
     gui_paint(id);
 }
 

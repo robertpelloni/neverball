@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.16-dev] - Level Editor Wireframe Visuals & Snap HUD
+
+### Added
+- **Level Editor Visual Rendering (`ball/st_edit.c`)**: Added direct 3D wireframe bounding box rendering for all placed level tiles in the viewport (`editor_render_tiles`), with color coding distinguishing yellow coins, red coins, blue coins, goal tapes, bumpers, and hazards.
+- **HUD Integration**: Active tile count and current selection preview synced with wireframe markers.
+
 ## [1.6.15-dev] - Grid-Snapped Level Editor & Layout Persistence
 
 ### Added
