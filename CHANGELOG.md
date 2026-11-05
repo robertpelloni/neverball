@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.6.17-dev] - Story Mode Campaign Intro Script Integration
+
+### Added
+- **Campaign Intro Cutscene Script (`data/story/campaign_intro.txt`)**: Created a multi-slide narrative introduction for Story Mode using existing image assets and thematic lore.
+- **Story State Automation (`ball/st_title.c`)**: Wired the "Story Mode" title menu action to execute `story_load_script("data/story/campaign_intro.txt", &st_char)`, enabling automated cutscene viewing followed by character selection.
+
 ## [1.6.16-dev] - Level Editor Wireframe Visuals & Snap HUD
 
 ### Added

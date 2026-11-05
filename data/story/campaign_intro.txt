@@ -1,0 +1,4 @@
+gui/help1.jpg|Welcome, Brave Monkey! A great challenge awaits across the mysterious rolling lands.
+gui/help2.jpg|Collect golden bananas and master the tilting courses to unlock ancient portals.
+gui/help3.jpg|Beware of perilous hazards, bumpers, and steep inclines as you venture onward!
+gui/help4.jpg|Your grand quest begins now. Roll with courage and reach the goal!

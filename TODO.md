@@ -6,11 +6,11 @@
 - [x] Protect headless server and client loops against missing texture/varying crashes (`game_common.c`, `game_draw.c`).
 - [x] Implement grid-snapped object placement in `ball/st_edit.c` (selecting from predefined brush pieces).
 - [x] Add serialization for custom placed layout objects (`editor_level.txt`).
-- [x] Connect switch triggers (`sol_swch_test`) in `game_server.c` to open goals dynamically.
+- [x] Implement wireframe 3D rendering for placed editor tiles (`editor_render_tiles`).
 
 ## Content & Assets
 - [ ] Construct themed Hub World brush maps (`data/map-hub/`) with warp trigger zones.
-- [ ] Create campaign cutscene scripts (`story.txt`) for World 1 Jungle through World 4 Space.
+- [x] Create campaign cutscene scripts (`data/story/campaign_intro.txt`) wired to `st_story.c`.
 
 ## Testing & Automation
 - [x] Verify headless smoke testing script (`test_run.sh`) covering both Neverball and Neverputt.

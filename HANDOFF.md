@@ -1,6 +1,9 @@
 # Model Handoff & Session State
 
 ## Session Summary
+- **Story Mode Campaign Script Integration (`data/story/campaign_intro.txt`, `ball/st_title.c`)**:
+  - Authored a 4-slide introductory campaign narrative script with existing game imagery and rich lore.
+  - Automatically loads and plays the intro cutscene in `st_story` upon launching Story Mode from the main menu, smoothly chaining into character selection (`st_char`).
 - **In-Engine 3D Wireframe Placement Rendering (`ball/st_edit.c`)**:
   - Implemented 3D wireframe bounding box rendering for placed level tiles, color-coded by tile type.
 - **Level Editor Grid-Snapped Placement & Persistence (`ball/st_edit.c`)**:
@@ -17,7 +20,7 @@
 - **Documentation & Dashboard Overhaul**:
   - Consolidated `docs/DASHBOARD.md` into a singular master page.
   - Maintained `MEMORY.md`, `ROADMAP.md`, `TODO.md`, and `CHANGELOG.md`.
-  - Bumped version to `1.6.16-dev`.
+  - Bumped version to `1.6.17-dev`.
 
 ## Next Recommended Tasks (Phase 4 Continuation)
 1. **Dynamic Moving Platform Paths**:

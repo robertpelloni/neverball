@@ -130,7 +130,10 @@ static int title_action(int tok, int val)
         break;
 
     case TITLE_STORY:
-        return goto_state(&st_story);
+        if (story_load_script("data/story/campaign_intro.txt", &st_char))
+            return goto_state(&st_story);
+        else
+            return goto_state(&st_char);
         break;
 
     case TITLE_PARTY: return goto_state(&st_party); break;
