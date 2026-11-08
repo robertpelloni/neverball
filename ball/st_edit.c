@@ -350,6 +350,20 @@ static int edit_buttn(int b, int d, int device_id)
     if (config_tst_d(CONFIG_JOYSTICK_BUTTON_B, b) && d)
         editor_place_current_tile();
 
+    if (config_tst_d(CONFIG_JOYSTICK_BUTTON_X, b) && d)
+        editor_remove_last_tile();
+
+    if (config_tst_d(CONFIG_JOYSTICK_BUTTON_L1, b) && d)
+    {
+        current_tile_type = (current_tile_type - 1 + TILE_COUNT) % TILE_COUNT;
+        editor_update_hud();
+    }
+    if (config_tst_d(CONFIG_JOYSTICK_BUTTON_R1, b) && d)
+    {
+        current_tile_type = (current_tile_type + 1) % TILE_COUNT;
+        editor_update_hud();
+    }
+
     return 1;
 }
 

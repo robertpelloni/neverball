@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.6.18-dev] - Level Editor Gamepad Controls & Placement Refinements
+
+### Added
+- **Level Editor Gamepad Integration (`ball/st_edit.c`)**: Added comprehensive gamepad controller mappings:
+  - Button B to snap-place objects
+  - Button X to remove last placed object
+  - Bumpers L1 / R1 to cycle backward/forward through tile types
+  - Button A for altitude lift/ascend
+  - Left stick for flying translation, right stick for look rotation
+
 ## [1.6.17-dev] - Story Mode Campaign Intro Script Integration
 
 ### Added

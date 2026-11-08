@@ -1,6 +1,8 @@
 # Model Handoff & Session State
 
 ## Session Summary
+- **Level Editor Gamepad Controls (`ball/st_edit.c`)**:
+  - Implemented gamepad controller mappings for the in-engine level editor (B to place, X to remove, L1/R1 to cycle tile types).
 - **Story Mode Campaign Script Integration (`data/story/campaign_intro.txt`, `ball/st_title.c`)**:
   - Authored a 4-slide introductory campaign narrative script with existing game imagery and rich lore.
   - Automatically loads and plays the intro cutscene in `st_story` upon launching Story Mode from the main menu, smoothly chaining into character selection (`st_char`).
