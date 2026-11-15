@@ -1,5 +1,44 @@
 # Changelog
 
+## [1.6.18-dev] - Level Editor Gamepad Controls & Placement Refinements
+
+### Added
+- **Level Editor Gamepad Integration (`ball/st_edit.c`)**: Added comprehensive gamepad controller mappings:
+  - Button B to snap-place objects
+  - Button X to remove last placed object
+  - Bumpers L1 / R1 to cycle backward/forward through tile types
+  - Button A for altitude lift/ascend
+  - Left stick for flying translation, right stick for look rotation
+
+## [1.6.17-dev] - Story Mode Campaign Intro Script Integration
+
+### Added
+- **Campaign Intro Cutscene Script (`data/story/campaign_intro.txt`)**: Created a multi-slide narrative introduction for Story Mode using existing image assets and thematic lore.
+- **Story State Automation (`ball/st_title.c`)**: Wired the "Story Mode" title menu action to execute `story_load_script("data/story/campaign_intro.txt", &st_char)`, enabling automated cutscene viewing followed by character selection.
+
+## [1.6.16-dev] - Level Editor Wireframe Visuals & Snap HUD
+
+### Added
+- **Level Editor Visual Rendering (`ball/st_edit.c`)**: Added direct 3D wireframe bounding box rendering for all placed level tiles in the viewport (`editor_render_tiles`), with color coding distinguishing yellow coins, red coins, blue coins, goal tapes, bumpers, and hazards.
+- **HUD Integration**: Active tile count and current selection preview synced with wireframe markers.
+
+## [1.6.15-dev] - Grid-Snapped Level Editor & Layout Persistence
+
+### Added
+- **Grid-Snapped Tile Placement (`ball/st_edit.c`)**: Enhanced the Phase 4 Level Editor with 2.0 unit grid-snapped object placement supporting up to 128 elements.
+- **Tile Cycling System**: Added hotkeys `Q` / `E` to cycle through placeable tile types (Yellow Coin, Red Coin, Blue Coin, Goal Tape, Bumper/Spring, Hazard/Spike).
+- **Editor Action Hotkeys & HUD**: Added `SPACE` to snap-place, `BACKSPACE` to remove, and live HUD readouts displaying position, grid snap size, and current tile selection.
+- **Level Layout Persistence**: Added `F5` / `F9` hotkeys to serialize and deserialize custom level layouts to and from `editor_level.txt`.
+
+## [1.6.14-dev] - UI Consolidation, Main Menu Redesign & Headless Stabilization
+
+### Added
+- **Main Menu Hierarchy Redesign (`ball/st_title.c`)**: Reorganized main menu into clear categorical groupings: Primary Modes (Arcade, Story, Party Games, Level Editor), Extras (Monkey Shop, Replays), and System/Guide (Help, Options, Exit).
+- **Interactive Tooltip Banner**: Added contextual descriptions at the bottom of the Title screen that dynamically update when navigating or hovering over menu items.
+- **Robust Headless Null-Safety (`ball/game_common.c`, `ball/game_draw.c`)**: Added defensive null and count guards for ball varying pointers (`vary->uc`, `vary->uv`, `vary->base`), preventing segmentation faults in headless CI/server testing when maps or default textures fail to load.
+- **Consolidated Architecture Dashboard (`docs/DASHBOARD.md`)**: Fully updated single master dashboard outlining subprojects, directory architecture, submodule tracking, UI organization, and headless server lifecycle commands.
+- **Headless Smoke Test Suite (`test_run.sh`)**: Updated automated smoke test script to test both Neverball and Neverputt under `xvfb-run`, validating process health and clean shutdown.
+
 ## [1.6.13-dev] - Dynamic Level Editing
 
 ### Added

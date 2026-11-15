@@ -1,10 +1,18 @@
-# Remaining Tasks (TODO)
+# Immediate Action Items (TODO)
 
-## Future Tech (Phase 4)
-- [ ] **Level Editor:** Implement a basic tile-based layout editor inside `st_edit` using precompiled `.sol` chunks. Currently exists as a free-flight prototype.
-- [ ] **Online Multiplayer:** Isolate the physics state into a serialize-able block and wrap the `game_proxy` queue with UDP/ENet logic.
-- [ ] **Ghost Data Sharing:** Build a simple web service backend to host and download `.gho` files natively from the Replay Browser.
+## Active Development: Phase 4 Level Editor & Dynamic Elements
+- [x] Integrate Level Editor entry into the primary Main Menu hierarchy (`ball/st_title.c`).
+- [x] Implement live UI hover tooltips across main menu options.
+- [x] Protect headless server and client loops against missing texture/varying crashes (`game_common.c`, `game_draw.c`).
+- [x] Implement grid-snapped object placement in `ball/st_edit.c` (selecting from predefined brush pieces).
+- [x] Add serialization for custom placed layout objects (`editor_level.txt`).
+- [x] Implement wireframe 3D rendering for placed editor tiles (`editor_render_tiles`).
 
-## Content Creation
-- [ ] **Hub World Maps:** Level designers need to build `.map` files containing 3D models for Hub Worlds, integrating the `GAME_WARP` switches.
-- [ ] **Story Scripts:** Write `story.txt` files mapping out the campaign narrative to be parsed by `st_story.c`.
+## Content & Assets
+- [ ] Construct themed Hub World brush maps (`data/map-hub/`) with warp trigger zones.
+- [x] Create campaign cutscene scripts (`data/story/campaign_intro.txt`) wired to `st_story.c`.
+
+## Testing & Automation
+- [x] Verify headless smoke testing script (`test_run.sh`) covering both Neverball and Neverputt.
+- [x] Ensure executable permissions on all shell scripts in `scripts/`.
+- [ ] Add automated CI test verifying all 14 party modes initialize without error.

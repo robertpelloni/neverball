@@ -557,7 +557,7 @@ static void game_draw_fore(struct s_rend *rend,
                            int d, float t)
 {
     struct game_draw *gd = &gds[p_idx];
-    const float *ball_p = gd->vary.uv[0].p;
+    const float *ball_p = (gd->vary.uc > 0 && gd->vary.uv) ? gd->vary.uv[0].p : NULL;
 
     struct s_draw *draw = &gd->draw;
 
@@ -565,7 +565,8 @@ static void game_draw_fore(struct s_rend *rend,
     {
         game_draw_tilt(gd, d);
         game_clip_refl(d);
-        game_clip_ball(gd, d, ball_p);
+        if (ball_p)
+            game_clip_ball(gd, d, ball_p);
 
         if (d < 0)
             glEnable(GL_CLIP_PLANE0);
